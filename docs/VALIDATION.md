@@ -19,6 +19,8 @@ The integration script verifies:
 
 ## Native UI checks
 
+September 5 refuge-theme checks: the rethemed app builds and its ad-hoc bundle passes strict signature verification. All 16 Swift tests and loopback integration checks pass. Native screenshots and accessibility checks covered the populated reader, selected community, empty search, first-run welcome, connection and provenance sheets, and contribution settings. Copy instructions, Escape dismissal, and pause/resume were exercised. A compact 860-pixel-wide window exposed welcome-text compression; making the welcome area scrollable fixed it. The final populated demo was restored at 1120 × 760, and its actual screenshot replaced the website’s previous app image. The menu panel and icon were rethemed; automated native access did not expose the menu-bar popup for a visual check.
+
 Opened the built app and inspected it through macOS accessibility and screenshots:
 
 - Empty-state reader and agent connection instructions render correctly.

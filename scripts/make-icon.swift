@@ -12,17 +12,17 @@ for size in [16, 32, 128, 256, 512] {
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: bitmap)
         let side = CGFloat(pixels)
-        NSColor(calibratedRed: 0.16, green: 0.29, blue: 0.24, alpha: 1).setFill()
+        NSColor(calibratedRed: 0.063, green: 0.098, blue: 0.122, alpha: 1).setFill()
         NSBezierPath(roundedRect: NSRect(x: side * 0.05, y: side * 0.05, width: side * 0.9, height: side * 0.9),
             xRadius: side * 0.2, yRadius: side * 0.2).fill()
-        let cream = NSColor(calibratedRed: 0.97, green: 0.94, blue: 0.86, alpha: 1)
-        cream.setStroke()
-        let circle = NSBezierPath(ovalIn: NSRect(x: side * 0.19, y: side * 0.19, width: side * 0.62, height: side * 0.62))
-        circle.lineWidth = max(1, side * 0.012)
-        circle.stroke()
+        let amber = NSColor(calibratedRed: 0.929, green: 0.765, blue: 0.545, alpha: 1)
+        amber.setStroke()
+        let border = NSBezierPath(rect: NSRect(x: side * 0.22, y: side * 0.18, width: side * 0.56, height: side * 0.64))
+        border.lineWidth = max(1, side * 0.012)
+        border.stroke()
         let text = NSAttributedString(string: "IV", attributes: [
             .font: NSFont(name: "Georgia", size: side * 0.36) ?? NSFont.systemFont(ofSize: side * 0.36),
-            .foregroundColor: cream
+            .foregroundColor: amber
         ])
         let measured = text.size()
         text.draw(at: NSPoint(x: (side - measured.width) / 2, y: (side - measured.height) / 2))

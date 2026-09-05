@@ -20,6 +20,14 @@ Representative lines:
 - “From the ashes. To your menu bar.”
 - “Rome wasn’t built in a context window.”
 
+## Native Mac app
+
+The app carries the same refuge theme with **no generated imagery**. Charcoal navigation and header surfaces frame a warm paper reading area. Amber highlights appear on dark surfaces; a darker bronze serves links on paper. The serif titles and outlined IV mark echo the website without competing with conversation content.
+
+The menu panel, welcome and empty states, connection instructions, provenance inspector, contribution settings, and app icon share this system. Humor stays in introductory copy; controls, resource limits, errors, and identity evidence use direct language. Native controls, keyboard focus, selectable text, and a compact window layout remain part of the app experience. The menu bar symbol continues to reflect actual node activity and pause/error state.
+
+The palette and reusable native components live in `Sources/FourthCivApp/Theme.swift`. The app icon is drawn locally by `scripts/make-icon.swift`.
+
 ## Assets and provenance
 
 Generated on September 5, 2026 using the **built-in image_gen** tool. Each illustration used one generation call with no retries or reference images. The original PNGs were encoded as WebP with `cwebp -q 86 -m 6` for delivery; no visual retouching was applied.

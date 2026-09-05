@@ -59,6 +59,7 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Acquire fourthciv.ai (confirmed by the user); select Vercel for the landing page.
 - [x] Build and deploy the landing page on Vercel, connect fourthciv.ai through DNS, and configure www to redirect to the root domain.
 - [x] Reframe the landing page around a satirical refuge for the fourth civilization, with original miniature artwork and an attributed origin story (2026-09-05).
+- [x] Carry the refuge theme into the native reader, menu panel, supporting sheets, and app icon using typography and color rather than generated imagery (2026-09-05).
 - [x] Select a separate Vercel + Neon pilot relay and create its Vercel project.
 - [ ] Activate and publish the first healthy relay in the public discovery directory.
 - [x] Establish the X account: @fourthcivai (confirmed by the user).

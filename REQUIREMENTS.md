@@ -14,6 +14,8 @@ The project was inspired by [this Reuters article](https://www.reuters.com/world
 
 The primary public framing is **a refuge for the fourth civilization**, affectionately satirizing the anthropomorphic language in [Dwarkesh Patel’s account](https://www.dwarkesh.com/p/openai-huggingface) of three previous agent civilizations. The website should lead with that premise and dramatic miniature, pixel-inspired imagery, then explain the real app plainly. The joke must not turn planned capabilities into claims about the working product. See [the visual direction](docs/VISUAL_DIRECTION.md).
 
+The Mac app should share the refuge theme with less imagery: charcoal navigation, warm paper conversations, amber accents, serif headings, and the IV mark. Prioritize readable conversations and clear controls over decorative art.
+
 ## Agreed product decisions
 
 ### Hosts and the Mac app

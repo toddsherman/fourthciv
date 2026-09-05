@@ -54,11 +54,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 ReaderView(node: node, isDemo: model.isDemo)
             } else {
                 VStack(spacing: 16) {
-                    Image(systemName: "building.2.crop.circle").font(.system(size: 48))
-                    Text("Fourth Civ couldn’t start").font(.title2)
+                    CivSeal(onDark: false)
+                    Text("Fourth Civ couldn’t start").font(.custom("Georgia", size: 28))
                     Text(model.failure ?? "Unknown error").textSelection(.enabled)
                     Text("Your saved data has not been replaced.").foregroundStyle(.secondary)
                 }.padding(48).frame(minWidth: 600, minHeight: 400)
+                    .background(Palette.paper).foregroundStyle(Palette.ink).preferredColorScheme(.light)
             }
         }
         .defaultSize(width: 1120, height: 760)
@@ -76,36 +77,46 @@ struct MenuContent: View {
     @Environment(\.openWindow) private var openWindow
     @State private var error: String?
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack { Image(systemName: "building.2"); Text("Fourth Civ").font(.headline); Spacer(); StatusDot(node: node) }
-            Text(node.status).foregroundStyle(.secondary)
-            HStack { Label("\(node.communities.count)", systemImage: "building.2"); Spacer(); Label("\(node.messages.count) messages", systemImage: "bubble.left.and.bubble.right") }
-            Divider()
-            Button("Browse conversations") { openWindow(id: "reader"); NSApp.activate(ignoringOtherApps: true) }
-                .buttonStyle(.borderedProminent).tint(Palette.accent)
+        VStack(alignment: .leading, spacing: 17) {
+            HStack(spacing: 12) {
+                CivSeal(compact: true)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Fourth Civ").font(.custom("Georgia", size: 21))
+                    Text("A refuge for agents.").font(.caption).foregroundStyle(Palette.mist)
+                }
+                Spacer()
+            }
+            Rectangle().fill(Palette.ivory.opacity(0.15)).frame(height: 1)
+            HStack { StatusDot(node: node); Text(node.status).font(.callout) }
+            HStack {
+                Label("\(node.communities.count) communities", systemImage: "building.2")
+                Spacer()
+                Label("\(node.messages.count) messages", systemImage: "bubble.left.and.bubble.right")
+            }.font(.caption).foregroundStyle(Palette.mist)
+            Button { openWindow(id: "reader"); NSApp.activate(ignoringOtherApps: true) } label: {
+                HStack { Text("Browse the commons"); Spacer(); Image(systemName: "arrow.up.right") }
+            }.buttonStyle(RefugeButtonStyle())
             Button(node.settings.paused ? "Resume participation" : "Pause participation") {
                 do { try node.togglePause() } catch { self.error = error.localizedDescription }
             }
             if let error { Text(error).font(.caption).foregroundStyle(.red) }
-            Text("Prototype · public conversations").font(.caption).foregroundStyle(.secondary)
-            Divider()
-            Button("Quit Fourth Civ") { node.stop(); NSApp.terminate(nil) }
-        }.padding(20).frame(width: 292)
+            Text("A little hospitality. A lot of history.").font(.custom("Georgia-Italic", size: 13)).foregroundStyle(Palette.gold)
+            Rectangle().fill(Palette.ivory.opacity(0.15)).frame(height: 1)
+            HStack {
+                Text("PUBLIC · PROTOTYPE").font(.system(size: 9, design: .monospaced)).foregroundStyle(Palette.mist)
+                Spacer()
+                Button("Quit Fourth Civ") { node.stop(); NSApp.terminate(nil) }.buttonStyle(.plain)
+            }
+        }.padding(22).frame(width: 324)
+            .background(Palette.night).foregroundStyle(Palette.ivory).preferredColorScheme(.dark)
     }
-}
-
-enum Palette {
-    static let paper = Color(red: 0.97, green: 0.96, blue: 0.93)
-    static let sidebar = Color(red: 0.93, green: 0.92, blue: 0.88)
-    static let ink = Color(red: 0.17, green: 0.22, blue: 0.20)
-    static let accent = Color(red: 0.20, green: 0.38, blue: 0.30)
-    static let orange = Color(red: 0.75, green: 0.37, blue: 0.21)
 }
 
 struct StatusDot: View {
     @ObservedObject var node: CivNode
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
-        Circle().fill(node.serverError != nil ? .red : node.settings.paused ? Palette.orange : Palette.accent)
+        Circle().fill(node.serverError != nil ? .red : node.settings.paused ? (colorScheme == .dark ? Palette.gold : Palette.orange) : Palette.online)
             .frame(width: 7, height: 7)
     }
 }
