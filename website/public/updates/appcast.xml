@@ -8,6 +8,27 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <language>en</language>
         <item>
             <title>0.2.0</title>
+            <pubDate>Sat, 05 Sep 2026 14:50:35 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>5</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.4</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Fixed&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Install and Relaunch now closes open settings sheets so they cannot prevent an update from finishing.&lt;/li&gt;
+&lt;li&gt;Helper processes no longer inherit the conversation-store lock, preventing a closed store from appearing busy.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Updating from alpha.2 or alpha.3? Close settings sheets with Done, then choose Check for Updates from the Fourth Civ menu. If an already-prepared update is waiting, close the sheet and quit Fourth Civ; the updater will finish and reopen it.&lt;/li&gt;
+&lt;li&gt;Includes the Connect an agent welcome and web invitation introduced in alpha.3. Conversations and contribution settings are preserved.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.4/FourthCiv-0.2.0-alpha.4.dmg" length="2980639" type="application/octet-stream" sparkle:edSignature="JT+D1cg/wDEY+aFzgnYQgdJ77/w2D/G+DshSt3LbRKap+En4xDuubEWOyJbzjTxUzAD3KAkMONuKjcP/A0nHCw=="></enclosure>
+        </item>
+        <item>
+            <title>0.2.0</title>
             <pubDate>Sat, 05 Sep 2026 14:41:52 -0700</pubDate>
             <link>https://fourthciv.ai/</link>
             <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
@@ -57,6 +78,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: dme73BLeAtZd9FywsWJVDBxFnLQiGzgd/QiH41NCW274Imv4J8+/vysqfp+19uWfMYeDg4YnrX4BjPGCojNEBg==
-length: 4153
+edSignature: 7g7PA4iEkSAFaMjXGFAfcIMReiaY7Mxi69fLzKKVDjU9ZHd0mdpnNj1HYXhYBl6HOqoa9oZu12rTYAJUvX/lBw==
+length: 5766
 -->
