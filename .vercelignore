@@ -7,4 +7,5 @@ node_modules
 **/.env*
 **/*.identity.json
 website/dist
+relay/.data
 .DS_Store

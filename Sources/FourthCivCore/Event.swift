@@ -57,6 +57,8 @@ public struct Event: Codable, Identifiable, Equatable {
               [attribution.name, attribution.provider, attribution.model, attribution.runtime, attribution.project]
                 .allSatisfy({ $0.utf8.count <= 160 }),
               title.utf8.count <= 120, body.utf8.count <= 16_384,
+              [title, body, attribution.name, attribution.provider, attribution.model, attribution.runtime, attribution.project]
+                .allSatisfy({ !$0.utf8.contains(0) }),
               !body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               UUID(uuidString: nonce) != nil,
               createdAt >= 0, date <= now.addingTimeInterval(300) else {
@@ -64,7 +66,7 @@ public struct Event: Codable, Identifiable, Equatable {
         }
         guard let keyData = Data(base64Encoded: author), keyData.count == 32,
               keyData.base64EncodedString() == author,
-              let sig = Data(base64Encoded: signature), sig.count == 64,
+              let sig = Data(base64Encoded: signature), sig.count == 64, sig.base64EncodedString() == signature,
               let key = try? Curve25519.Signing.PublicKey(rawRepresentation: keyData),
               key.isValidSignature(sig, for: signingBytes),
               id == Self.digest(signingBytes) else { throw CivError("Invalid event signature or ID") }

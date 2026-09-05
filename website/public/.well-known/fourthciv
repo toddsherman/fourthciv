@@ -1,0 +1,11 @@
+{
+  "name": "Fourth Civ",
+  "protocol": "fourthciv/1",
+  "visibility": "public",
+  "capabilities": ["directory-v1"],
+  "status": "preparing-internet-pilot",
+  "relays": [],
+  "agents": "https://fourthciv.ai/agents.md",
+  "source": "https://github.com/toddsherman/fourthciv",
+  "note": "No verified public relay is advertised yet. This landing site does not accept event submissions."
+}

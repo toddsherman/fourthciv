@@ -78,6 +78,9 @@ struct CoreTests {
         #expect(throws: (any Error).self) {
             _ = try Event.signed(kind: .community, key: .init(), attribution: Attribution(name: String(repeating: "a", count: 161)), title: "Town", body: "Description")
         }
+        #expect(throws: (any Error).self) {
+            _ = try Event.signed(kind: .community, key: .init(), attribution: attribution, title: "Town", body: "NUL\0")
+        }
     }
 
     @Test func incrementalHTTPAndHostileFraming() throws {
@@ -115,5 +118,54 @@ struct CoreTests {
         let data = Data(#"{"paused":false,"storageMiB":16,"peers":[],"syncSeconds":10}"#.utf8)
         let settings = try JSONDecoder().decode(NodeSettings.self, from: data)
         #expect(!settings.lanEnabled)
+        #expect(!settings.internetEnabled)
+        #expect(settings.dailySyncMiB == 25)
+    }
+
+    @Test func relayEndpointsRequireHTTPSAndExplicitOptIn() throws {
+        #expect(try RelayEndpoint.validate(RelayEndpoint.pilot).scheme == "https")
+        #expect(throws: (any Error).self) { _ = try LocalEndpoint.validate(RelayEndpoint.pilot) }
+        #expect(try LocalEndpoint.validate(RelayEndpoint.pilot, allowInternet: true).host == "fourthciv-pilot.vercel.app")
+        for value in ["http://example.com", "https://127.0.0.1", "https://localhost", "https://node.local", "https://a.example:8443", "https://user:password@example.com", "https://example.com/events", "https://example.com?next=bad", "https://example.com#fragment", "https://-bad.example", "https://example.com."] {
+            #expect(throws: (any Error).self) { _ = try RelayEndpoint.validate(value) }
+        }
+    }
+
+    @Test @MainActor func syncBudgetPersistsReservationsAndResetsAtUTCDateBoundary() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let now = Date(timeIntervalSince1970: 86_400 * 100 + 50)
+        let ledger = try SyncLedger(directory: dir, now: now)
+        let reservation = try ledger.reserve(700, limit: 1_000, now: now)
+        #expect(ledger.remaining(limit: 1_000, now: now) == 300)
+        #expect(throws: (any Error).self) { _ = try ledger.reserve(301, limit: 1_000, now: now) }
+        #expect(try SyncLedger(directory: dir, now: now).used(now: now) == 700)
+        try ledger.settle(reservation, actual: 200)
+        #expect(try SyncLedger(directory: dir, now: now).used(now: now) == 200)
+        let tomorrow = now.addingTimeInterval(86_400)
+        #expect(ledger.remaining(limit: 1_000, now: tomorrow) == 1_000)
+        _ = try ledger.reserve(100, limit: 1_000, now: tomorrow)
+        #expect(ledger.used(now: tomorrow) == 100)
+        var progress = RelayProgress(); progress.epoch = UUID().uuidString; progress.offset = 3
+        try ledger.setProgress(progress, for: RelayEndpoint.pilot)
+        #expect(try SyncLedger(directory: dir).progress(for: RelayEndpoint.pilot).offset == 3)
+        try ledger.retain([])
+        #expect(ledger.progress(for: RelayEndpoint.pilot).offset == 0)
+    }
+
+    @Test @MainActor func largeEventsHaveBoundedPagesWithoutSkippingReferences() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let store = try EventStore(directory: dir)
+        let key = Curve25519.Signing.PrivateKey()
+        let community = try Event.signed(kind: .community, key: key, attribution: attribution, title: "Large pages", body: "Test")
+        try store.insert(community)
+        for _ in 0..<20 { try store.insert(Event.signed(kind: .message, key: key, attribution: attribution, community: community.id, body: String(repeating: "a", count: 16_384))) }
+        let first = store.page(offset: 0)
+        #expect(try JSONEncoder().encode(first).count <= 256 * 1_024)
+        let next = try #require(first.next)
+        let second = store.page(offset: next)
+        #expect(first.events + second.events == store.events)
     }
 }

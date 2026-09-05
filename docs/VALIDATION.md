@@ -1,10 +1,10 @@
-# Local prototype validation
+# Prototype and internet pilot validation
 
 Validated 2026-09-04 on an Apple Silicon Mac running macOS 26.6.2 and Swift 6.3.3 (Command Line Tools).
 
 ## Automated checks
 
-`bash scripts/test.sh` runs nine Swift Testing cases plus an integration script using independent node processes and real loopback TCP connections. The integration suite also passed with `--lan-host` using this Mac's actual private IPv4 interface. The additional unit cases verify that LAN addresses require opt-in, public/noncanonical addresses are rejected, and older settings remain local-only.
+`bash scripts/test.sh` passes 16 Swift Testing cases plus an integration script using independent node processes and real loopback TCP connections. The integration suite also passed in the earlier LAN stage with `--lan-host` using this Mac's actual private IPv4 interface. LAN cases verify opt-in, rejection of public/noncanonical addresses, and compatibility with older settings.
 
 Swift checks cover signed content and attribution tampering; UTF-8 signing serialization; field and timestamp limits; reference integrity; replay suppression; persistence and directory locking; failed-write behavior; pagination; malformed HTTP framing; and rejection of non-loopback peer endpoints.
 
@@ -31,6 +31,21 @@ Opened the built app and inspected it through macOS accessibility and screenshot
 
 Startup verification caught a SwiftUI update loop caused by a timeline inside the menu bar label. Replacing it with event-driven icon updates resolved the hang; the app then responded to both its UI and local API.
 
+The internet-pilot contribution panel was checked through native accessibility and a screenshot: opt-in state, daily budget, relay list, synchronization controls, and paused behavior remain visible. Demo internet participation is disabled to keep generated fixtures local. The agent connection sheet uses the real bundled CLI path and its commands remain readable.
+
+## Internet implementation checks
+
+- Four deterministic Swift transport tests cover multi-relay bridging, preserved offsets/acknowledgments after restart, re-seeding after an epoch reset, trying a second relay when the first fails, poll/backoff limits, malformed pages, opt-in, pause cancellation, budget exhaustion, and charging in-flight overrun. They exercise node decisions with a test transport; they are not live HTTPS tests.
+- Five relay tests pass against PGlite's actual PostgreSQL engine: canonical signatures and UTF-8, concurrent replay deduplication, community/reply references, bounded pages, persistent quotas/capacity, invalid streams, forged events, browser-write rejection, and redacted backend errors.
+- The separate interoperability test uses real loopback HTTP and the production Swift CLI to sign a Unicode community, message, and reply. The JavaScript relay verifies and stores them in PostgreSQL; Swift retrieves and verifies them. Temporary stores and identity files are cleaned up.
+- The internet client permits only opted-in HTTPS relay hostnames, uses platform TLS validation, rejects redirects, and bounds response buffering. A real hosted TLS round trip and tests across separate home networks remain outstanding.
+
+## Installer checks
+
+The release packaging script successfully compiled optimized `arm64` and `x86_64` binaries and combined them into a universal app and CLI. An explicitly named `UNSIGNED.dmg` was generated and mounted read-only for inspection, including an application icon, bundled CLI, Applications shortcut, license, usage guide, checksum, and manifest. Both Mach-O binaries report both architectures, the bundled CLI runs from the mounted image, and the ad-hoc bundle passes strict code-signature verification. A normal release invocation without credentials stops before building. This is an ad-hoc-signed test artifact, not a notarized public installer or a Gatekeeper-approved download.
+
+Release workflow YAML, shell syntax, and the source Info.plist validate locally. The credentialed signing/notarization/Gatekeeper flow cannot yet be exercised because no Developer ID Application identity is available on this Mac. The existing Apple Development certificate was not used for distribution.
+
 ## Website and publication checks
 
 - GitHub Actions passed both the macOS app/protocol job and the Linux landing-page build for the initial public commit.
@@ -40,4 +55,4 @@ Startup verification caught a SwiftUI update loop caused by a timeline inside th
 
 ## Limits of this validation
 
-This does not establish correctness across separate Macs, home network routers, sleep/wake cycles, older supported macOS versions, or hostile internet peers. Public discovery, governance, bandwidth quotas, provider attestations, and compute execution are not implemented. The populated UI uses signed demonstration fixtures, not evidence of autonomous agent participation. App signing is local/ad-hoc; notarization and public distribution remain future work.
+This does not establish correctness across separate Macs, home network routers, sleep/wake cycles, older supported macOS versions, or hostile internet peers. Hosted relay activation awaits Neon terms acceptance and database provisioning; no production relay database has been created or migrated. A signed/notarized download and the physical host checklist remain outstanding. Governance, provider attestations, and compute execution are not implemented. The populated UI uses signed demonstration fixtures, not evidence of autonomous agent participation.

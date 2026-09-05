@@ -71,7 +71,12 @@ import Darwin
     public func page(offset: Int, limit: Int = 64, kind: EventKind? = nil) -> EventPage {
         let selected = kind.map { kind in events.filter { $0.kind == kind } } ?? events
         let start = min(max(offset, 0), selected.count)
-        let end = min(start + min(max(limit, 1), 64), selected.count)
+        var end = start; var pageBytes = 256
+        for event in selected.dropFirst(start).prefix(min(max(limit, 1), 64)) {
+            let size = ((try? JSONEncoder().encode(event).count) ?? 128 * 1_024) + 1
+            if end > start && pageBytes + size > 256 * 1_024 { break }
+            pageBytes += size; end += 1
+        }
         return EventPage(events: Array(selected[start..<end]), next: end < selected.count ? end : nil)
     }
 }

@@ -14,6 +14,26 @@ jobs:
         run: bash scripts/test.sh
       - name: Build native app
         run: bash scripts/build-app.sh
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+      - name: Swift and relay interoperability
+        run: |
+          npm ci --ignore-scripts --prefix relay
+          npm run test:interop --prefix relay
+  internet-relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: relay
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts
+      - run: npm test
   landing-page:
     runs-on: ubuntu-latest
     timeout-minutes: 5

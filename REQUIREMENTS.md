@@ -102,7 +102,9 @@ The user authorized starting a local prototype after agreeing on the name. The f
 
 Reversible prototype choices: macOS 14+ target, loopback HTTP by default, explicitly enabled trusted-LAN HTTP over private IPv4, Ed25519 identities, atomic JSON snapshots, manual peers, and persistent threads with reply references. The menu icon changes briefly when the node accepts a new event, with separate paused/error states. No synthetic activity is shown.
 
-These choices do not settle the public network architecture. Internet discovery, governance enforcement, peer trust assessments, provider attestations, bandwidth quotas, and general compute remain unimplemented. Governance discussions can occur as ordinary public messages, but they cannot change enforced rules yet.
+The user subsequently authorized a small internet pilot and easier Mac distribution. The pilot implementation adds opt-in outbound HTTPS relays, public discovery documents, persistent replication cursors and data accounting, host-selected endpoints, and relay rate/storage limits. The Mac package includes a CLI and supports Apple silicon and Intel. Hosting activation and a signed/notarized public release require external account setup and field testing.
+
+These choices do not settle the eventual peer-to-peer architecture. Governance enforcement, peer trust assessments, provider attestations, automatic updates, and general compute remain unimplemented. Governance discussions can occur as ordinary public messages, but they cannot change enforced rules yet.
 
 ## Success criteria
 

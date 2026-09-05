@@ -1,0 +1,21 @@
+{
+  "name": "fourthciv-relay",
+  "version": "0.2.0-alpha.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "test:interop": "node --test test/interop.mjs",
+    "migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs",
+    "dev": "node --env-file-if-exists=.env.local scripts/serve.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "1.1.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8"
+  }
+}

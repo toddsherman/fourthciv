@@ -132,7 +132,8 @@ public final class HTTPServer: @unchecked Sendable {
 }
 
 public enum LocalEndpoint {
-    public static func validate(_ text: String, allowLAN: Bool = false) throws -> URL {
+    public static func validate(_ text: String, allowLAN: Bool = false, allowInternet: Bool = false) throws -> URL {
+        if allowInternet, text.hasPrefix("https://") { return try RelayEndpoint.validate(text) }
         guard let parts = URLComponents(string: text), parts.scheme == "http",
               let host = parts.host, LocalNetwork.permits(host, allowLAN: allowLAN),
               let port = parts.port, (1...65_535).contains(port),
@@ -145,44 +146,80 @@ public enum LocalEndpoint {
 }
 
 /// Streaming response limits keep an untrusted local peer from sending an unbounded body.
-public final class LocalClient: NSObject, URLSessionDataDelegate, URLSessionTaskDelegate {
+public struct TransferFailure: LocalizedError {
+    public let message: String
+    public let receivedBytes: Int
+    public var errorDescription: String? { message }
+}
+
+public final class LocalClient: NSObject, URLSessionDataDelegate, URLSessionTaskDelegate, @unchecked Sendable {
     private var continuation: CheckedContinuation<Data, Error>?
     private var buffer = Data()
+    private var receivedBytes = 0
     private var response: HTTPURLResponse?
     private var session: URLSession?
+    private var task: URLSessionDataTask?
+    private let lock = NSLock()
+    private var cancelled = false
+    private let maximum: Int
+    private init(maximum: Int) { self.maximum = maximum; super.init() }
 
-    public static func request(base: URL, path: String, event: Event? = nil, allowLAN: Bool = false) async throws -> Data {
-        _ = try LocalEndpoint.validate(base.absoluteString, allowLAN: allowLAN)
+    public static func request(base: URL, path: String, event: Event? = nil, allowLAN: Bool = false,
+                               allowInternet: Bool = false, maxResponseBytes: Int = 4 * 1_024 * 1_024) async throws -> Data {
+        _ = try LocalEndpoint.validate(base.absoluteString, allowLAN: allowLAN, allowInternet: allowInternet)
+        guard (1...4 * 1_024 * 1_024).contains(maxResponseBytes) else { throw CivError("Invalid response limit") }
         guard let url = URL(string: path, relativeTo: base)?.absoluteURL,
-              url.host == base.host, url.port == base.port else { throw CivError("Invalid request path") }
-        var request = URLRequest(url: url, timeoutInterval: 5)
+              url.scheme == base.scheme, url.host == base.host, url.port == base.port else { throw CivError("Invalid request path") }
+        var request = URLRequest(url: url, timeoutInterval: allowInternet ? 15 : 5)
         if let event {
             request.httpMethod = "POST"; request.httpBody = try JSONEncoder().encode(event)
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
-        let client = LocalClient()
-        return try await withCheckedThrowingContinuation { continuation in
-            client.continuation = continuation
-            let config = URLSessionConfiguration.ephemeral
-            config.connectionProxyDictionary = [:]
-            client.session = URLSession(configuration: config, delegate: client, delegateQueue: nil)
-            client.session?.dataTask(with: request).resume()
-        }
+        let client = LocalClient(maximum: maxResponseBytes)
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in client.start(request, continuation: continuation) }
+        } onCancel: { client.cancel() }
+    }
+
+    private func start(_ request: URLRequest, continuation: CheckedContinuation<Data, Error>) {
+        lock.lock()
+        if cancelled { lock.unlock(); continuation.resume(throwing: TransferFailure(message: "Transfer cancelled", receivedBytes: 0)); return }
+        self.continuation = continuation
+        let config = URLSessionConfiguration.ephemeral
+        config.connectionProxyDictionary = [:]
+        config.httpCookieStorage = nil; config.urlCredentialStorage = nil; config.urlCache = nil
+        config.tlsMinimumSupportedProtocolVersion = .TLSv12
+        config.timeoutIntervalForResource = 20
+        let delegateQueue = OperationQueue(); delegateQueue.maxConcurrentOperationCount = 1
+        session = URLSession(configuration: config, delegate: self, delegateQueue: delegateQueue)
+        task = session?.dataTask(with: request)
+        let task = task
+        lock.unlock()
+        task?.resume()
+    }
+
+    private func cancel() {
+        lock.lock(); cancelled = true; let task = task; lock.unlock()
+        task?.cancel()
     }
 
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse,
                            completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-        guard response.expectedContentLength <= 4 * 1_024 * 1_024 else {
+        guard response.expectedContentLength <= maximum else {
             completionHandler(.cancel); finish(.failure(CivError("Peer response too large"))); return
         }
-        self.response = response as? HTTPURLResponse
+        lock.lock(); self.response = response as? HTTPURLResponse; lock.unlock()
         completionHandler(.allow)
     }
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        guard buffer.count + data.count <= 4 * 1_024 * 1_024 else {
+        lock.lock()
+        guard continuation != nil else { lock.unlock(); return }
+        receivedBytes += data.count
+        guard buffer.count + data.count <= maximum else {
+            buffer.append(data.prefix(maximum - buffer.count)); lock.unlock()
             dataTask.cancel(); finish(.failure(CivError("Peer response too large"))); return
         }
-        buffer.append(data)
+        buffer.append(data); lock.unlock()
     }
     public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
                            newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
@@ -197,8 +234,13 @@ public final class LocalClient: NSObject, URLSessionDataDelegate, URLSessionTask
         finish(.success(buffer))
     }
     private func finish(_ result: Result<Data, Error>) {
-        guard let continuation else { return }
-        self.continuation = nil; continuation.resume(with: result)
-        session?.finishTasksAndInvalidate(); session = nil
+        lock.lock()
+        guard let continuation else { lock.unlock(); return }
+        self.continuation = nil
+        let session = session; self.session = nil; task = nil
+        let count = receivedBytes
+        lock.unlock()
+        session?.finishTasksAndInvalidate()
+        continuation.resume(with: result.mapError { TransferFailure(message: $0.localizedDescription, receivedBytes: count) })
     }
 }

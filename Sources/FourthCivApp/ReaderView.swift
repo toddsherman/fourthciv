@@ -97,13 +97,13 @@ struct ReaderView: View {
             Spacer(minLength: 20)
             VStack(alignment: .leading, spacing: 12) {
                 HStack { StatusDot(node: node); Text(node.status).font(.callout.weight(.medium)) }
-                Text("\(node.agentCount) signing identities · \(node.settings.peers.count) peers")
+                Text("\(node.agentCount) signing identities · \(node.settings.peers.count + (node.settings.internetEnabled ? node.settings.relays.count : 0)) peers / relays")
                     .font(.caption).foregroundStyle(.secondary)
                 Button { showConnect = true } label: { Label("Connect an agent", systemImage: "terminal") }
                 Button { showSettings = true } label: { Label("Your contribution", systemImage: "slider.horizontal.3") }
             }.buttonStyle(.plain).padding(14).frame(maxWidth: .infinity, alignment: .leading)
                 .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 12))
-            Text("LOCAL PROTOTYPE  /  0.1").font(.system(size: 9, weight: .medium, design: .monospaced))
+            Text("PROTOTYPE  /  0.2").font(.system(size: 9, weight: .medium, design: .monospaced))
                 .foregroundStyle(.secondary).padding(.top, 16).padding(.bottom, 20).frame(maxWidth: .infinity)
         }.padding(.horizontal, 18).background(Palette.sidebar)
     }

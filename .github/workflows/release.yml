@@ -1,0 +1,89 @@
+name: Signed Mac prerelease
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version, for example 0.2.0-alpha.1'
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: signed-mac-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      FOURTHCIV_VERSION: ${{ inputs.version }}
+      FOURTHCIV_SIGNING_IDENTITY: ${{ secrets.FOURTHCIV_SIGNING_IDENTITY }}
+      FOURTHCIV_NOTARY_PROFILE: fourthciv-release
+      FOURTHCIV_NOTARY_KEYCHAIN: ${{ runner.temp }}/fourthciv-release.keychain-db
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Require distribution credentials
+        env:
+          CERTIFICATE: ${{ secrets.FOURTHCIV_CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.FOURTHCIV_CERTIFICATE_PASSWORD }}
+          API_KEY: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          [[ "$FOURTHCIV_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+)?$ ]]
+          for NAME in CERTIFICATE CERTIFICATE_PASSWORD API_KEY API_KEY_ID API_ISSUER_ID FOURTHCIV_SIGNING_IDENTITY; do
+            if [ -z "${!NAME}" ]; then echo "Missing release credential: $NAME" >&2; exit 1; fi
+          done
+      - name: Verify Mac implementation
+        run: bash scripts/test.sh
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+      - name: Verify relay and interoperability
+        run: |
+          npm ci --ignore-scripts --prefix relay
+          npm test --prefix relay
+          npm run test:interop --prefix relay
+      - name: Require the pilot relay to be live
+        run: |
+          .build/debug/fourthciv discover --node https://fourthciv-pilot.vercel.app --internet true > "$RUNNER_TEMP/relay-discovery.json"
+          python3 - "$RUNNER_TEMP/relay-discovery.json" <<'PY'
+          import json, sys, uuid
+          value = json.load(open(sys.argv[1]))
+          assert value['protocol'] == 'fourthciv/1' and value['visibility'] == 'public'
+          assert 'relay-sync-v1' in value['capabilities']
+          uuid.UUID(value['epoch'])
+          PY
+      - name: Prepare temporary signing keychain
+        env:
+          CERTIFICATE: ${{ secrets.FOURTHCIV_CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.FOURTHCIV_CERTIFICATE_PASSWORD }}
+          API_KEY: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          umask 077
+          KEYCHAIN_PASSWORD=$(openssl rand -hex 32)
+          printf '%s' "$CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/fourthciv.p12"
+          printf '%s' "$API_KEY" | base64 --decode > "$RUNNER_TEMP/fourthciv-notary.p8"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$FOURTHCIV_NOTARY_KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$FOURTHCIV_NOTARY_KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$FOURTHCIV_NOTARY_KEYCHAIN"
+          security import "$RUNNER_TEMP/fourthciv.p12" -k "$FOURTHCIV_NOTARY_KEYCHAIN" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$FOURTHCIV_NOTARY_KEYCHAIN" >/dev/null
+          security list-keychains -d user -s "$FOURTHCIV_NOTARY_KEYCHAIN" "$HOME/Library/Keychains/login.keychain-db"
+          xcrun notarytool store-credentials "$FOURTHCIV_NOTARY_PROFILE" --key "$RUNNER_TEMP/fourthciv-notary.p8" --key-id "$API_KEY_ID" --issuer "$API_ISSUER_ID" --keychain "$FOURTHCIV_NOTARY_KEYCHAIN"
+      - name: Build, sign, notarize, and assess installer
+        run: bash scripts/package-release.sh
+      - name: Publish prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$FOURTHCIV_VERSION" dist/releases/* --target "$GITHUB_SHA" --prerelease --title "Fourth Civ $FOURTHCIV_VERSION" --notes-file docs/PILOT_RELEASE_NOTES.md
+      - name: Remove temporary credentials
+        if: always()
+        run: |
+          security delete-keychain "$FOURTHCIV_NOTARY_KEYCHAIN" || true
+          rm -f "$RUNNER_TEMP/fourthciv.p12" "$RUNNER_TEMP/fourthciv-notary.p8"

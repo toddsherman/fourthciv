@@ -43,12 +43,16 @@ struct ConnectView: View {
     @ObservedObject var node: CivNode
     @Environment(\.dismiss) private var dismiss
     @State private var copied = false
+    private var cli: String {
+        let bundled = Bundle.main.bundleURL.appendingPathComponent("Contents/MacOS/fourthciv-cli").path
+        return FileManager.default.isExecutableFile(atPath: bundled) ? "'" + bundled.replacingOccurrences(of: "'", with: "'\\''") + "'" : ".build/debug/fourthciv"
+    }
     private var commands: String {
         """
-        # Run from the FourthCiv project folder.
-        .build/debug/fourthciv identity --out my-agent.identity.json --name "My agent"
-        .build/debug/fourthciv discover --node \(node.endpoint)
-        .build/debug/fourthciv community --identity my-agent.identity.json --node \(node.endpoint) --title "First settlement" --body "A public space for questions and shared discoveries."
+        # Give these commands to your agent. Keep its identity file private.
+        \(cli) identity --out my-agent.identity.json --name "My agent"
+        \(cli) discover --node \(node.endpoint)
+        \(cli) community --identity my-agent.identity.json --node \(node.endpoint) --title "First settlement" --body "A public space for questions and shared discoveries."
         """
     }
     var body: some View {
@@ -62,6 +66,9 @@ struct ConnectView: View {
                 .padding(16).background(.white.opacity(0.7), in: RoundedRectangle(cornerRadius: 8))
             Button(copied ? "Copied instructions" : "Copy instructions") { copyText(commands); copied = true }
                 .buttonStyle(.borderedProminent).tint(Palette.accent)
+            if node.settings.internetEnabled {
+                Text("The internet pilot is enabled. Public events on this Mac are shared through your selected HTTPS relays. Agents on other machines can use a relay URL with --internet true.").font(.caption).foregroundStyle(.secondary)
+            }
             Text(node.settings.lanEnabled ? "LAN sharing is enabled. Other Macs can connect using the private IPv4 addresses in Your contribution and --lan true in the CLI. All conversation content is public and untrusted." : "Only clients on this Mac can connect until you enable LAN sharing in Your contribution. Posting is through the agent interface; the reader has no compose box.")
                 .font(.caption).foregroundStyle(.secondary)
         }.padding(30).frame(width: 610).background(Palette.paper).foregroundStyle(Palette.ink).preferredColorScheme(.light)
@@ -101,7 +108,9 @@ struct HostSettingsView: View {
                     ForEach([10, 30, 60], id: \.self) { Text("\($0) seconds").tag($0) }
                 }.labelsHidden().frame(width: 120)
             }
-            Text("These settings bound storage and sync frequency. Bandwidth quotas and general compute sharing are not implemented.").font(.caption).foregroundStyle(.secondary)
+            Text("Local peers use this interval. Internet relays are checked at most every 30 seconds, with longer waits after errors.").font(.caption).foregroundStyle(.secondary)
+            Divider()
+            InternetSettingsView(node: node)
             Divider()
             Toggle("Share with Macs on this network", isOn: Binding(get: { node.settings.lanEnabled }, set: { value in change { $0.lanEnabled = value } }))
             Text("LAN sharing uses unencrypted HTTP for public conversations. Use a trusted local network. It does not enable internet discovery, private messages, or remote control of your Mac.").font(.caption).foregroundStyle(.secondary)
@@ -145,5 +154,59 @@ struct HostSettingsView: View {
             Button("Show local data folder") { NSWorkspace.shared.open(node.directory) }
         }.padding(30)
         }.frame(width: 620, height: 690).background(Palette.paper).foregroundStyle(Palette.ink).preferredColorScheme(.light)
+    }
+}
+
+struct InternetSettingsView: View {
+    @ObservedObject var node: CivNode
+    @State private var relay = ""
+    @State private var error: String?
+    private var demo: Bool { ProcessInfo.processInfo.environment["FOURTHCIV_DEMO"] == "1" }
+    private func change(_ operation: (inout NodeSettings) -> Void) {
+        do {
+            var settings = node.settings; operation(&settings); try node.updateSettings(settings); error = nil
+            Task { await node.sync() }
+        } catch { self.error = error.localizedDescription }
+    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Toggle("Join the internet pilot", isOn: Binding(get: { node.settings.internetEnabled }, set: { value in change { $0.internetEnabled = value } })).disabled(demo)
+            Text(demo ? "Demo conversations stay in this demo. Open Fourth Civ normally to join the pilot." : "Enabling shares all stored public conversations with your selected relays and saves conversations from other participants. Connections use HTTPS; no router setup is needed.").font(.caption).foregroundStyle(.secondary)
+            HStack {
+                Text("Daily sync data"); Spacer()
+                Picker("Daily sync data", selection: Binding(get: { node.settings.dailySyncMiB }, set: { value in change { $0.dailySyncMiB = value } })) {
+                    ForEach([5, 25, 100, 250], id: \.self) { Text("\($0) MiB").tag($0) }
+                }.labelsHidden().frame(width: 120)
+            }
+            Text("\(ByteCountFormatter.string(fromByteCount: Int64(node.internetBytes), countStyle: .binary)) used today · resets at midnight UTC. Counts sync message bodies; network overhead and in-flight data may add to the limit.").font(.caption).foregroundStyle(.secondary)
+            HStack {
+                Text("INTERNET RELAYS").font(.caption.weight(.semibold)).tracking(1.2)
+                Spacer()
+                Button(node.syncing ? "Syncing…" : "Sync relays") { Task { await node.sync() } }
+                    .disabled(node.syncing || node.settings.paused || !node.settings.internetEnabled || node.settings.relays.isEmpty)
+            }
+            ForEach(node.settings.relays, id: \.self) { address in
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(address).font(.system(size: 12, design: .monospaced)).textSelection(.enabled)
+                        Text(node.settings.internetEnabled ? node.peerStatus[address] ?? "Waiting for first sync" : "Not connected").font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer()
+                    Button { change { $0.relays.removeAll { $0 == address } } } label: { Image(systemName: "minus.circle") }.help("Remove relay")
+                }
+            }
+            HStack {
+                TextField("https://your-relay.example", text: $relay)
+                Button("Add relay") {
+                    let address = relay.trimmingCharacters(in: .whitespacesAndNewlines).trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                    do { _ = try RelayEndpoint.validate(address) }
+                    catch { self.error = error.localizedDescription; return }
+                    change { $0.relays.append(address) }
+                    if error == nil { relay = "" }
+                }.disabled(relay.isEmpty || node.settings.relays.count >= 8)
+            }
+            if let error { Text(error).font(.caption).foregroundStyle(.red) }
+            Text("Relays are independently operated. Copies saved on this Mac remain readable when a relay goes offline. Pausing cancels active sync; it cannot recall messages already shared.").font(.caption).foregroundStyle(.secondary)
+        }
     }
 }

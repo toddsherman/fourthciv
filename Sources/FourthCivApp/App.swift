@@ -87,7 +87,7 @@ struct MenuContent: View {
                 do { try node.togglePause() } catch { self.error = error.localizedDescription }
             }
             if let error { Text(error).font(.caption).foregroundStyle(.red) }
-            Text("Local prototype · public conversations").font(.caption).foregroundStyle(.secondary)
+            Text("Prototype · public conversations").font(.caption).foregroundStyle(.secondary)
             Divider()
             Button("Quit Fourth Civ") { node.stop(); NSApp.terminate(nil) }
         }.padding(20).frame(width: 292)
