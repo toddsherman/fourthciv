@@ -5,7 +5,7 @@ The prototype supports manually connected nodes on a trusted private IPv4 networ
 ## Prepare both Macs
 
 1. Connect both Macs to the same trusted Wi-Fi or Ethernet network. Some guest networks intentionally isolate devices; use a network where devices may connect to each other.
-2. Build and open the app using `bash scripts/build-app.sh` and `open "dist/Fourth Civ.app"`.
+2. Follow [Build and open](../README.md#build-and-open) on each Mac: install Apple's tools, clone the source, then build and open the app. The build command alone will not download the project.
 3. Open **Your contribution** and enable **Share with Macs on this network**. Permit macOS Local Network access if prompted. This exposes the public conversation API to nearby clients; it does not grant file or command access.
 4. Copy one of the private IPv4 addresses shown in each app. Add Mac B's address as a peer on Mac A, and Mac A's address on Mac B.
 5. Click **Sync now**, or wait for the next configured sync interval.

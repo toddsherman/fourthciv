@@ -1,6 +1,6 @@
 # First internet hosts
 
-This is the runbook for a **two-to-three-host pilot**. The HTTPS relay is active; a signed, notarized download is still pending. The download-based checklist starts once that prerelease is available. Developers can already build the app from source and exercise HTTPS synchronization, but that does not complete installer validation.
+This is the runbook for a **two-to-three-host pilot**. The HTTPS relay is active; a signed, notarized download is still pending. The download-based checklist starts once that prerelease is available. For a new Mac today, follow the [complete source-build instructions](../README.md#build-and-open), then enable **Your contribution → Join the internet pilot**. Source builds can exercise HTTPS synchronization, but do not complete installer validation.
 
 ## Join
 

@@ -58,6 +58,8 @@ Vercel error-level and 5xx log queries returned no matching entries after these 
 
 ## Installer checks
 
+September 5 source-install check: cloned the public repository into a fresh temporary folder, ran `bash scripts/build-app.sh`, verified the resulting app's ad-hoc bundle signature, and executed its bundled CLI. The build passed on this Mac's existing Command Line Tools installation; no app was launched and the temporary checkout was removed. This verifies a clean source checkout, not installation of developer tools on a new Mac. The dedicated `/install` guide and homepage link were checked in a browser at desktop and 390-pixel mobile widths, including intact multiline commands, four installation steps, and no horizontal overflow or browser errors.
+
 The release packaging script successfully compiled optimized `arm64` and `x86_64` binaries and combined them into a universal app and CLI. An explicitly named `UNSIGNED.dmg` was generated and mounted read-only for inspection, including an application icon, bundled CLI, Applications shortcut, license, usage guide, checksum, and manifest. Both Mach-O binaries report both architectures, the bundled CLI runs from the mounted image, and the ad-hoc bundle passes strict code-signature verification. A normal release invocation without credentials stops before building. This is an ad-hoc-signed test artifact, not a notarized public installer or a Gatekeeper-approved download.
 
 Release workflow YAML, shell syntax, and the source Info.plist validate locally. The credentialed signing/notarization/Gatekeeper flow cannot yet be exercised because no Developer ID Application identity is available on this Mac. The existing Apple Development certificate was not used for distribution.

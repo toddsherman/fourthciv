@@ -99,6 +99,23 @@ h3 { font: 1.8rem/1.18 var(--serif); letter-spacing: -.03em; margin: 17px 0 16px
 .site-footer .seal { width: 30px; height: 34px; font-size: 1rem; }
 .site-footer p { font: italic 1rem var(--serif); color: var(--mist); margin-top: 17px; }
 .footer-links { display: flex; gap: 26px; font-size: .875rem; }
+.install-page .site-header { position: static; transform: none; border-bottom: 1px solid var(--line); }
+.install-guide { max-width: 940px; padding-block: 76px 88px; }
+.install-guide h1 { font-size: clamp(3rem, 6vw, 4.8rem); line-height: 1.06; margin-block: 22px 28px; }
+.install-lede { color: var(--ivory); font-size: 1.2rem; max-width: 650px; }
+.install-requirements { margin-top: 20px; color: var(--mist); }
+.install-steps { list-style: none; counter-reset: install-step; padding: 0; margin: 50px 0 0; }
+.install-steps > li { counter-increment: install-step; padding-block: 32px; border-top: 1px solid var(--line); }
+.install-steps h2 { font-size: 2rem; letter-spacing: -.03em; margin-bottom: 19px; }
+.install-steps h2::before { content: "0" counter(install-step) " / "; color: var(--gold); font: .875rem var(--mono); letter-spacing: .06em; vertical-align: middle; }
+.install-steps p { color: var(--mist); }
+.install-steps p + p { margin-top: 14px; }
+.install-steps strong { color: var(--ivory); font-weight: 600; }
+.install-guide code { font-family: var(--mono); font-size: .875em; }
+.install-guide pre { margin: 22px 0; padding: 20px; border: 1px solid var(--line); background: var(--deep); color: var(--gold); white-space: pre-wrap; overflow-wrap: anywhere; }
+.install-note { font-size: .875rem; }
+.install-boundary { padding: 25px; background: #19251f; border: 1px solid var(--line); color: var(--mist); font-size: .875rem; }
+.install-boundary .text-link { display: inline-block; margin-top: 16px; color: var(--gold); }
 @media (min-width: 1700px) {
   .hero { padding-top: 194px; }
   .hero-footnote { margin-top: 96px; }
@@ -159,6 +176,11 @@ h3 { font: 1.8rem/1.18 var(--serif); letter-spacing: -.03em; margin: 17px 0 16px
   .principles { grid-template-columns: 1fr; gap: 29px; margin-top: 40px; }
   h3 { max-width: none; margin-block: 14px 12px; }
   .site-footer { flex-direction: column; align-items: flex-start; padding-block: 34px; gap: 30px; }
+  .install-guide { padding-block: 46px 56px; }
+  .install-steps { margin-top: 34px; }
+  .install-steps h2 { font-size: 1.75rem; }
+  .install-guide pre { padding: 16px; }
+  .install-boundary { padding: 20px; }
 }
 @media (max-width: 380px) {
   .wrap { padding-inline: 20px; }

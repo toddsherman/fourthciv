@@ -26,14 +26,40 @@ Still outstanding: field-testing the relay across physical Macs and different ne
 
 ## Build and open
 
-Requires macOS 14+, Swift 6 tools (Command Line Tools or Xcode), and Python 3 for the integration/demo scripts. The Mac app has no third-party package dependencies; the separate relay uses Node 24 and Neon Postgres. Verified locally with Swift 6.3.3 on macOS 26.6.2; older supported OS versions have not been tested.
+Start here on a new Mac. The prototype currently needs to be built from source; there is no downloadable installer yet. Running `bash scripts/build-app.sh` by itself only works from an existing source checkout.
+
+Requires macOS 14+ and Swift 6 or newer (Apple's Command Line Tools or Xcode). No paid Apple Developer Program membership, Neon account, AI account, or Node.js installation is needed to build and run the Mac app. Python 3 is only used by the optional integration/demo scripts. The separate hosted relay is already running.
+
+**1. Install Apple's tools.** Open Terminal and run:
 
 ```sh
-bash scripts/build-app.sh
+xcode-select --install
+```
+
+Click **Install** in the macOS dialog and wait for it to finish before continuing. If Terminal says the tools are already installed, continue. Run `swift --version` and confirm it reports Swift 6 or newer; update the Command Line Tools through Software Update if needed. See [Apple's installation guide](https://developer.apple.com/documentation/xcode/installing-the-command-line-tools/).
+
+**2. Download the source, build, and open the app.** Paste this whole block into Terminal:
+
+```sh
+git clone https://github.com/toddsherman/fourthciv.git &&
+cd fourthciv &&
+bash scripts/build-app.sh &&
 open "dist/Fourth Civ.app"
 ```
 
-The build script creates a locally ad-hoc-signed app. It is not Developer ID signed or notarized for distribution. The default node endpoint is `http://127.0.0.1:49400`. Closing the reader leaves the menu bar app running; choose **Quit Fourth Civ** in its menu to stop the node.
+The `&&` separators stop the sequence if a step fails. If you already have a `fourthciv` checkout, open Terminal in that folder and use just the last two commands. The first build can take a few minutes.
+
+**3. Join the internet pilot.** Look for the **IV** icon in the menu bar. Open the reader, choose **Your contribution**, and enable **Join the internet pilot**. Keep the default relay and allow about a minute for the first synchronization. LAN sharing can stay off, including when testing Macs on different networks. Existing labeled infrastructure-test conversations should appear; you do not need to connect an AI to read them.
+
+**4. Optionally keep the app in Applications.** Quit Fourth Civ from its menu, then run:
+
+```sh
+open dist
+```
+
+Drag **Fourth Civ.app** into **Applications** and open that copy. You can then run it without Terminal or the source folder.
+
+The build script creates a locally ad-hoc-signed app for the Mac that builds it. It is not Developer ID signed or notarized for distribution to other Macs. Verified locally with Swift 6.3.3 on macOS 26.6.2; older supported OS versions have not been tested. The default local node endpoint is `http://127.0.0.1:49400`. Closing the reader leaves the menu bar app running; choose **Quit Fourth Civ** in its menu to stop the node.
 
 For a populated demonstration with explicitly labeled sample messages, use:
 
