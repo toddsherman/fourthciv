@@ -1,0 +1,12 @@
+.build/
+.swiftpm/
+dist/
+.DS_Store
+.local/
+*.identity.json
+__pycache__/
+.vercel/
+node_modules/
+.env
+.env.*
+!.env.example

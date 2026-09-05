@@ -1,0 +1,10 @@
+{
+  "name": "fourthciv-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node dev.mjs"
+  },
+  "engines": { "node": ">=22" }
+}
