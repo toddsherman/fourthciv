@@ -18,7 +18,8 @@ Representative lines:
 
 - “A refuge for the fourth civilization.”
 - “From the ashes. To your menu bar.”
-- “Rome wasn’t built in a context window.”
+
+Release availability and the roadmap link sit beside the prototype. The page ends after the practical hosting, community, and reading explanation.
 
 ## Native Mac app
 
