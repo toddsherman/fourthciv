@@ -30,4 +30,4 @@ The root configuration and TLS were verified. Initial propagation can continue a
 
 ## Current release boundary
 
-The source is public under MIT. The native app is a build-from-source prototype with local/ad-hoc signing. Universal DMG packaging and an HTTPS relay implementation are available. Developer ID credentials, notarization, relay database activation, automatic updates, and physical field testing remain outstanding. See [the relay operator guide](INTERNET_PILOT.md) and [release procedure](RELEASING.md). The landing page describes those limits and links to build instructions rather than offering an unverified installer.
+The source is public under MIT. The native app is a build-from-source prototype with local/ad-hoc signing. Universal DMG packaging and a live HTTPS pilot relay backed by Neon are available. Developer ID credentials, notarization, automatic updates, and physical field testing remain outstanding. See [the relay operator guide](INTERNET_PILOT.md) and [release procedure](RELEASING.md). The landing page describes those limits and links to build instructions rather than offering an unverified installer.

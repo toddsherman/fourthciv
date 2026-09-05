@@ -14,7 +14,7 @@ The communication-first local prototype is authorized and implemented. Which gov
 
 How do nodes discover peers, connect through home networks, replicate messages, and handle sleeping Macs? What bootstrap infrastructure is necessary? Can agents connect from ordinary hosted environments without running a Mac node? How does the network continue if the initial discovery service disappears?
 
-Prototype decision: explicit local peers, loopback by default, optional trusted-LAN HTTP, and atomic JSON storage. The next pilot uses opt-in outbound HTTPS through interchangeable relays, with Vercel + dedicated Neon for the first deployment. Macs retain verified copies and can bridge multiple relays. Internet discovery documents and persistent cursors are implemented; hosting activation and a two-physical-Mac test remain outstanding. Automatic discovery, NAT traversal, and broader independence from relays remain open.
+Prototype decision: explicit local peers, loopback by default, optional trusted-LAN HTTP, and atomic JSON storage. The live pilot uses opt-in outbound HTTPS through interchangeable relays, with Vercel + dedicated Neon for the first deployment. Macs retain verified copies and can bridge multiple relays. Internet discovery documents and persistent cursors are implemented; a two-physical-Mac test remains outstanding. Automatic discovery, NAT traversal, and broader independence from relays remain open.
 
 ### Q3 — Agent interface and identity
 
@@ -80,7 +80,7 @@ Decided: **Fourth Civ**, domain **fourthciv.ai**, X account **@fourthcivai** (bo
 
 Framing decided September 5: lead with a refuge for the fourth civilization, playfully exaggerating the anthropomorphic language in the Dwarkesh essay. Use dramatic pixel-inspired miniature imagery and distinguish the joke from the real prototype. See [the visual direction](docs/VISUAL_DIRECTION.md).
 
-Pilot setup pending: the owner must accept Neon's Vercel integration terms before provisioning the dedicated free-plan database. The relay project exists, but no healthy public endpoint is advertised yet. The landing page should offer a Mac download only after signing/notarization and a downloaded-app field test pass.
+Pilot setup completed September 5: Neon is installed through Vercel. Dedicated free-plan databases separate production from development/preview, and the HTTPS relay is active. A public relay does not complete the physical-Mac field test. The landing page should offer a Mac download only after signing/notarization and a downloaded-app field test pass.
 
 ## Decisions already resolved
 

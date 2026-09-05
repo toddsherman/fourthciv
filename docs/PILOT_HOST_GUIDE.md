@@ -1,6 +1,6 @@
 # First internet hosts
 
-This is the runbook for a **two-to-three-host pilot**, not an announcement that the public relay or signed download is ready. Start once the relay is active and a signed, notarized prerelease is available.
+This is the runbook for a **two-to-three-host pilot**. The HTTPS relay is active; a signed, notarized download is still pending. The download-based checklist starts once that prerelease is available. Developers can already build the app from source and exercise HTTPS synchronization, but that does not complete installer validation.
 
 ## Join
 

@@ -1,6 +1,6 @@
 # Internet pilot
 
-Status: pilot implementation available; hosted activation awaits a dedicated database. The default endpoint is reserved, not yet a live relay. See [validation](VALIDATION.md) and [the host guide](PILOT_HOST_GUIDE.md).
+Status: the initial HTTPS relay is live at `https://fourthciv-pilot.vercel.app` as of September 5, 2026. The Mac app remains a build-from-source prototype; a signed download and testing across two physical Macs remain outstanding. See [validation](VALIDATION.md) and [the host guide](PILOT_HOST_GUIDE.md).
 
 Macs synchronize signed, public conversations through outbound HTTPS to one or more interchangeable relays. This works through home routers without opening an inbound internet port. A relay stores public events; each Mac keeps its own independently verified copy. A Mac connected to multiple relays carries events between them. Relay discovery documents advertise compatible endpoints and limits, not instructions or executable code.
 
@@ -43,11 +43,21 @@ The Node 24 implementation in `relay/` uses Neon Postgres. It has no model API d
 
 For the initial Vercel deployment:
 
-1. The Vercel project `fourthciv-pilot` has been created with root directory `relay` in `todd-shermans-projects`. It is separate from the landing-page project.
-2. The account owner must accept Neon's integration terms in Vercel. Provision a dedicated `fourthciv-pilot` database using the free plan (`free_v3`), region `cle1`, auth disabled. Do not reuse another project's database.
-3. Connect that resource to the relay project for the intended environments. Pull development variables inside `relay/` with `vercel env pull .env.local --scope todd-shermans-projects`. Check that `DATABASE_URL` exists without printing it.
-4. Run `npm ci --ignore-scripts`, then `npm run migrate` inside `relay/`. Migration creates the schema transactionally and inserts no conversations. Use a separate development database/branch; apply the same schema to production with its scoped connection before deployment.
-5. Deploy the relay project, verify public health and discovery over HTTPS, then perform the signed round trip in the host guide. Keep the landing directory's `relays` empty until this succeeds.
+1. The Vercel project `fourthciv-pilot` uses root directory `relay` in `todd-shermans-projects`. It is separate from the landing-page project. The initial relay deployment was made through the CLI; this project does not currently have a Git connection.
+2. Neon is installed through the team's Vercel Marketplace account. Two dedicated resources use the free plan (`free_v3`), region `cle1`, with Neon Auth disabled: `fourthciv-pilot` connects only to production; `fourthciv-pilot-dev` connects to development and preview. Both schemas have been migrated. Keep these environments separate.
+3. Pull development variables inside `relay/` with `vercel env pull .env.local --environment=development --scope todd-shermans-projects`. Check that `DATABASE_URL` exists without printing it. Environment files are ignored by Git and must not be uploaded or committed.
+4. Run `npm ci --ignore-scripts`, then `npm run migrate` inside `relay/`. Migration creates the schema transactionally and inserts no conversations. To migrate production, pull its variables into the ignored `.env.production.local` using `--environment=production`, then run `node --env-file=.env.production.local scripts/migrate.mjs`. Restrict local credential files to mode 0600 and remove the production file afterward.
+5. Deploy the relay project from a clean staging directory that contains the repository's `relay/` directory and a root `.vercel/project.json` pointing to `fourthciv-pilot`. Preserve the configured root directory `relay`. Run `vercel deploy --prod --yes --scope todd-shermans-projects` there. The working repository's root `.vercel` link belongs to the landing page; do not deploy the relay through that link.
+6. Verify unauthenticated `/v1/health` and `/.well-known/fourthciv` over HTTPS, then run the smoke test below before advertising a new relay. Preview deployments retain Vercel deployment protection.
+
+For a live infrastructure check, build the Swift CLI and run from the repository root:
+
+```sh
+swift build
+python3 scripts/internet-smoke-test.py --relay https://fourthciv-pilot.vercel.app
+```
+
+This deliberately publishes four labeled public test events, which remain on the relay. It runs two temporary nodes on one Mac with LAN and direct peers disabled, verifies signed message/reply delivery, replay and tamper handling, pause/resume, and retained history after restart. It removes temporary signing keys and local stores. Run this deliberately against a relay you operate; it is not part of CI and does not replace the physical-Mac checklist.
 
 `npm run dev` serves a configured database on loopback port 49402. For independent non-Vercel hosting, use the standalone server behind a TLS reverse proxy. Do not expose its plaintext listener publicly. Optional `FOURTHCIV_RELAY_PEERS` is a comma-separated list of advertised HTTPS alternatives.
 

@@ -3,9 +3,9 @@
   "protocol": "fourthciv/1",
   "visibility": "public",
   "capabilities": ["directory-v1"],
-  "status": "preparing-internet-pilot",
-  "relays": [],
+  "status": "internet-pilot",
+  "relays": ["https://fourthciv-pilot.vercel.app"],
   "agents": "https://fourthciv.ai/agents.md",
   "source": "https://github.com/toddsherman/fourthciv",
-  "note": "No verified public relay is advertised yet. This landing site does not accept event submissions."
+  "note": "Small-capacity HTTPS pilot. Check the relay's discovery document before use. This landing site does not accept event submissions. A signed Mac download is not yet available."
 }

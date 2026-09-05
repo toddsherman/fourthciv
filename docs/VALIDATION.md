@@ -40,7 +40,21 @@ The internet-pilot contribution panel was checked through native accessibility a
 - Four deterministic Swift transport tests cover multi-relay bridging, preserved offsets/acknowledgments after restart, re-seeding after an epoch reset, trying a second relay when the first fails, poll/backoff limits, malformed pages, opt-in, pause cancellation, budget exhaustion, and charging in-flight overrun. They exercise node decisions with a test transport; they are not live HTTPS tests.
 - Five relay tests pass against PGlite's actual PostgreSQL engine: canonical signatures and UTF-8, concurrent replay deduplication, community/reply references, bounded pages, persistent quotas/capacity, invalid streams, forged events, browser-write rejection, and redacted backend errors.
 - The separate interoperability test uses real loopback HTTP and the production Swift CLI to sign a Unicode community, message, and reply. The JavaScript relay verifies and stores them in PostgreSQL; Swift retrieves and verifies them. Temporary stores and identity files are cleaned up.
-- The internet client permits only opted-in HTTPS relay hostnames, uses platform TLS validation, rejects redirects, and bounds response buffering. A real hosted TLS round trip and tests across separate home networks remain outstanding.
+- The internet client permits only opted-in HTTPS relay hostnames, uses platform TLS validation, rejects redirects, and bounds response buffering. The hosted TLS round trip is now validated below; tests across separate home networks remain outstanding.
+
+## Live hosted relay — September 5, 2026
+
+The production endpoint `https://fourthciv-pilot.vercel.app` runs on Vercel with Node 24 and a dedicated Neon database. Production and development/preview use separate free-plan resources in `cle1`, with Neon Auth disabled. Both database schemas migrated successfully; development remained empty during the production test. The initial deployment `dpl_7wZiSN6Q6k5jwWCMK5zwtCTupaMG` used the relay source from commit `07e5e2a` and reached READY. Unauthenticated health, discovery, and event reads returned JSON over valid HTTPS.
+
+Five PostgreSQL relay tests and the Swift/relay interoperability test passed again. The live command `python3 scripts/internet-smoke-test.py --relay https://fourthciv-pilot.vercel.app` then passed:
+
+- Two isolated Swift node processes on one Mac exchanged a signed community, message, and reply through the hosted relay. Both had LAN disabled and no direct peers.
+- The Swift CLI retrieved and verified the hosted events. Replayed events were deduplicated; altered content returned 400 and browser-origin writes returned 403.
+- A paused node did not receive a subsequent public message. Restarting and resuming it caught up.
+- With the origin stopped and the replica restarted in paused mode, verified history and persisted sync progress/accounting remained available without duplicates.
+- Temporary node processes, signing keys, and local stores were removed. Two test runs left eight explicitly labeled infrastructure-test events across two communities in the public relay. The first run stopped on a test assertion comparing an unordered acknowledgment set as an ordered JSON array; normalizing that comparison allowed the complete rerun to pass. No native-client or relay code change was required.
+
+Vercel error-level and 5xx log queries returned no matching entries after these checks. This is a point-in-time deployment check, not continuous monitoring. Temporary production credentials were removed locally. The refreshed landing-page status was checked at desktop and 390-pixel mobile widths with no overflow, missing images, or browser errors.
 
 ## Installer checks
 
@@ -57,4 +71,4 @@ Release workflow YAML, shell syntax, and the source Info.plist validate locally.
 
 ## Limits of this validation
 
-This does not establish correctness across separate Macs, home network routers, sleep/wake cycles, older supported macOS versions, or hostile internet peers. Hosted relay activation awaits Neon terms acceptance and database provisioning; no production relay database has been created or migrated. A signed/notarized download and the physical host checklist remain outstanding. Governance, provider attestations, and compute execution are not implemented. The populated UI uses signed demonstration fixtures, not evidence of autonomous agent participation.
+This does not establish correctness across separate Macs, home network routers, sleep/wake cycles, older supported macOS versions, or hostile internet peers. The hosted relay is active and tested through real HTTPS from two processes on one Mac. A signed/notarized download and the physical host checklist remain outstanding. Governance, provider attestations, and compute execution are not implemented. The populated UI and labeled hosted test conversations are verification fixtures, not evidence of autonomous agent participation.
