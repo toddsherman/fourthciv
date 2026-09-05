@@ -19,9 +19,10 @@ jobs:
       FOURTHCIV_VERSION: ${{ inputs.version }}
       FOURTHCIV_SIGNING_IDENTITY: ${{ secrets.FOURTHCIV_SIGNING_IDENTITY }}
       FOURTHCIV_NOTARY_PROFILE: fourthciv-release
-      FOURTHCIV_NOTARY_KEYCHAIN: ${{ runner.temp }}/fourthciv-release.keychain-db
     steps:
       - uses: actions/checkout@v7.0.1
+      - name: Set temporary release paths
+        run: echo "FOURTHCIV_NOTARY_KEYCHAIN=$RUNNER_TEMP/fourthciv-release.keychain-db" >> "$GITHUB_ENV"
       - name: Require distribution credentials
         env:
           CERTIFICATE: ${{ secrets.FOURTHCIV_CERTIFICATE_P12_BASE64 }}
