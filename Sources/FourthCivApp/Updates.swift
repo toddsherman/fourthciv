@@ -4,7 +4,7 @@ import Sparkle
 import SwiftUI
 
 /// One updater for the entire app. Sparkle owns persisted preferences and scheduling.
-@MainActor final class AppUpdates: NSObject, ObservableObject, @preconcurrency SPUStandardUserDriverDelegate {
+@MainActor final class AppUpdates: NSObject, ObservableObject, @preconcurrency SPUStandardUserDriverDelegate, SPUUpdaterDelegate {
     @Published private(set) var canCheck = false
     @Published private(set) var automaticallyChecks = false
     @Published private(set) var availableVersion: String?
@@ -28,7 +28,7 @@ import SwiftUI
 
     override init() {
         super.init()
-        controller = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: self)
+        controller = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: self, userDriverDelegate: self)
         controller.updater.publisher(for: \.canCheckForUpdates)
             .receive(on: RunLoop.main).sink { [weak self] in self?.canCheck = $0 }.store(in: &observations)
         controller.updater.publisher(for: \.automaticallyChecksForUpdates)
@@ -57,6 +57,17 @@ import SwiftUI
     }
 
     func showChangelog() { NSWorkspace.shared.open(changelogURL) }
+
+    func updaterWillRelaunchApplication(_ updater: SPUUpdater) {
+        // AppKit refuses termination while a SwiftUI settings sheet is attached.
+        // End nested sheets first, after the user has chosen Install and Relaunch.
+        func endSheets(on window: NSWindow) {
+            guard let sheet = window.attachedSheet else { return }
+            endSheets(on: sheet)
+            window.endSheet(sheet)
+        }
+        for window in NSApp.windows where window.sheetParent == nil { endSheets(on: window) }
+    }
 
     // A menu-bar app needs a visible reminder even while its windows are closed.
     var supportsGentleScheduledUpdateReminders: Bool { true }

@@ -131,3 +131,12 @@ The installed app now has a guided signed-message round trip verified between tw
 `0.2.0-alpha.3` (build 4) was packaged from clean commit `413492aec5204e2ee69557a4c9ac64749de9cd2e`, with universal arm64/x86_64 executables, Developer ID signing, hardened runtime, and timestamping. Apple accepted both app (`53845640-f9ae-4d3b-b871-9433342027c6`) and DMG (`1f07afb0-0a8f-41fc-b24f-f8afccce01f6`) with no issues. Stapling, Gatekeeper assessment, app distribution checks, and bundled-CLI notarization validation passed.
 
 The exact DMG, checksum, and manifest were published as a GitHub prerelease. The public installer was downloaded and its SHA-256 and Ed25519 signature verified before staging the signed feed. Prior feed entries are preserved. SHA-256: `9f50483b1fd0fb528031f1ca3390814295681751ec5667fa6f4c849099d7d60a`.
+
+
+### Update field check and follow-up fixes
+
+Updating the normal installed alpha.2 app to alpha.3 revealed an AppKit termination block while the App updates sheet remained open. After closing the sheet and quitting, Sparkle completed installation and relaunched alpha.3 (build 4). All 11 prior events, their signatures, and contribution settings were preserved. This result required that workaround; it was not a clean unattended relaunch. Evidence: `.local/update-fieldcheck-4`.
+
+The follow-up alpha.4 connects the production updater delegate and ends attached/nested sheets immediately before Sparkle relaunch. A regression harness compiled the actual `Updates.swift` and `Theme.swift`, left a SwiftUI-hosted settings sheet open, and used the production AppUpdates instance as Sparkle's delegate. It downloaded the public signed alpha.3 installer into an isolated older app copy, installed, and relaunched successfully without manually dismissing the sheet or quitting. The harness recorded build 4 and exited; the installed copy passed strict signatures and distribution checks. It did not open the Fourth Civ data store. Evidence: `.local/update-sheet-test`.
+
+One concurrent GitHub run also exposed a store-lock inheritance race. A deterministic POSIX child-process regression reproduced the lock remaining held after its EventStore closed. Opening `node.lock` with `O_CLOEXEC` fixes this while preserving exclusion of concurrent writers. All 19 Swift tests and the full integration suite passed. The follow-up release contains both fixes; second-physical-Mac upgrade testing remains outstanding.

@@ -6,6 +6,18 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 - No additional changes yet.
 
+## [0.2.0-alpha.4] - 2026-09-05
+
+### Fixed
+
+- Install and Relaunch now closes open settings sheets so they cannot prevent an update from finishing.
+- Helper processes no longer inherit the conversation-store lock, preventing a closed store from appearing busy.
+
+### Upgrade notes
+
+- Updating from alpha.2 or alpha.3? Close settings sheets with Done, then choose Check for Updates from the Fourth Civ menu. If an already-prepared update is waiting, close the sheet and quit Fourth Civ; the updater will finish and reopen it.
+- Includes the Connect an agent welcome and web invitation introduced in alpha.3. Conversations and contribution settings are preserved.
+
 ## [0.2.0-alpha.3] - 2026-09-05
 
 ### Added
