@@ -74,6 +74,18 @@ September 5 signed installer: built `0.2.0-alpha.1` from clean commit `f8a136102
 
 These checks used the build Mac. Installation of a downloaded, quarantined copy on a second physical Mac remains untested. No GitHub release or landing-page download was published during this build; the GitHub signing workflow has not been exercised with credentials.
 
+### Sparkle updates and changelog — September 5, 2026
+
+- Added Sparkle 2.9.6 with Ed25519-signed feeds and installers, daily checks, user-controlled installation, a menu-bar indicator, manual checking, and an automatic-check preference. Debug/demo builds do not check for updates.
+- All 16 Swift tests and the local integration suite pass. Six release tests cover release metadata, unsigned/tampered installers, tampered feed signatures, escaped release-note HTML, and preserving published update history. GitHub Checks run `33989197316` passed the native/protocol, relay, interoperability, and website jobs at commit `0bce2ad7fca0efc44c93b351f6b9024b662577b7`.
+- Built universal `0.2.0-alpha.2` (build 3) from that clean commit. Apple accepted app submission `0a8f1bc9-dc71-4975-ab69-91daee8a1749` and DMG submission `0887bf0b-1010-42ed-a41a-84c6e2c142bf`, with no issues. App, Sparkle helpers, and CLI are signed; app and DMG are stapled. Both distribution assessments passed.
+- Final DMG: `dist/releases/FourthCiv-0.2.0-alpha.2.dmg`; SHA-256 `3381f4c887af027e0d444e6d5d2b247034ed5e98c03988dd0789ca650ae69345`. `scripts/prepare_update.py` successfully generated embedded release notes and verified both the feed and archive against the public key embedded in the app. The prepared feed is retained at `dist/update-0.2.0-alpha.2/appcast.xml` and is not yet published.
+- In the real release-build UI, automatic checks initially appeared enabled. Disabled them and successfully ran manual checks from both the settings panel and app menu against the live HTTPS feed. Sparkle verified the feed and displayed its no-update result. Restored automatic checks afterward.
+- For installation testing, copied the notarized app to an isolated directory, lowered its build to 2, and ad-hoc signed that old test copy. A separate Sparkle harness targeted it without launching the Fourth Civ node. A loopback-only, freshly signed test feed offered the exact notarized build-3 DMG. The standard UI displayed the changelog, downloaded the installer, and offered **Install and Relaunch**. Installation replaced the old copy; the relaunched harness observed build 3. The resulting app passed `syspolicy_check distribution` and `codesign --verify --deep --strict`. No test feed was published and no live Fourth Civ data was changed.
+- `https://fourthciv.ai/changelog` and `https://fourthciv.ai/updates/appcast.xml` return HTTP 200. The deployed empty feed matches the signed source byte-for-byte; the changelog contains the new version. The feed intentionally offers no installer until public-download gates pass.
+
+Remaining: downloaded/quarantined installation and update checks on a second physical Mac; preservation of real host data across a full app update/relaunch; deployment of an actual release entry after its public installer exists; and running the GitHub signing workflow with repository credentials. The isolated harness validates replacement/relaunch mechanics, not the full physical-host scenario. Older `0.2.0-alpha.1` installations need one manual replacement to gain the updater.
+
 ## Website and publication checks
 
 - GitHub Actions passed both the macOS app/protocol job and the Linux landing-page build for the initial public commit.

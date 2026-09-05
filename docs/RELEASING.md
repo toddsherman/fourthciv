@@ -1,6 +1,6 @@
 # Mac release procedure
 
-Status, September 5, 2026: `0.2.0-alpha.1` was built from commit `f8a136102935ed95ec1b62a6e0a45c2691c199bf` in a clean checkout, Developer ID signed, notarized, stapled, and verified locally. The app and DMG both passed Gatekeeper assessment; the app also passed `syspolicy_check distribution`, and the bundled CLI passed its notarized signature requirement and ran from the mounted installer. The verified DMG, checksum, and manifest are in `dist/releases/`. The HTTPS relay is active. Public download publication and physical pilot testing remain pending; see [validation](VALIDATION.md).
+Status, September 5, 2026: updater-enabled `0.2.0-alpha.2` was built from clean commit `0bce2ad7fca0efc44c93b351f6b9024b662577b7`, Developer ID signed, notarized, stapled, and verified locally. Sparkle downloaded and installed the exact DMG into an isolated older app copy, then relaunched a test harness that confirmed build 3. The installed app passed `syspolicy_check distribution` and strict signature verification. The verified DMG, checksum, manifest, and prepared signed update feed are in `dist/`. The public changelog and signed empty feed are live. Public download publication and physical pilot testing remain pending; see [validation](VALIDATION.md).
 
 ## Packaging
 

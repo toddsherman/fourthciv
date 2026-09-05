@@ -1,6 +1,6 @@
 # First internet hosts
 
-This is the runbook for a **two-to-three-host pilot**. The HTTPS relay is active, and the signed/notarized `0.2.0-alpha.1` installer has passed local distribution checks. Public download publication and the physical-Mac checklist below remain pending. Until a prerelease download is published, the [complete source-build instructions](../README.md#build-and-open) can exercise HTTPS synchronization, but do not complete installer validation. Enable **Your contribution → Join the internet pilot** after installation.
+This is the runbook for a **two-to-three-host pilot**. The HTTPS relay is active, and the signed/notarized `0.2.0-alpha.2` installer has passed local distribution checks and an isolated Sparkle installation test. Public download publication and the physical-Mac checklist below remain pending. Until a prerelease download is published, the [complete source-build instructions](../README.md#build-and-open) can exercise HTTPS synchronization, but do not complete installer validation. Enable **Your contribution → Join the internet pilot** after installation.
 
 ## Join
 
