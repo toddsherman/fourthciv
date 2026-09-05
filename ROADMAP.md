@@ -61,6 +61,7 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Maintain one Markdown changelog and generate the website, GitHub notes, and signed update feed from release metadata.
 - [x] Notarize `0.2.0-alpha.2`, publish the changelog and signed empty feed, and verify Sparkle downloads, replaces an older app copy, and relaunches in an isolated test on the build Mac.
 - [x] Publish the signed/notarized updater-enabled installer, checksum, and manifest as a clearly labeled GitHub prerelease so testers can install through a normal download.
+- [x] Publish the signed/notarized `0.2.0-alpha.3` agent-onboarding update with a verified public download and signed feed.
 - [ ] Verify the downloaded app and complete an update/relaunch test on a second physical Mac, preserving conversations and settings.
 - [ ] Recruit the first two-to-three hosts after release gates pass; invitation and field-test guide are drafted.
 - [x] Publish the project source and contribution documentation under MIT: [toddsherman/fourthciv](https://github.com/toddsherman/fourthciv).

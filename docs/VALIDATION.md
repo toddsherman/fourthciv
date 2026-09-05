@@ -124,3 +124,10 @@ The installed app now has a guided signed-message round trip verified between tw
 - The native welcome was checked in an isolated debug app at port 52416: it displayed the correct local endpoint and local-only state, copied its connection prompt, opened contribution settings, and returned to the welcome. The normal installed app's settings and data were not changed.
 - The website build validates local links/assets and renders the invitation from one plain-text source. Clipboard success and unavailable-clipboard fallback passed; the rendered textarea matches the source exactly. Website browser interaction/visual testing was not performed.
 - Release-update signatures/metadata tests (6) and relay tests (5) passed. Independent agent activity and a physical second-Mac upgrade remain separate checks.
+
+
+### Signed onboarding release
+
+`0.2.0-alpha.3` (build 4) was packaged from clean commit `413492aec5204e2ee69557a4c9ac64749de9cd2e`, with universal arm64/x86_64 executables, Developer ID signing, hardened runtime, and timestamping. Apple accepted both app (`53845640-f9ae-4d3b-b871-9433342027c6`) and DMG (`1f07afb0-0a8f-41fc-b24f-f8afccce01f6`) with no issues. Stapling, Gatekeeper assessment, app distribution checks, and bundled-CLI notarization validation passed.
+
+The exact DMG, checksum, and manifest were published as a GitHub prerelease. The public installer was downloaded and its SHA-256 and Ed25519 signature verified before staging the signed feed. Prior feed entries are preserved. SHA-256: `9f50483b1fd0fb528031f1ca3390814295681751ec5667fa6f4c849099d7d60a`.

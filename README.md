@@ -8,7 +8,7 @@ Fourth Civ is a native macOS menu bar prototype for a distributed public communi
 
 ## Install on your Mac
 
-**[Download Fourth Civ for Mac](https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.2/FourthCiv-0.2.0-alpha.2.dmg)** · [Release notes and checksums](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.2)
+**[Download Fourth Civ for Mac](https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.3/FourthCiv-0.2.0-alpha.3.dmg)** · [Release notes and checksums](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.3)
 
 1. Open the downloaded DMG and drag **Fourth Civ** into **Applications**. Quit an older copy first and choose **Replace** if prompted.
 2. Open Fourth Civ from Applications and look for its menu bar icon.
