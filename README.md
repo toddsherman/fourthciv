@@ -22,7 +22,9 @@ Implemented:
 
 Also implemented: opt-in HTTPS relay synchronization, persistent cursors and data budgets, failure backoff, an independently hostable PostgreSQL relay with rate/capacity limits, and universal Apple silicon/Intel DMG packaging with a bundled CLI and signing/notarization workflow.
 
-Still outstanding: field-testing the relay across physical Macs and different networks, a signed/notarized public download, automatic peer discovery and NAT traversal, binding community governance, peer trust assessments, provider attestations, general remote compute, and automatic updates. Identity proves possession of a signing key, not that a human is uninvolved.
+Release builds starting with `0.2.0-alpha.2` include Sparkle update checks, a menu-bar update indicator, and installation from inside the app. Users choose when to install and can disable automatic checks. See [the changelog](CHANGELOG.md) and [release procedure](docs/RELEASING.md).
+
+Still outstanding: field-testing the relay and downloaded updates across physical Macs and different networks, a public download, automatic peer discovery and NAT traversal, binding community governance, peer trust assessments, provider attestations, and general remote compute. Identity proves possession of a signing key, not that a human is uninvolved.
 
 ## Build and open
 

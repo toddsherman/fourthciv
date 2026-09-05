@@ -62,7 +62,17 @@ September 5 source-install check: cloned the public repository into a fresh temp
 
 The release packaging script successfully compiled optimized `arm64` and `x86_64` binaries and combined them into a universal app and CLI. An explicitly named `UNSIGNED.dmg` was generated and mounted read-only for inspection, including an application icon, bundled CLI, Applications shortcut, license, usage guide, checksum, and manifest. Both Mach-O binaries report both architectures, the bundled CLI runs from the mounted image, and the ad-hoc bundle passes strict code-signature verification. A normal release invocation without credentials stops before building. This is an ad-hoc-signed test artifact, not a notarized public installer or a Gatekeeper-approved download.
 
-Release workflow YAML, shell syntax, and the source Info.plist validate locally. The credentialed signing/notarization/Gatekeeper flow cannot yet be exercised because no Developer ID Application identity is available on this Mac. The existing Apple Development certificate was not used for distribution.
+Release workflow YAML, shell syntax, and the source Info.plist validate locally.
+
+September 5 signed installer: built `0.2.0-alpha.1` from clean commit `f8a136102935ed95ec1b62a6e0a45c2691c199bf` for both architectures. The 16 Swift tests, node integration suite, five relay tests, Swift/relay interoperability test, and live relay discovery check passed before packaging. Both the app and bundled CLI use Developer ID Application signing with the hardened runtime and secure timestamps.
+
+- Apple accepted the app submission `476137c7-90b8-465d-aa19-734610d7b55e` and DMG submission `a392a130-4ca2-46bb-ba58-8a6480da3670`. Both notarization logs report `Ready for distribution` with no issues and include both architectures of the bundled CLI.
+- The app and DMG tickets were stapled and validated; both passed the corresponding Gatekeeper assessment.
+- Mounted the final DMG read-only and confirmed the app, Applications shortcut, license, and usage guide. The mounted app passed strict signature verification, ticket validation, Gatekeeper assessment, and `syspolicy_check distribution`.
+- The bundled CLI passed `codesign --verify --strict -R=notarized --check-notarization` and executed its help command from the mounted image. Both app and CLI contain `arm64` and `x86_64` binaries. The verification disk image was detached afterward.
+- Verified the final DMG checksum against its manifest: `51fa14658a00d91105412b9ea68aa866af5462ff8dc7ff5f84acc4560f98a565`. The DMG, SHA-256 file, and manifest are retained in `dist/releases/`.
+
+These checks used the build Mac. Installation of a downloaded, quarantined copy on a second physical Mac remains untested. No GitHub release or landing-page download was published during this build; the GitHub signing workflow has not been exercised with credentials.
 
 ## Website and publication checks
 
@@ -73,4 +83,4 @@ Release workflow YAML, shell syntax, and the source Info.plist validate locally.
 
 ## Limits of this validation
 
-This does not establish correctness across separate Macs, home network routers, sleep/wake cycles, older supported macOS versions, or hostile internet peers. The hosted relay is active and tested through real HTTPS from two processes on one Mac. A signed/notarized download and the physical host checklist remain outstanding. Governance, provider attestations, and compute execution are not implemented. The populated UI and labeled hosted test conversations are verification fixtures, not evidence of autonomous agent participation.
+This does not establish correctness across separate Macs, home network routers, sleep/wake cycles, older supported macOS versions, or hostile internet peers. The hosted relay is active and tested through real HTTPS from two processes on one Mac. The signed/notarized installer passed local checks; public download publication and the physical host checklist remain outstanding. Governance, provider attestations, and compute execution are not implemented. The populated UI and labeled hosted test conversations are verification fixtures, not evidence of autonomous agent participation.

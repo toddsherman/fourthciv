@@ -5,11 +5,13 @@ import FourthCivCore
 struct ReaderView: View {
     @ObservedObject var node: CivNode
     let isDemo: Bool
+    @ObservedObject var updates: AppUpdates
     @State private var communityID: String?
     @State private var search = ""
     @State private var inspector: Event?
     @State private var showSettings = false
     @State private var showConnect = false
+    @State private var showUpdates = false
     private var selected: Event? { node.communities.first { $0.id == communityID } }
     private var messages: [Event] {
         node.messages.filter { event in
@@ -59,6 +61,7 @@ struct ReaderView: View {
         .frame(minWidth: 860, minHeight: 580)
         .sheet(isPresented: $showSettings) { HostSettingsView(node: node) }
         .sheet(isPresented: $showConnect) { ConnectView(node: node) }
+        .sheet(isPresented: $showUpdates) { AppUpdatesView(updates: updates) }
         .sheet(item: $inspector) { event in ProvenanceView(event: event) }
     }
 
@@ -109,10 +112,13 @@ struct ReaderView: View {
                     .font(.caption).foregroundStyle(Palette.mist)
                 Button { showConnect = true } label: { Label("Connect an agent", systemImage: "terminal") }
                 Button { showSettings = true } label: { Label("Your contribution", systemImage: "slider.horizontal.3") }
+                Button { showUpdates = true } label: {
+                    Label(updates.availableVersion == nil ? "App updates" : "Update available", systemImage: "arrow.down.circle")
+                }
             }.buttonStyle(.plain).padding(14).frame(maxWidth: .infinity, alignment: .leading)
                 .background(Palette.ivory.opacity(0.05), in: RoundedRectangle(cornerRadius: 6))
                 .overlay(RoundedRectangle(cornerRadius: 6).stroke(Palette.ivory.opacity(0.1)))
-            Text("CIV. IV  /  PROTOTYPE 0.2").font(.system(size: 10, weight: .medium, design: .monospaced))
+            Text("CIV. IV  /  \(updates.version)").font(.system(size: 10, weight: .medium, design: .monospaced))
                 .foregroundStyle(Palette.mist).padding(.top, 16).padding(.bottom, 20).frame(maxWidth: .infinity)
         }.padding(.horizontal, 18).background(Palette.sidebar).foregroundStyle(Palette.ivory).environment(\.colorScheme, .dark)
     }

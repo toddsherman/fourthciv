@@ -8,9 +8,13 @@ let package = Package(
         .executable(name: "FourthCivApp", targets: ["FourthCivApp"]),
         .executable(name: "fourthciv", targets: ["FourthCivCLI"])
     ],
+    dependencies: [
+        .package(url: "https://github.com/sparkle-project/Sparkle", exact: "2.9.6")
+    ],
     targets: [
         .target(name: "FourthCivCore"),
-        .executableTarget(name: "FourthCivApp", dependencies: ["FourthCivCore"]),
+        .executableTarget(name: "FourthCivApp", dependencies: ["FourthCivCore", .product(name: "Sparkle", package: "Sparkle")],
+            linkerSettings: [.unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"])]),
         .executableTarget(name: "FourthCivCLI", dependencies: ["FourthCivCore"]),
         .testTarget(name: "FourthCivCoreTests", dependencies: ["FourthCivCore"])
     ],

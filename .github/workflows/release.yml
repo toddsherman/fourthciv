@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version, for example 0.2.0-alpha.1'
+        description: 'Version already recorded in release.json and CHANGELOG.md'
         required: true
         type: string
 permissions:
@@ -30,14 +30,17 @@ jobs:
           API_KEY: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
           API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          SPARKLE_KEY: ${{ secrets.FOURTHCIV_SPARKLE_PRIVATE_KEY }}
         run: |
           set -euo pipefail
           [[ "$FOURTHCIV_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+)?$ ]]
-          for NAME in CERTIFICATE CERTIFICATE_PASSWORD API_KEY API_KEY_ID API_ISSUER_ID FOURTHCIV_SIGNING_IDENTITY; do
+          for NAME in CERTIFICATE CERTIFICATE_PASSWORD API_KEY API_KEY_ID API_ISSUER_ID FOURTHCIV_SIGNING_IDENTITY SPARKLE_KEY; do
             if [ -z "${!NAME}" ]; then echo "Missing release credential: $NAME" >&2; exit 1; fi
           done
       - name: Verify Mac implementation
-        run: bash scripts/test.sh
+        run: |
+          bash scripts/test.sh
+          python3 scripts/test_updates.py
       - uses: actions/setup-node@v7.0.0
         with:
           node-version: '24'
@@ -78,11 +81,25 @@ jobs:
           xcrun notarytool store-credentials "$FOURTHCIV_NOTARY_PROFILE" --key "$RUNNER_TEMP/fourthciv-notary.p8" --key-id "$API_KEY_ID" --issuer "$API_ISSUER_ID" --keychain "$FOURTHCIV_NOTARY_KEYCHAIN"
       - name: Build, sign, notarize, and assess installer
         run: bash scripts/package-release.sh
+      - name: Sign update feed and generate release notes
+        env:
+          FOURTHCIV_SPARKLE_PRIVATE_KEY: ${{ secrets.FOURTHCIV_SPARKLE_PRIVATE_KEY }}
+        run: |
+          python3 scripts/prepare_update.py "dist/releases/FourthCiv-$FOURTHCIV_VERSION.dmg" --output dist/update
+          python3 scripts/release_notes.py "$FOURTHCIV_VERSION" --format markdown > "$RUNNER_TEMP/release-notes.md"
       - name: Publish prerelease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v$FOURTHCIV_VERSION" dist/releases/* --target "$GITHUB_SHA" --prerelease --title "Fourth Civ $FOURTHCIV_VERSION" --notes-file docs/PILOT_RELEASE_NOTES.md
+          gh release create "v$FOURTHCIV_VERSION" "dist/releases/FourthCiv-$FOURTHCIV_VERSION.dmg" "dist/releases/FourthCiv-$FOURTHCIV_VERSION.sha256" "dist/releases/FourthCiv-$FOURTHCIV_VERSION.json" --target "$GITHUB_SHA" --prerelease --title "Fourth Civ $FOURTHCIV_VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"
+      - name: Verify public installer and stage feed publication
+        run: python3 scripts/publish_update.py dist/update --check-only
+      - name: Retain signed feed for website publication
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-update-${{ inputs.version }}
+          path: dist/update/
+          retention-days: 30
       - name: Remove temporary credentials
         if: always()
         run: |

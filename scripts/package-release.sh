@@ -4,7 +4,12 @@ cd "$(dirname "$0")/.."
 UNSIGNED=false
 if [ "${1:-}" = '--unsigned' ] && [ "$#" -eq 1 ]; then UNSIGNED=true
 elif [ "$#" -ne 0 ]; then echo 'Usage: package-release.sh [--unsigned]' >&2; exit 1; fi
-VERSION="${FOURTHCIV_VERSION:-0.2.0-alpha.1}"
+CONFIG_VERSION=$(python3 -c 'import json; print(json.load(open("release.json"))["version"])')
+VERSION="${FOURTHCIV_VERSION:-$CONFIG_VERSION}"
+if [ "$VERSION" != "$CONFIG_VERSION" ]; then echo 'Release version must match release.json; update release.json and CHANGELOG.md together.' >&2; exit 1; fi
+BUILD_NUMBER=$(python3 -c 'import json; print(json.load(open("release.json"))["build"])')
+if [[ ! "$BUILD_NUMBER" =~ ^[1-9][0-9]*$ ]]; then echo 'Release build must be a positive, increasing integer.' >&2; exit 1; fi
+python3 scripts/release_notes.py "$VERSION" >/dev/null
 if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+)?$ ]]; then echo 'Invalid release version' >&2; exit 1; fi
 if ! $UNSIGNED; then
   : "${FOURTHCIV_SIGNING_IDENTITY:?Set a Developer ID Application signing identity}"
@@ -28,9 +33,9 @@ for BINARY in app cli; do
   lipo "$WORK/universal/$BINARY" -verify_arch arm64 x86_64
 done
 APP="$WORK/payload/Fourth Civ.app"
-bash scripts/assemble-app.sh "$WORK/universal/app" "$WORK/universal/cli" "$APP"
+bash scripts/assemble-app.sh "$WORK/universal/app" "$WORK/universal/cli" "$APP" "$BIN/Sparkle.framework"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${VERSION%%-*}" "$APP/Contents/Info.plist"
-/usr/libexec/PlistBuddy -c "Add :FourthCivReleaseVersion string $VERSION" "$APP/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :FourthCivReleaseVersion $VERSION" "$APP/Contents/Info.plist"
 notarize() {
   NOTARY_ARGS=(--keychain-profile "$FOURTHCIV_NOTARY_PROFILE")
   if [ -n "${FOURTHCIV_NOTARY_KEYCHAIN:-}" ]; then NOTARY_ARGS+=(--keychain "$FOURTHCIV_NOTARY_KEYCHAIN"); fi
@@ -41,6 +46,14 @@ result = json.load(open(sys.argv[1]))
 if result.get('status') != 'Accepted':
     raise SystemExit('Notarization failed: ' + str(result.get('status')) + ', submission ' + str(result.get('id')))
 PY
+  SUBMISSION_ID=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["id"])' "$WORK/notary-result.json")
+  xcrun notarytool log "$SUBMISSION_ID" "${NOTARY_ARGS[@]}" "$WORK/notary-log.json"
+  python3 - "$WORK/notary-log.json" <<'PY'
+import json, sys
+result = json.load(open(sys.argv[1]))
+if result.get('issues'):
+    raise SystemExit('Review notarization issues before distribution: ' + str(result['issues']))
+PY
 }
 SUFFIX=''
 if $UNSIGNED; then
@@ -48,13 +61,13 @@ if $UNSIGNED; then
   codesign --force --sign - "$APP"
   echo 'Local test build only. This app is not Developer ID signed or notarized. Do not distribute it as a public release.' > "$WORK/payload/UNSIGNED-TEST-BUILD.txt"
 else
-  codesign --force --options runtime --timestamp --sign "$FOURTHCIV_SIGNING_IDENTITY" "$APP/Contents/MacOS/fourthciv-cli"
-  codesign --force --options runtime --timestamp --sign "$FOURTHCIV_SIGNING_IDENTITY" "$APP"
-  codesign --verify --deep --strict --verbose=2 "$APP"
+  bash scripts/sign-app.sh "$APP" "$FOURTHCIV_SIGNING_IDENTITY"
   ditto -c -k --keepParent "$APP" "$WORK/FourthCiv.zip"
   notarize "$WORK/FourthCiv.zip"
   xcrun stapler staple "$APP"
   spctl --assess --type execute --verbose=2 "$APP"
+  syspolicy_check distribution "$APP"
+  codesign --verify --strict -R=notarized --check-notarization "$APP/Contents/MacOS/fourthciv-cli"
 fi
 ln -s /Applications "$WORK/payload/Applications"
 cp LICENSE "$WORK/payload/LICENSE.txt"
@@ -71,6 +84,12 @@ The default sync budget is 25 MiB of application request/response bodies per UTC
 You can pause or change that budget. Copies already shared may remain on other hosts.
 This app does not run an AI model or execute agent code on your Mac.
 
+Fourth Civ checks for app updates daily. An arrow in the menu bar means an
+update is available. Choose Check for Updates to read the changes and install.
+Automatic checks can be disabled in App updates. Updates preserve your data.
+App update downloads are separate from your conversation-sync allowance.
+Release notes: https://fourthciv.ai/changelog
+
 Open Connect an agent for commands using the bundled tool:
 "/Applications/Fourth Civ.app/Contents/MacOS/fourthciv-cli" help
 
@@ -86,11 +105,11 @@ if ! $UNSIGNED; then
   xcrun stapler validate "$DMG"
   spctl --assess --type open --context context:primary-signature --verbose=2 "$DMG"
 fi
-python3 - "$DMG" "$VERSION" "$UNSIGNED" "$(git rev-parse HEAD)" <<'PY'
+python3 - "$DMG" "$VERSION" "$UNSIGNED" "$(git rev-parse HEAD)" "$BUILD_NUMBER" <<'PY'
 import hashlib, json, pathlib, sys
 path = pathlib.Path(sys.argv[1]); digest = hashlib.sha256(path.read_bytes()).hexdigest()
 path.with_suffix('.sha256').write_text(digest + '  ' + path.name + '\n')
-path.with_suffix('.json').write_text(json.dumps(dict(version=sys.argv[2], commit=sys.argv[4],
+path.with_suffix('.json').write_text(json.dumps(dict(version=sys.argv[2], build=int(sys.argv[5]), commit=sys.argv[4],
     architectures=['arm64','x86_64'], minimumMacOS='14.0', notarized=sys.argv[3]=='false',
     file=path.name, sha256=digest), indent=2) + '\n')
 PY

@@ -12,6 +12,12 @@
       { "key": "Content-Security-Policy", "value": "default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" }
     ]
   }, {
+    "source": "/updates/appcast.xml",
+    "headers": [
+      { "key": "Content-Type", "value": "application/rss+xml; charset=utf-8" },
+      { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" }
+    ]
+  }, {
     "source": "/.well-known/fourthciv",
     "headers": [
       { "key": "Content-Type", "value": "application/json; charset=utf-8" },

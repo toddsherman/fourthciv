@@ -12,6 +12,12 @@
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
+.release-history { margin-top: 4rem; max-width: 850px; }
+.release-entry { border-top: 1px solid var(--line); padding-block: 2.5rem; scroll-margin-top: 2rem; }
+.release-entry h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: .5rem 0 1.75rem; overflow-wrap: anywhere; }
+.release-entry h3 { font-size: 1rem; color: var(--gold); margin-top: 1.5rem; }
+.release-entry ul { color: var(--mist); padding-left: 1.25rem; }
+.release-entry li + li { margin-top: .65rem; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
 body { margin: 0; background: var(--night); color: var(--ivory); font: 1rem/1.7 var(--sans); -webkit-font-smoothing: antialiased; }

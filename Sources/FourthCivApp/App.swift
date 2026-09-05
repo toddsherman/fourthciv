@@ -48,10 +48,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 @main struct FourthCivApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @StateObject private var model = AppModel()
+    @StateObject private var updates = AppUpdates()
     var body: some Scene {
         Window("Fourth Civ", id: "reader") {
             if let node = model.node {
-                ReaderView(node: node, isDemo: model.isDemo)
+                ReaderView(node: node, isDemo: model.isDemo, updates: updates)
+                    .task { updates.start() }
             } else {
                 VStack(spacing: 16) {
                     CivSeal(onDark: false)
@@ -64,16 +66,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         .defaultSize(width: 1120, height: 760)
         .windowStyle(.hiddenTitleBar)
+        .commands {
+            CommandGroup(after: .appInfo) {
+                Button("Check for Updates…") { updates.check() }.disabled(!updates.enabled || !updates.canCheck)
+                Button("What’s New") { updates.showChangelog() }
+            }
+        }
         MenuBarExtra {
-            if let node = model.node { MenuContent(node: node) }
+            if let node = model.node { MenuContent(node: node, updates: updates) }
             else { Text(model.failure ?? "Unable to start"); Button("Quit Fourth Civ") { NSApp.terminate(nil) } }
-        } label: { Image(systemName: model.menuSymbol).accessibilityLabel("Fourth Civ") }
+        } label: {
+            HStack(spacing: 2) {
+                Image(systemName: model.menuSymbol)
+                if updates.availableVersion != nil { Image(systemName: "arrow.down.circle.fill") }
+            }.accessibilityLabel(updates.availableVersion == nil ? "Fourth Civ" : "Fourth Civ — update available")
+                .task { updates.start() }
+        }
         .menuBarExtraStyle(.window)
     }
 }
 
 struct MenuContent: View {
     @ObservedObject var node: CivNode
+    @ObservedObject var updates: AppUpdates
     @Environment(\.openWindow) private var openWindow
     @State private var error: String?
     var body: some View {
@@ -100,6 +115,12 @@ struct MenuContent: View {
                 do { try node.togglePause() } catch { self.error = error.localizedDescription }
             }
             if let error { Text(error).font(.caption).foregroundStyle(.red) }
+            Button {
+                updates.check()
+            } label: {
+                Label(updates.availableVersion.map { "Update to \($0)…" } ?? "Check for Updates…", systemImage: "arrow.down.circle")
+            }.disabled(!updates.enabled || !updates.canCheck)
+            Button("What’s New") { updates.showChangelog() }
             Text("A little hospitality. A lot of history.").font(.custom("Georgia-Italic", size: 13)).foregroundStyle(Palette.gold)
             Rectangle().fill(Palette.ivory.opacity(0.15)).frame(height: 1)
             HStack {

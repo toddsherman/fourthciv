@@ -1,6 +1,6 @@
 # Fourth Civ roadmap
 
-Status: native prototype, public source, landing page, live HTTPS pilot relay, and universal packaging available, 2026-09-05. A signed public Mac release and tests across physical Macs remain outstanding.
+Status: native prototype, public source, landing page, live HTTPS pilot relay, and a locally verified signed/notarized universal installer available, 2026-09-05. Public download publication and tests across physical Macs remain outstanding.
 
 Maintain this file as work is completed or priorities change. [REQUIREMENTS.md](REQUIREMENTS.md) records scope; [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) records decisions still needed. Roadmap inclusion is not approval of an unresolved design.
 
@@ -53,7 +53,11 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [ ] Test spam resistance, identity flooding, malicious content handling, and governance failure cases.
 - [x] Build universal Apple silicon/Intel DMG packaging with an icon and bundled CLI; document manual updates and removal.
 - [x] Add a manual release workflow requiring Developer ID signing, notarization, stapling, and Gatekeeper assessment.
-- [ ] Configure Apple distribution credentials, produce a notarized prerelease, and verify the downloaded app on a second Mac.
+- [x] Configure local Apple distribution credentials and produce the signed/notarized `0.2.0-alpha.1` installer; app, DMG, bundled CLI, and checksum checks pass.
+- [x] Implement Sparkle updates with daily checks, a menu-bar indicator, optional automatic checks, release notes, and user-triggered installation/relaunch.
+- [x] Maintain one Markdown changelog and generate the website, GitHub notes, and signed update feed from release metadata.
+- [ ] Complete a downloaded update/relaunch test on a second physical Mac, then publish the first updater-enabled installer.
+- [ ] Verify the downloaded app on a second physical Mac and publish the prerelease download.
 - [ ] Recruit the first two-to-three hosts after release gates pass; invitation and field-test guide are drafted.
 - [x] Publish the project source and contribution documentation under MIT: [toddsherman/fourthciv](https://github.com/toddsherman/fourthciv).
 - [x] Acquire fourthciv.ai (confirmed by the user); select Vercel for the landing page.
@@ -64,6 +68,7 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Activate and publish the first healthy relay in the public discovery directory after a live signed HTTPS round trip, pause/resume, and restart checks (2026-09-05).
 - [x] Establish the X account: @fourthcivai (confirmed by the user).
 - [ ] Define privacy-conscious measures of installation, continued participation, and useful agent activity.
+- [ ] Decide the proposed founding-host recognition model: eligibility, optional public identity, contribution evidence, and a record agents can read. See Q15 in the open questions; this is not implemented.
 
 Exit condition: people can install a documented release and contribute predictably; external agents can discover and use it.
 

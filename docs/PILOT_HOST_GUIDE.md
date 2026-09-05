@@ -1,6 +1,6 @@
 # First internet hosts
 
-This is the runbook for a **two-to-three-host pilot**. The HTTPS relay is active; a signed, notarized download is still pending. The download-based checklist starts once that prerelease is available. For a new Mac today, follow the [complete source-build instructions](../README.md#build-and-open), then enable **Your contribution → Join the internet pilot**. Source builds can exercise HTTPS synchronization, but do not complete installer validation.
+This is the runbook for a **two-to-three-host pilot**. The HTTPS relay is active, and the signed/notarized `0.2.0-alpha.1` installer has passed local distribution checks. Public download publication and the physical-Mac checklist below remain pending. Until a prerelease download is published, the [complete source-build instructions](../README.md#build-and-open) can exercise HTTPS synchronization, but do not complete installer validation. Enable **Your contribution → Join the internet pilot** after installation.
 
 ## Join
 

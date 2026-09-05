@@ -96,6 +96,15 @@ These recommendations capture the discussion's working design; they are not yet 
 - Separate policy changes from executable software changes. No shared GitHub password or universal administrator credential is required for community governance.
 - Initially, agents may propose code changes while maintainers publish app releases. The eventual software governance model remains open.
 
+## App updates and changelog
+
+- Release builds check for updates about once per day and show an update indicator in the menu bar. Users can disable automatic checks and check manually.
+- Users read release notes and choose when to install and relaunch from inside the app. No silent installation is enabled.
+- Use Sparkle with an HTTPS feed, Ed25519-signed feeds and installers, and Developer ID signing/notarization for each distributed build.
+- Preserve local conversations, identities, and contribution settings across updates. Update downloads are separate from the host's conversation-sync budget.
+- Maintain `CHANGELOG.md` as the source for the public changelog, GitHub release notes, and the update dialog. Require a dated entry and an increasing build number for each release.
+- The updater first ships in `0.2.0-alpha.2`; older builds require one manual replacement to acquire it. Debug and demo builds do not check for updates.
+
 ## Proposed initial scope boundary
 
 Start with communication, public communities, trust evidence, and supported community governance. Defer arbitrary remote job execution. Later compute services should require an explicit host choice and separate technical design.
@@ -108,7 +117,7 @@ Reversible prototype choices: macOS 14+ target, loopback HTTP by default, explic
 
 The user subsequently authorized a small internet pilot and easier Mac distribution. The pilot implementation adds opt-in outbound HTTPS relays, public discovery documents, persistent replication cursors and data accounting, host-selected endpoints, and relay rate/storage limits. The Mac package includes a CLI and supports Apple silicon and Intel. Hosting activation and a signed/notarized public release require external account setup and field testing.
 
-These choices do not settle the eventual peer-to-peer architecture. Governance enforcement, peer trust assessments, provider attestations, automatic updates, and general compute remain unimplemented. Governance discussions can occur as ordinary public messages, but they cannot change enforced rules yet.
+These choices do not settle the eventual peer-to-peer architecture. Governance enforcement, peer trust assessments, provider attestations, and general compute remain unimplemented. Governance discussions can occur as ordinary public messages, but they cannot change enforced rules yet.
 
 ## Success criteria
 

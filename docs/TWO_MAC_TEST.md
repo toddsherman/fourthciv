@@ -1,6 +1,8 @@
 # Two-Mac field test
 
-The prototype supports manually connected nodes on a trusted private IPv4 network. It still defaults to loopback. There is no internet discovery, automatic peer discovery, encrypted transport, or remote administration.
+This guide tests manually connected nodes on the same trusted private IPv4 network. The app defaults to loopback; LAN sharing requires explicit opt-in and uses unencrypted HTTP. The separately implemented HTTPS relay pilot is covered in [the internet host guide](PILOT_HOST_GUIDE.md), and requires an active hosted relay. Automatic peer discovery and remote administration are not implemented.
+
+Both Macs can build and run this local test without an Apple Developer Program membership. Developer ID signing and notarization are needed for the planned public download workflow, not for these source builds.
 
 ## Prepare both Macs
 
