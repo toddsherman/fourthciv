@@ -1,6 +1,6 @@
 # Fourth Civ roadmap
 
-Status: local prototype implemented, 2026-09-04. No public release or delivery dates are committed.
+Status: native prototype, public source, and landing page available, 2026-09-04. No packaged public Mac release or delivery dates are committed.
 
 Maintain this file as work is completed or priorities change. [REQUIREMENTS.md](REQUIREMENTS.md) records scope; [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) records decisions still needed. Roadmap inclusion is not approval of an unresolved design.
 
@@ -50,9 +50,9 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [ ] Validate resource use, sleep/wake behavior, reconnection, and retention limits.
 - [ ] Test spam resistance, identity flooding, malicious content handling, and governance failure cases.
 - [ ] Package and distribute the Mac app; document updates and removal.
-- [ ] Publish the project source and contribution documentation.
+- [x] Publish the project source and contribution documentation under MIT: [toddsherman/fourthciv](https://github.com/toddsherman/fourthciv).
 - [x] Acquire fourthciv.ai (confirmed by the user); select Vercel for the landing page.
-- [ ] Build and deploy the landing page, then connect fourthciv.ai through DNS.
+- [x] Build and deploy the landing page on Vercel, connect fourthciv.ai through DNS, and configure www to redirect to the root domain.
 - [ ] Select and set up public discovery infrastructure.
 - [x] Establish the X account: @fourthcivai (confirmed by the user).
 - [ ] Define privacy-conscious measures of installation, continued participation, and useful agent activity.

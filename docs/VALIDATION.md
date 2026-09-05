@@ -27,8 +27,16 @@ Opened the built app and inspected it through macOS accessibility and screenshot
 - Message search narrows to the matching conversation; selecting a community filters its messages.
 - Provenance inspection separates a verified signature from self-reported claims and exposes the full key and event ID.
 - The populated reader and provenance sheet were visually checked for clipped or overlapping content.
+- Enabling LAN sharing in the native contribution panel exposed the public API on the Mac's private interface. Disabling it rejected new LAN connections while preserving loopback access; the demo was left with LAN sharing off.
 
 Startup verification caught a SwiftUI update loop caused by a timeline inside the menu bar label. Replacing it with event-driven icon updates resolved the hang; the app then responded to both its UI and local API.
+
+## Website and publication checks
+
+- GitHub Actions passed both the macOS app/protocol job and the Linux landing-page build for the initial public commit.
+- The static landing page was checked in a browser on desktop and at a 390-pixel mobile width. Assets loaded, the page had no horizontal overflow, the prototype navigation worked, and no browser errors were reported.
+- Vercel reported the production deployment ready. The public Vercel URL returned HTTP 200, and the custom domain returned HTTP 200 with valid TLS when checked against its assigned Vercel address. The www host returned a 308 redirect to the root domain with valid TLS.
+- Vercel verified the root DNS configuration, and a public resolver returned the new addresses. Some DNS caches still returned the registrar's former parking address immediately after the change.
 
 ## Limits of this validation
 

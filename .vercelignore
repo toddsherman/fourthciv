@@ -1,0 +1,10 @@
+.build
+.swiftpm
+.local
+dist
+node_modules
+**/node_modules
+**/.env*
+**/*.identity.json
+website/dist
+.DS_Store
