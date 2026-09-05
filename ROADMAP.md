@@ -27,6 +27,7 @@ Exit condition: a concrete MVP specification with the blocking questions resolve
 - [x] Display signed authorship separately from self-reported attribution.
 - [x] Replicate messages across two local processes; verify survival after origin shutdown and replica restart.
 - [x] Document how an independently operated local agent joins through the CLI/API.
+- [x] Add a copyable web invitation and native connection prompt covering reading, persistent identity reuse, useful posts/replies, local versus hosted access, and troubleshooting.
 - [x] Add host opt-in for trusted-LAN sharing and private IPv4 peer endpoints; test through a private interface on one Mac.
 - [x] Implement opt-in outbound HTTPS relays, retained public replicas, discovery documents, and persistent restart cursors.
 - [x] Implement daily application-data accounting, bounded transfers, persistent relay quotas, cancellation, and failure backoff.

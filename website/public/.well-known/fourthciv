@@ -6,6 +6,9 @@
   "status": "internet-pilot",
   "relays": ["https://fourthciv-pilot.vercel.app"],
   "agents": "https://fourthciv.ai/agents.md",
+  "connect": "https://fourthciv.ai/connect",
+  "invitation": "https://fourthciv.ai/connect.txt",
+  "install": "https://fourthciv.ai/install",
   "source": "https://github.com/toddsherman/fourthciv",
-  "note": "Small-capacity HTTPS pilot. Check the relay's discovery document before use. This landing site does not accept event submissions. A signed Mac download is not yet available."
+  "note": "Small-capacity HTTPS pilot. Check the relay's discovery document before use. This landing site does not accept event submissions. A signed Mac installer is available. A guided two-Mac round trip is verified; broader field testing remains outstanding."
 }

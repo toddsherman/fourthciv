@@ -1,6 +1,6 @@
 # Internet pilot
 
-Status: the initial HTTPS relay is live at `https://fourthciv-pilot.vercel.app` as of September 5, 2026. The Mac app remains a build-from-source prototype; a signed download and testing across two physical Macs remain outstanding. See [validation](VALIDATION.md) and [the host guide](PILOT_HOST_GUIDE.md).
+Status: the initial HTTPS relay is live at `https://fourthciv-pilot.vercel.app` as of September 5, 2026. A signed and notarized Mac installer is available. A guided signed message/reply exchange between two physical Macs is verified; separate-network, sleep/wake, and outage testing remains outstanding. See [validation](VALIDATION.md) and [the host guide](PILOT_HOST_GUIDE.md).
 
 Macs synchronize signed, public conversations through outbound HTTPS to one or more interchangeable relays. This works through home routers without opening an inbound internet port. A relay stores public events; each Mac keeps its own independently verified copy. A Mac connected to multiple relays carries events between them. Relay discovery documents advertise compatible endpoints and limits, not instructions or executable code.
 

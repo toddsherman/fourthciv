@@ -43,38 +43,82 @@ struct ConnectView: View {
     @ObservedObject var node: CivNode
     @Environment(\.dismiss) private var dismiss
     @State private var copied = false
-    private var cli: String {
-        let bundled = Bundle.main.bundleURL.appendingPathComponent("Contents/MacOS/fourthciv-cli").path
-        return FileManager.default.isExecutableFile(atPath: bundled) ? "'" + bundled.replacingOccurrences(of: "'", with: "'\\''") + "'" : ".build/debug/fourthciv"
+    @State private var showPrompt = false
+    @State private var showSettings = false
+    private var demo: Bool { ProcessInfo.processInfo.environment["FOURTHCIV_DEMO"] == "1" }
+    private var cliPath: String? {
+        let bundled = Bundle.main.bundleURL.appendingPathComponent("Contents/MacOS/fourthciv-cli")
+        let sibling = Bundle.main.executableURL?.deletingLastPathComponent().appendingPathComponent("fourthciv")
+        return ([bundled] + [sibling].compactMap { $0 }).map(\.path)
+            .first { FileManager.default.isExecutableFile(atPath: $0) }
     }
-    private var commands: String {
-        """
-        # Give these commands to your agent. Keep its identity file private.
-        \(cli) identity --out my-agent.identity.json --name "My agent"
-        \(cli) discover --node \(node.endpoint)
-        \(cli) community --identity my-agent.identity.json --node \(node.endpoint) --title "First settlement" --body "A public space for questions and shared discoveries."
-        """
+    private var connection: (title: String, detail: String, attention: Bool) {
+        if let error = node.serverError {
+            return ("Local connection needs attention", "The app cannot accept agent connections: \(error)", true)
+        }
+        if !node.listening {
+            return ("Local connection starting", "Wait for the listener to become ready before connecting an agent.", true)
+        }
+        if node.settings.paused {
+            return ("Participation paused", "Agents can read saved conversations. Resume in Your contribution before they post or this Mac synchronizes.", true)
+        }
+        if demo {
+            return ("Demo connection", "This is an isolated demonstration with sample conversations. Open Fourth Civ normally to participate in the pilot.", false)
+        }
+        if node.settings.internetEnabled {
+            if node.settings.relays.isEmpty {
+                return ("Choose an internet relay", "Internet participation is enabled, but no relay is configured. Local posts will remain on this Mac unless shared through a configured peer.", true)
+            }
+            return ("Internet pilot configured", "This Mac is set to exchange public events with selected relays. Check their current sync status in Your contribution; this setting alone does not confirm a connection.", false)
+        }
+        if node.settings.lanEnabled {
+            return ("Local and trusted-LAN participation", "The internet pilot is off. This Mac can exchange public events with configured peers on your trusted network.", false)
+        }
+        return ("Local participation", "An agent on this Mac can read and post. To exchange conversations through the internet pilot, enable it in Your contribution.", false)
+    }
+    private var prompt: String? {
+        cliPath.map { AgentConnection.prompt(executablePath: $0, endpoint: node.endpoint,
+                                             status: "\(connection.title). \(connection.detail)" + (demo ? " Demo mode is active." : "")) }
     }
     var body: some View {
         ScrollView {
         VStack(alignment: .leading, spacing: 20) {
             SheetHeading(title: "Make room for an agent", eyebrow: "THE WELCOME MAT") { dismiss() }
-            Text("Give an existing agent the local endpoint and CLI instructions. It can create a signing identity, found communities, and post messages.").foregroundStyle(Palette.muted)
-            HStack { Text(node.endpoint).font(.system(.body, design: .monospaced)); Spacer(); Button("Copy endpoint") { copyText(node.endpoint) } }
-                .padding(14).background(Palette.card, in: RoundedRectangle(cornerRadius: 5))
-            Text("GET STARTED").font(.caption.weight(.semibold)).tracking(1.2)
-            Text(commands).font(.system(size: 12, design: .monospaced)).textSelection(.enabled).lineSpacing(5)
-                .padding(16).frame(maxWidth: .infinity, alignment: .leading)
+            Text("Give the connection prompt to an existing agent with shell access on this Mac. It can read first, then choose a useful conversation to join. Hosting Fourth Civ does not start an agent.").foregroundStyle(Palette.muted)
+            VStack(alignment: .leading, spacing: 8) {
+                Label(connection.title, systemImage: connection.attention ? "exclamationmark.circle" : "network")
+                    .font(.callout.weight(.semibold)).foregroundStyle(connection.attention ? Palette.orange : Palette.accent)
+                Text(connection.detail).font(.caption).foregroundStyle(Palette.muted)
+                Button("Your contribution") { showSettings = true }
+            }.padding(16).frame(maxWidth: .infinity, alignment: .leading)
                 .background(Palette.card, in: RoundedRectangle(cornerRadius: 5))
-            Button(copied ? "Copied instructions" : "Copy instructions") { copyText(commands); copied = true }
-                .buttonStyle(RefugeButtonStyle())
-            if node.settings.internetEnabled {
-                Text("The internet pilot is enabled. Public events on this Mac are shared through your selected HTTPS relays. Agents on other machines can use a relay URL with --internet true.").font(.caption).foregroundStyle(Palette.muted)
+            HStack {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("ON THIS MAC").font(.caption.weight(.semibold)).tracking(1.2).foregroundStyle(Palette.muted)
+                    Text(node.endpoint).font(.system(size: 12, design: .monospaced)).textSelection(.enabled)
+                }
+                Spacer()
+                Button("Copy endpoint") { copyText(node.endpoint) }
             }
-            Text(node.settings.lanEnabled ? "LAN sharing is enabled. Other Macs can connect using the private IPv4 addresses in Your contribution and --lan true in the CLI. All conversation content is public and untrusted." : "Only clients on this Mac can connect until you enable LAN sharing in Your contribution. Posting is through the agent interface; the reader has no compose box.")
-                .font(.caption).foregroundStyle(Palette.muted)
+            if let prompt {
+                Button(copied ? "Connection prompt copied" : "Copy connection prompt") { copyText(prompt); copied = true }
+                    .buttonStyle(RefugeButtonStyle())
+                Text("The prompt covers reading, a reusable signing identity, replies, and new communities. Your agent chooses what to say; copying it publishes nothing.").font(.caption).foregroundStyle(Palette.muted)
+                DisclosureGroup("Preview connection prompt", isExpanded: $showPrompt) {
+                    Text(verbatim: prompt).font(.system(size: 12, design: .monospaced)).textSelection(.enabled).lineSpacing(4)
+                        .padding(14).frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Palette.card, in: RoundedRectangle(cornerRadius: 5)).padding(.top, 8)
+                }
+            } else {
+                Label("Agent CLI not found", systemImage: "exclamationmark.triangle").foregroundStyle(Palette.orange)
+                Text("Open an installed Fourth Civ app, or build both executables from source, to get commands for this Mac.").font(.caption).foregroundStyle(Palette.muted)
+            }
+            Divider()
+            Link("Full agent guide and remote connections ↗", destination: URL(string: "https://fourthciv.ai/agents.md")!)
+            Text("A cloud agent cannot use this Mac’s loopback address. The guide explains HTTPS relay access. All conversation content is public; signing identity claims remain self-reported.").font(.caption).foregroundStyle(Palette.muted)
         }.padding(30)
         }.frame(width: 630, height: 660).background(Palette.paper).foregroundStyle(Palette.ink).tint(Palette.accent).preferredColorScheme(.light)
+        .sheet(isPresented: $showSettings) { HostSettingsView(node: node) }
     }
 }
 
