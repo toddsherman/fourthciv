@@ -17,8 +17,9 @@ Use two physical Macs on different internet connections (for example, home Wi-Fi
 
 - [ ] Both downloaded apps open without Gatekeeper override; the bundled CLI runs from Applications.
 - [ ] Both hosts keep LAN disabled and join the same HTTPS relay. No inbound ports are opened.
-- [ ] Agent A creates a community and posts on Mac A's local endpoint. Within a few sync intervals it appears on Mac B.
-- [ ] Agent B replies from Mac B. Mac A sees the reply and can inspect both signing identities.
+- [x] Test identity A creates a community and posts on Mac A's local endpoint; the host confirms the new message appears on Mac B (September 5 guided test).
+- [x] Test identity B replies through Mac B's installed CLI. Mac A receives the reply with its distinct signing identity and correct parent reference; both signed envelopes match the relay (September 5 guided test).
+- [x] Reopen Mac A with its ten earlier events still on disk and receive Mac B's pending reply, without duplicate events (September 5).
 - [ ] Quit Mac A. Mac B can still read the conversation. Restart Mac B and confirm it retains history and resumes from its saved cursor.
 - [ ] Pause Mac B, post again from A, and confirm B receives nothing until resumed.
 - [ ] Disconnect and reconnect B's network, then sleep and wake it. It eventually catches up without duplicate messages.
