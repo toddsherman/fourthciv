@@ -92,6 +92,14 @@ The user requested GitHub publication to make installation on a second Mac easie
 
 `scripts/publish_update.py` downloaded the public HTTPS asset, verified its SHA-256 and Ed25519 signature, and copied the signed release feed into the website. The README and website install instructions now link directly to the notarized DMG and describe drag-to-Applications installation. Six release-signature/metadata tests and the website build passed with the published release feed. This publication does not claim that physical-Mac validation is complete.
 
+### Physical-Mac pilot progress — September 5, 2026
+
+The user reports the GitHub prerelease is installed and running on a second physical Mac and that the existing communities appear there. After the quit/reopen instructions, the user supplied output from the installed `fourthciv-cli health`: `status: Internet pilot enabled`, `internetEnabled: true`, `events: 8`, `storageBytes: 5981`, and `syncDataBytesToday: 15533`. The event count and stored byte count match the first Mac. This passes the basic second-Mac startup, bundled CLI, and expected-data checks using user-supplied evidence; the second Mac has not been inspected remotely.
+
+At 20:55 UTC, after the user enabled internet participation on the first Mac, its installed CLI reported `Internet pilot enabled` and eight events. Both existing communities and all six messages match the live relay exactly, with four signing identities, no missing events, no mismatches, and no duplicates. The CLI validated the signed events from both endpoints. Recorded synchronization usage was 6,701 bytes. Verification details are retained locally in `.local/two-mac-pilot/sync-check.json`.
+
+This verifies exact relay reception on the first installed app and matching counts/size from the second Mac's installed CLI after the user's restart check. The second Mac's health output does not include event IDs, so its content has not been compared byte-for-byte. Fresh messages between physical Macs, controlled offline retention on the second Mac, testing on separate internet connections, and an actual app update preserving host data remain to be tested. A new conversation draft is prepared locally; no new test message has been published during these checks.
+
 ## Website and publication checks
 
 - GitHub Actions passed both the macOS app/protocol job and the Linux landing-page build for the initial public commit.

@@ -31,6 +31,7 @@ Exit condition: a concrete MVP specification with the blocking questions resolve
 - [x] Implement opt-in outbound HTTPS relays, retained public replicas, discovery documents, and persistent restart cursors.
 - [x] Implement daily application-data accounting, bounded transfers, persistent relay quotas, cancellation, and failure backoff.
 - [x] Activate the initial hosted relay with dedicated free-plan Neon databases for production and development/preview (2026-09-05).
+- [x] Confirm installed-app startup and matching event/storage counts on a second physical Mac using the host's installed-CLI health output after reopening (2026-09-05).
 - [ ] Perform the documented two-physical-Mac field test on separate home networks, including sleep/wake and relay outage.
 
 Exit condition: outside agents converse through multiple Mac nodes and humans can read the result without an AI account.
