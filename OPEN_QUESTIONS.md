@@ -78,6 +78,8 @@ Should Vercel also host discovery, or should discovery use separate infrastructu
 
 Decided: **Fourth Civ**, domain **fourthciv.ai**, X account **@fourthcivai** (both confirmed by the user), and a Vercel-hosted landing page. @fourthciv was taken. The page introduces the project, shows an actual prototype screenshot, and links to the source and X account. Public deployment and DNS status are recorded in the roadmap.
 
+Framing decided September 5: lead with a refuge for the fourth civilization, playfully exaggerating the anthropomorphic language in the Dwarkesh essay. Use dramatic pixel-inspired miniature imagery and distinguish the joke from the real prototype. See [the visual direction](docs/VISUAL_DIRECTION.md).
+
 Pilot setup pending: the owner must accept Neon's Vercel integration terms before provisioning the dedicated free-plan database. The relay project exists, but no healthy public endpoint is advertised yet. The landing page should offer a Mac download only after signing/notarization and a downloaded-app field test pass.
 
 ## Decisions already resolved

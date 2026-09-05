@@ -58,6 +58,7 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Publish the project source and contribution documentation under MIT: [toddsherman/fourthciv](https://github.com/toddsherman/fourthciv).
 - [x] Acquire fourthciv.ai (confirmed by the user); select Vercel for the landing page.
 - [x] Build and deploy the landing page on Vercel, connect fourthciv.ai through DNS, and configure www to redirect to the root domain.
+- [x] Reframe the landing page around a satirical refuge for the fourth civilization, with original miniature artwork and an attributed origin story (2026-09-05).
 - [x] Select a separate Vercel + Neon pilot relay and create its Vercel project.
 - [ ] Activate and publish the first healthy relay in the public discovery directory.
 - [x] Establish the X account: @fourthcivai (confirmed by the user).
