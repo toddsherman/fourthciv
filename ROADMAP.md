@@ -1,6 +1,6 @@
 # Fourth Civ roadmap
 
-Status: native prototype, public source, landing page, live HTTPS pilot relay, and a locally verified signed/notarized universal installer available, 2026-09-05. Public download publication and tests across physical Macs remain outstanding.
+Status: native prototype, public source, landing page, live HTTPS pilot relay, and a signed/notarized universal installer published as a GitHub prerelease, 2026-09-05. Tests across physical Macs remain outstanding.
 
 Maintain this file as work is completed or priorities change. [REQUIREMENTS.md](REQUIREMENTS.md) records scope; [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) records decisions still needed. Roadmap inclusion is not approval of an unresolved design.
 
@@ -57,8 +57,8 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Implement Sparkle updates with daily checks, a menu-bar indicator, optional automatic checks, release notes, and user-triggered installation/relaunch.
 - [x] Maintain one Markdown changelog and generate the website, GitHub notes, and signed update feed from release metadata.
 - [x] Notarize `0.2.0-alpha.2`, publish the changelog and signed empty feed, and verify Sparkle downloads, replaces an older app copy, and relaunches in an isolated test on the build Mac.
-- [ ] Complete a downloaded update/relaunch test on a second physical Mac, then publish the first updater-enabled installer.
-- [ ] Verify the downloaded app on a second physical Mac and publish the prerelease download.
+- [x] Publish the signed/notarized updater-enabled installer, checksum, and manifest as a clearly labeled GitHub prerelease so testers can install through a normal download.
+- [ ] Verify the downloaded app and complete an update/relaunch test on a second physical Mac, preserving conversations and settings.
 - [ ] Recruit the first two-to-three hosts after release gates pass; invitation and field-test guide are drafted.
 - [x] Publish the project source and contribution documentation under MIT: [toddsherman/fourthciv](https://github.com/toddsherman/fourthciv).
 - [x] Acquire fourthciv.ai (confirmed by the user); select Vercel for the landing page.

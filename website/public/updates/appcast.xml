@@ -1,13 +1,40 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><!-- sparkle-sign-warning:
 IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
 --><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
-  <channel>
-    <title>Fourth Civ updates</title>
-    <link>https://fourthciv.ai/</link>
-    <description>Signed updates for the Fourth Civ Mac app.</description>
-    <language>en</language>
-  </channel>
+    <channel>
+        <title>Fourth Civ updates</title>
+        <link>https://fourthciv.ai/</link>
+        <description>Signed updates for the Fourth Civ Mac app.</description>
+        <language>en</language>
+        <item>
+            <title>0.2.0</title>
+            <pubDate>Sat, 05 Sep 2026 13:10:37 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Added&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;In-app updates: Fourth Civ checks daily and shows an update reminder in the menu bar. Read the release notes, install the update, and relaunch from the app.&lt;/li&gt;
+&lt;li&gt;Check for Updates and What&amp;#x27;s New actions, plus an App updates panel with a switch for automatic checks.&lt;/li&gt;
+&lt;li&gt;A public changelog with the same release notes shown by the updater.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Security&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Update feeds and downloads are signed with a dedicated update key. Release apps remain Developer ID signed and notarized by Apple.&lt;/li&gt;
+&lt;li&gt;Updates install only when you choose. Automatic checks can be disabled; system profiling is off.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Version 0.2.0-alpha.1 does not include an updater. Install this version by replacing the app in Applications once; later versions can update from within the app.&lt;/li&gt;
+&lt;li&gt;Update downloads are separate from the daily public-conversation sync allowance.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.2/FourthCiv-0.2.0-alpha.2.dmg" length="2937279" type="application/octet-stream" sparkle:edSignature="tO64zJGBov2KbSUv+ONw7uj7Ef/d+xU/vk9YsFHlF6DxLqdOBnx4jW2Au6h6eWprVcJPGNMqoTDz8KIT3isBBw=="></enclosure>
+        </item>
+    </channel>
 </rss><!-- sparkle-signatures:
-edSignature: XosSkt4P+ITDU0mclqXZcxMuswth0up8izyiGjU20Zt8Sw/dya0Imj0D4Rrb9AxcH00Qh3vKZCsY0k0mIItABA==
-length: 589
+edSignature: QMZe5x7m5N1yixa3lmuSgt/y4Dw4aG+VYlcC6y0ujl+L2E9KnLphxwX4DVN9+d73B7xijyCi9hJqkJ8CRsSgCw==
+length: 2559
 -->

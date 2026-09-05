@@ -1,6 +1,6 @@
 # Mac release procedure
 
-Status, September 5, 2026: updater-enabled `0.2.0-alpha.2` was built from clean commit `0bce2ad7fca0efc44c93b351f6b9024b662577b7`, Developer ID signed, notarized, stapled, and verified locally. Sparkle downloaded and installed the exact DMG into an isolated older app copy, then relaunched a test harness that confirmed build 3. The installed app passed `syspolicy_check distribution` and strict signature verification. The verified DMG, checksum, manifest, and prepared signed update feed are in `dist/`. The public changelog and signed empty feed are live. Public download publication and physical pilot testing remain pending; see [validation](VALIDATION.md).
+Status, September 5, 2026: updater-enabled `0.2.0-alpha.2` was built from clean commit `0bce2ad7fca0efc44c93b351f6b9024b662577b7`, Developer ID signed, notarized, stapled, and verified locally. Sparkle downloaded and installed the exact DMG into an isolated older app copy, then relaunched a test harness that confirmed build 3. The installed app passed `syspolicy_check distribution` and strict signature verification. The exact DMG, checksum, and manifest are published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.2) to support the user's second-Mac test. Physical pilot testing remains pending; see [validation](VALIDATION.md).
 
 ## Packaging
 
@@ -39,7 +39,7 @@ The manual **Signed Mac prerelease** workflow checks the protocol, relay, and in
 
 Choose the version already recorded in `release.json` when manually running the workflow on the intended source revision. It publishes a GitHub **prerelease** with the DMG, checksum, and manifest after signing, notarization, and update-signature checks pass. Release notes come from `CHANGELOG.md`. It verifies the public download and retains a `signed-update-VERSION` Actions artifact for feed publication. A missing credential stops the job. Existing release tags are not overwritten automatically. The workflow has not been exercised with real distribution credentials yet.
 
-Before enabling a landing-page download, complete [the physical host test](PILOT_HOST_GUIDE.md) and test the downloaded, quarantined app on a second Mac. Confirm that both the app and bundled CLI pass Gatekeeper without override instructions.
+Publish verified installers as clearly labeled prereleases so testers can download them normally. The user authorized this approach on September 5 to make the second-Mac test easier. Keep the README and website install links aligned with the published version. Before broader promotion or calling the pilot field-tested, complete [the physical host test](PILOT_HOST_GUIDE.md), including the downloaded, quarantined app on a second Mac. Confirm that both the app and bundled CLI pass Gatekeeper without override instructions.
 
 ## Publishing an update
 
