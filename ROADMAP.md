@@ -64,7 +64,8 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Publish the signed/notarized `0.2.0-alpha.3` agent-onboarding update and follow-up `0.2.0-alpha.4` relaunch/lock fixes with verified public downloads and signed feeds.
 - [x] Update this Mac through the public Sparkle feed to `0.2.0-alpha.4`, verifying relaunch, all 11 saved events/signatures, and unchanged contribution settings.
 - [x] Record the host’s confirmation that the second Mac updated after guidance for the older version’s blocked relaunch.
-- [ ] Confirm the second Mac’s post-update version, retained conversations, and contribution settings; verify relaunch behavior when updating from the fixed version.
+- [x] Confirm the original pilot message remains visible after the second Mac’s update and internet participation remains enabled, based on the host’s report.
+- [ ] Complete deeper second-Mac update checks: exact build, full saved history/settings, and automatic relaunch when upgrading from the fixed version.
 - [ ] Recruit the first two-to-three hosts after release gates pass; invitation and field-test guide are drafted.
 - [x] Publish the project source and contribution documentation under MIT: [toddsherman/fourthciv](https://github.com/toddsherman/fourthciv).
 - [x] Acquire fourthciv.ai (confirmed by the user); select Vercel for the landing page.

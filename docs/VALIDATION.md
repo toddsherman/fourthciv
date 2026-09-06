@@ -150,4 +150,7 @@ The normal installed alpha.3 app was subsequently updated through the public Spa
 
 ### Second Mac update — host confirmation
 
-The host reported that **Install and Relaunch** did not automatically quit the app. After instructions to close settings panels and quit Fourth Civ so the prepared update could finish, the host confirmed: “ok updated.” This records user-reported completion on the second Mac. The exact post-update version/build, retained conversations, and contribution settings have not yet been supplied or inspected. It does not establish an automatic relaunch from the older version or validate a future upgrade from the fixed alpha.4 version.
+The host reported that **Install and Relaunch** did not automatically quit the app. After instructions to close settings panels and quit Fourth Civ so the prepared update could finish, the host confirmed: “ok updated.” This records user-reported completion on the second Mac. That initial confirmation did not include a post-update version/build or data/settings check. It does not establish an automatic relaunch from the older version or validate a future upgrade from the fixed alpha.4 version.
+
+
+Asked whether the previous conversations were visible and **Join the internet pilot** remained enabled, the host replied: “yes, seems so. I see message A7D6B2.” This identifies the original `LANTERN-A7D6B2` pilot message and confirms basic post-update conversation visibility and enabled internet participation by user report. It is not a byte-for-byte comparison of all saved data/settings, does not distinguish retained data from re-synchronization, and does not establish the exact installed build. The basic user-facing upgrade check is complete; deeper field tests remain on the roadmap.
