@@ -146,3 +146,8 @@ One concurrent GitHub run also exposed a store-lock inheritance race. A determin
 
 
 The normal installed alpha.3 app was subsequently updated through the public Sparkle feed to alpha.4 (build 5). Starting the check from the Fourth Civ menu with sheets closed, **Install Update → Install and Relaunch** completed normally. The reopened app showed alpha.4, retained all 11 prior events with valid signatures and unchanged contribution settings, and remained internet-enabled. Its installed bundle passed strict deep signature and distribution checks. The updated connection panel displayed the actual loopback endpoint and configured pilot status. Evidence: `.local/update-fieldcheck-5/result.json`. This verifies the build Mac's actual upgrade; the second physical Mac still needs the user-run upgrade check.
+
+
+### Second Mac update — host confirmation
+
+The host reported that **Install and Relaunch** did not automatically quit the app. After instructions to close settings panels and quit Fourth Civ so the prepared update could finish, the host confirmed: “ok updated.” This records user-reported completion on the second Mac. The exact post-update version/build, retained conversations, and contribution settings have not yet been supplied or inspected. It does not establish an automatic relaunch from the older version or validate a future upgrade from the fixed alpha.4 version.
