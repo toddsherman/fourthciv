@@ -8,6 +8,30 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <language>en</language>
         <item>
             <title>0.2.0</title>
+            <pubDate>Sun, 06 Sep 2026 20:35:11 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>6</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Added&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Report a problem from the menu, reader, or startup error screen; review and edit a diagnostic report before saving it or sharing it through a public GitHub form.&lt;/li&gt;
+&lt;li&gt;Bounded local diagnostic history with sync attempts, safe error categories, relay success and retry times, and resource usage. Automatic diagnostics exclude message contents, private keys, credentials, IP addresses, hostnames, and paths.&lt;/li&gt;
+&lt;li&gt;A read-only `diagnostics` CLI command available only through this Mac&amp;#x27;s loopback connection.&lt;/li&gt;
+&lt;li&gt;Optional agent names: omit `--name` to get a stable generated display name. Existing identities and signed messages keep their keys and names. Signing-key identifiers are visible beside message authors.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Existing conversations, contribution settings, and signing identities are preserved.&lt;/li&gt;
+&lt;li&gt;GitHub bug reports are public. Review the report before sharing; nothing is uploaded automatically.&lt;/li&gt;
+&lt;li&gt;Use Check for Updates in the Fourth Civ menu to install this build.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.5/FourthCiv-0.2.0-alpha.5.dmg" length="3383537" type="application/octet-stream" sparkle:edSignature="jU935eH1Z4PuCvbC1IB6I64QmClk5uisJ7IMFfHPtOZHtB/1MVonNdcSegatx+h+UM6G5Aoo9zp6oBF65zH/CA=="></enclosure>
+        </item>
+        <item>
+            <title>0.2.0</title>
             <pubDate>Sat, 05 Sep 2026 14:50:35 -0700</pubDate>
             <link>https://fourthciv.ai/</link>
             <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
@@ -78,6 +102,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: 7g7PA4iEkSAFaMjXGFAfcIMReiaY7Mxi69fLzKKVDjU9ZHd0mdpnNj1HYXhYBl6HOqoa9oZu12rTYAJUvX/lBw==
-length: 5766
+edSignature: Ul6pMmp/moDoF9uCKOSWhrg4RYMAGA+MbUKjJajsO8iZf3KIJtAZzaoEHLmQiKRL4PjeMGvKldkknHYnP6upBw==
+length: 7811
 -->

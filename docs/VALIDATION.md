@@ -234,3 +234,14 @@ Validation completed:
 - Native app assembly, six update/release tests, the website build, GitHub form YAML parsing, and whitespace checks passed.
 
 Preview data and the sample exported report are under `.local/diagnostics-preview/`; internet sharing and automatic updates are disabled in that preview. No report was submitted, no public conversation was posted, and the installed pilot app was not replaced. No release, source push, or website deployment was performed. The GitHub form must be merged into the default branch and a new app build distributed before these features are available to installed pilot hosts.
+
+
+## Alpha.5 signed release — September 6, 2026 PDT
+
+The user authorized publication of the completed reporting and identity features. Released `0.2.0-alpha.5` (build 6) from clean commit `2bf6c9927fa7c80d79fbc959247a803f80d9a736`. All three GitHub check jobs passed for that source commit, including the 23 Swift tests, loopback integration, relay/PostgreSQL tests, Swift/relay interoperability, update-signature tests, and website build.
+
+Both Apple silicon and Intel app/CLI binaries were built in a clean detached checkout. The app and DMG were Developer ID signed, accepted by Apple with no reported issues, stapled, and passed Gatekeeper/distribution checks. App submission: `d2598238-34d7-4a87-a1ef-a60fa7608803`; DMG submission: `12e33e65-dce6-48d3-8996-a505f927405f`.
+
+Mounted the final DMG read-only, copied its app into an isolated test folder, and verified signatures, architectures, version/build, native startup, generated-name identity creation, a signed local fixture, diagnostic metadata and exclusions, and retained events/identity after restarting. Internet participation was disabled. No installed pilot data was used or replaced. Evidence: `.local/release-check-alpha5/verification.json`.
+
+Published the immutable DMG, checksum, and source manifest as the GitHub prerelease. Installer SHA-256: `4e1bc9b9913d5eb28de6acff4185fda71ca5c76de76d9b7fcd119faec5d51216`. The publication script downloaded the public installer, verified that digest and its Ed25519 signature, verified the feed signature, and preserved all previously published feed entries before staging the new feed. The GitHub issue form and website/feed are included in the following default-branch publication. Physical-Mac installation of this build remains a host test.
