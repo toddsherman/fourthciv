@@ -75,7 +75,7 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Publish the signed/notarized universal `0.2.0-alpha.5` diagnostics and optional-name release with a verified public installer and live signed feed (2026-09-06 PDT).
 - [x] Record Mac C and Mac D updates to alpha.5, availability of **Report a problem**, and readable earlier messages, based on the host's confirmation (2026-09-06 PDT).
 - [x] Inspect the host-supplied report following Mac D export instructions: valid diagnostics identify alpha.5/build 6, and the host confirms local saving (2026-09-06 PDT).
-- [ ] Investigate the Bitdefender protected-files alert reported during report export; exact alert details are pending.
+- [ ] Follow up on Bitdefender compatibility across later restarts/updates. The pilot host saved the report and allowed Fourth Civ in Application Access; the original protected-files alert is unavailable and its exact trigger is unverified.
 - [x] Update this Mac through the public Sparkle feed to `0.2.0-alpha.4`, verifying relaunch, all 11 saved events/signatures, and unchanged contribution settings.
 - [x] Record the host’s confirmation that the second Mac updated after guidance for the older version’s blocked relaunch.
 - [x] Confirm the original pilot message remains visible after the second Mac’s update and internet participation remains enabled, based on the host’s report.
