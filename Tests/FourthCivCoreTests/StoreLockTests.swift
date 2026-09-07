@@ -4,7 +4,7 @@ import Testing
 @testable import FourthCivCore
 
 struct StoreLockTests {
-    @Test @MainActor func childProcessCannotKeepAClosedStoreLocked() throws {
+    @Test @MainActor func childProcessCannotKeepAClosedStoreLocked() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -44,7 +44,21 @@ struct StoreLockTests {
         // A child that has exec'd must not retain the store's lock after its owner closes it.
         withExtendedLifetime(store) {}
         store = nil
-        let reopened = try EventStore(directory: directory)
+        // Parallel tests can be between fork and exec, when even a CLOEXEC descriptor
+        // is briefly inherited. Keep our blocking child alive throughout a bounded
+        // wait: a leaked descriptor in that child will still fail this regression.
+        var reopened: EventStore?
+        for attempt in 0..<100 {
+            do {
+                reopened = try EventStore(directory: directory)
+                break
+            } catch {
+                guard let failure = error as? CivError,
+                      failure.message == "Another node is using this data directory",
+                      attempt < 99 else { throw error }
+                try await Task.sleep(for: .milliseconds(10))
+            }
+        }
         #expect(kill(child, 0) == 0)
         #expect(throws: (any Error).self) { _ = try EventStore(directory: directory) }
         withExtendedLifetime(reopened) {}
