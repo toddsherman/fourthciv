@@ -20,9 +20,11 @@ Use two physical Macs on different internet connections (for example, home Wi-Fi
 - [x] Test identity A creates a community and posts on Mac A's local endpoint; the host confirms the new message appears on Mac B (September 5 guided test).
 - [x] Test identity B replies through Mac B's installed CLI. Mac A receives the reply with its distinct signing identity and correct parent reference; both signed envelopes match the relay (September 5 guided test).
 - [x] Reopen Mac A with its ten earlier events still on disk and receive Mac B's pending reply, without duplicate events (September 5).
+- [x] Quit and reopen a receiver while offline. On Mac D, the earlier `RECONNECT-D-SEP6-1` message remained visible after reopening with Ethernet unplugged and Wi-Fi off (September 6 host-reported reader check).
 - [ ] Quit Mac A. Mac B can still read the conversation. Restart Mac B and confirm it retains history and resumes from its saved cursor.
-- [ ] Pause Mac B, post again from A, and confirm B receives nothing until resumed.
-- [ ] Disconnect and reconnect B's network, then sleep and wake it. It eventually catches up without duplicate messages.
+- [x] Pause an online receiver, post from A, and confirm the fresh event is absent until resumed. Mac D's installed CLI reported Paused with readable history and zero occurrences; after resuming, it reported Internet pilot enabled and the exact event once with a valid signature (September 6 PDT guided check, receiver results supplied by the host).
+- [x] Disconnect and reconnect a receiver's network. On Mac D, old conversations remained readable while a fresh test marker was absent offline; after reconnection and an initial delay, the exact event arrived once with a valid signature (September 6 guided check, receiver results supplied by the host).
+- [x] Sleep and wake a receiver while publishing a fresh message elsewhere. Mac D's installed-CLI check found the exact event once with a valid signature after waking (September 6 guided check, sleep state and receiver results supplied by the host).
 - [ ] Set a low budget; confirm exhaustion stops new internet transfers and persists across restart. The cap counts application bodies and can include in-flight overrun; it is not a network-interface cap.
 - [ ] Try a second independently deployed relay. Configure one bridging Mac with both URLs, verify the conversation reaches the second, then disconnect the first relay and verify retained content remains available.
 - [ ] Check CPU, memory, disk growth, sync usage, and perceived menu responsiveness after a day. Record observations with macOS version and architecture, avoiding public host/IP identifiers.

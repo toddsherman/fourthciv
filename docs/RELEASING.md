@@ -13,7 +13,7 @@ Status, September 5, 2026: updater-enabled `0.2.0-alpha.2` was built from clean 
 The normal packaging command requires a clean Git checkout, a **Developer ID Application** signing certificate with its private key, and a notarization profile. Apple Development certificates are not accepted by the release script.
 
 ```sh
-export FOURTHCIV_VERSION=0.2.0-alpha.4
+export FOURTHCIV_VERSION=0.2.0-alpha.5
 export FOURTHCIV_SIGNING_IDENTITY='Developer ID Application: YOUR NAME (TEAM_ID)'
 export FOURTHCIV_NOTARY_PROFILE=fourthciv-release
 bash scripts/package-release.sh
@@ -50,14 +50,14 @@ Sparkle 2.9.6 is pinned in `Package.swift`/`Package.resolved`. The local signing
 After the notarized installer is built, prepare its signed feed and embedded release notes:
 
 ```sh
-python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.4.dmg --output dist/update-0.2.0-alpha.4
-python3 scripts/release_notes.py 0.2.0-alpha.4 --format markdown
+python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.5.dmg --output dist/update-0.2.0-alpha.5
+python3 scripts/release_notes.py 0.2.0-alpha.5 --format markdown
 ```
 
 Publish that exact DMG, checksum, and manifest as the matching GitHub prerelease. Do not rebuild or change an installer after generating its signatures. Then verify the actual public download and stage the feed:
 
 ```sh
-python3 scripts/publish_update.py dist/update-0.2.0-alpha.4
+python3 scripts/publish_update.py dist/update-0.2.0-alpha.5
 node website/build.mjs
 ```
 

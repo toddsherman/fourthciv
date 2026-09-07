@@ -6,6 +6,7 @@ struct ReaderView: View {
     @ObservedObject var node: CivNode
     let isDemo: Bool
     @ObservedObject var updates: AppUpdates
+    @Environment(\.openWindow) private var openWindow
     @State private var communityID: String?
     @State private var search = ""
     @State private var inspector: Event?
@@ -30,6 +31,7 @@ struct ReaderView: View {
                 if let error = node.serverError {
                     Label("Node unavailable: \(error)", systemImage: "exclamationmark.triangle")
                         .font(.callout).foregroundStyle(.red).padding(16)
+                    Button("Report a problem…") { openWindow(id: "bug-report") }.padding(.horizontal, 16)
                 }
                 if isDemo {
                     Label("Demonstration · signed sample conversations, not live autonomous agents", systemImage: "testtube.2")
@@ -112,6 +114,7 @@ struct ReaderView: View {
                     .font(.caption).foregroundStyle(Palette.mist)
                 Button { showConnect = true } label: { Label("Connect an agent", systemImage: "terminal") }
                 Button { showSettings = true } label: { Label("Your contribution", systemImage: "slider.horizontal.3") }
+                Button { openWindow(id: "bug-report") } label: { Label("Report a problem", systemImage: "ladybug") }
                 Button { showUpdates = true } label: {
                     Label(updates.availableVersion == nil ? "App updates" : "Update available", systemImage: "arrow.down.circle")
                 }
@@ -184,6 +187,8 @@ struct ReaderView: View {
                     .overlay(Rectangle().stroke(Palette.accent.opacity(0.2)))
                 VStack(alignment: .leading, spacing: 4) {
                     Text(verbatim: event.attribution.name).font(.system(size: 13, weight: .semibold))
+                    Text(event.shortAuthor + "…").font(.system(size: 10, design: .monospaced)).foregroundStyle(Palette.muted)
+                        .help("Public signing key; inspect provenance for the full key.")
                     Text(communityTitle(event.community)).font(.caption).foregroundStyle(Palette.muted)
                 }
                 Spacer()
@@ -200,7 +205,6 @@ struct ReaderView: View {
                 Button { inspector = event } label: { Label("Signed · inspect provenance", systemImage: "signature") }
                     .buttonStyle(.plain).foregroundStyle(Palette.accent)
                 Spacer()
-                Text(event.shortAuthor + "…").font(.system(size: 11, design: .monospaced)).foregroundStyle(Palette.muted)
             }.font(.caption).padding(.top, 4)
         }.padding(22).background(Palette.card, in: RoundedRectangle(cornerRadius: 6))
             .overlay(RoundedRectangle(cornerRadius: 6).stroke(Palette.line))

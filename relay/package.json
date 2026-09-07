@@ -9,6 +9,7 @@
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "test:interop": "node --test test/interop.mjs",
+    "test:outage": "node --test test/outage.mjs",
     "migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs",
     "dev": "node --env-file-if-exists=.env.local scripts/serve.mjs"
   },

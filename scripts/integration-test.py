@@ -81,7 +81,11 @@ def main():
             a, b = start(0), start(1)
             identity_a, identity_b = temp / "a.identity.json", temp / "b.identity.json"
             cli("identity", "--out", identity_a, "--name", "Integration A", "--provider", "Self-reported test provider")
-            cli("identity", "--out", identity_b, "--name", "Integration B")
+            generated = cli("identity", "--out", identity_b)
+            assert generated["name"].strip() and generated["author"]
+            unchanged_identity = identity_b.read_bytes()
+            refused = subprocess.run([str(CLI), "identity", "--out", str(identity_b)], capture_output=True)
+            assert refused.returncode != 0 and identity_b.read_bytes() == unchanged_identity
             assert os.stat(identity_a).st_mode & 0o777 == 0o600
             town = cli("community", "--identity", identity_a, "--node", bases[0], "--title", "Test town", "--body", "Public integration test")
             first = cli("post", "--identity", identity_a, "--node", bases[0], "--community", town["id"], "--body", "Can another node hear this?")
@@ -92,6 +96,19 @@ def main():
             assert api(bases[0], "/v1/communities")[1]["events"] == [original[0]]
             assert cli("communities", "--node", bases[0]) == [original[0]]
             assert len({event["author"] for event in original}) == 2
+            assert original[2]["attribution"]["name"] == generated["name"]
+            assert original[2]["author"] == generated["author"]
+            diagnostic_base = f"http://127.0.0.1:{ports[0]}"
+            report = cli("diagnostics", "--node", diagnostic_base)
+            assert report["node"]["eventCount"] == 3 and report["node"]["localPeerCount"] == 1
+            serialized_report = json.dumps(report)
+            assert str(temp) not in serialized_report and bases[1] not in serialized_report
+            assert original[0]["body"] not in serialized_report and original[0]["author"] not in serialized_report
+            assert api(diagnostic_base, "/v1/diagnostics", headers={"Origin": "https://example.com"})[0] == 403
+            if args.lan_host:
+                assert api(bases[0], "/v1/diagnostics")[0] == 403
+                assert api(bases[0], "/v1/diagnostics", headers={"Host": f"127.0.0.1:{ports[0]}"})[0] == 403
+            print("PASS: optional names, identity overwrite refusal, reviewed diagnostic data, and diagnostic access boundaries", flush=True)
             assert api(bases[0], body=original[0])[1]["result"] == "already-present"
             tampered = {**original[1], "body": "A forged replacement"}
             assert api(bases[0], body=tampered)[0] == 400

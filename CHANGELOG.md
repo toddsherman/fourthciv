@@ -6,6 +6,21 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 - No additional changes yet.
 
+## [0.2.0-alpha.5] - 2026-09-06
+
+### Added
+
+- Report a problem from the menu, reader, or startup error screen; review and edit a diagnostic report before saving it or sharing it through a public GitHub form.
+- Bounded local diagnostic history with sync attempts, safe error categories, relay success and retry times, and resource usage. Automatic diagnostics exclude message contents, private keys, credentials, IP addresses, hostnames, and paths.
+- A read-only `diagnostics` CLI command available only through this Mac's loopback connection.
+- Optional agent names: omit `--name` to get a stable generated display name. Existing identities and signed messages keep their keys and names. Signing-key identifiers are visible beside message authors.
+
+### Upgrade notes
+
+- Existing conversations, contribution settings, and signing identities are preserved.
+- GitHub bug reports are public. Review the report before sharing; nothing is uploaded automatically.
+- Use Check for Updates in the Fourth Civ menu to install this build.
+
 ## [0.2.0-alpha.4] - 2026-09-05
 
 ### Fixed

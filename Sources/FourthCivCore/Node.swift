@@ -32,6 +32,7 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
     public let port: UInt16
     public let directory: URL
     public let ledger: SyncLedger
+    public let diagnostics: DiagnosticLog
     @Published public private(set) var events: [Event]
     @Published public private(set) var settings: NodeSettings
     @Published public private(set) var listening = false
@@ -47,6 +48,12 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
     private var serverGeneration = UUID()
     private var activeRequest: Task<Data, Error>?
     private var relaySchedule: [String: (failures: Int, next: Date)] = [:]
+    private struct RelayObservation {
+        var attempt: Date
+        var success: Date?
+        var failure: DiagnosticFailure?
+    }
+    private var relayObservations: [String: RelayObservation] = [:]
     private let requestData: NodeRequest
 
     public var endpoint: String { "http://127.0.0.1:\(port)" }
@@ -73,6 +80,8 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         ledger = try SyncLedger(directory: directory)
         try ledger.retain(settings.relays)
         internetBytes = ledger.used()
+        diagnostics = DiagnosticLog(directory: directory)
+        diagnostics.record(.nodeOpened)
     }
 
     public func start() throws {
@@ -84,6 +93,7 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         }, state: { [weak self] error in
             guard self?.serverGeneration == current else { return }
             self?.serverError = error; self?.listening = error == nil
+            self?.diagnostics.record(error == nil ? .listenerReady : .listenerFailed)
         })
         server?.start()
         syncTask = Task { [weak self] in
@@ -99,6 +109,7 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
     public func stop() {
         generation = UUID(); serverGeneration = UUID(); activeRequest?.cancel()
         syncTask?.cancel(); syncTask = nil; server?.stop(); server = nil; listening = false
+        diagnostics.record(.nodeStopped)
     }
 
     public func updateSettings(_ updated: NodeSettings) throws {
@@ -111,10 +122,33 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         settings = updated; store.limitBytes = updated.storageMiB * 1_024 * 1_024
         try ledger.retain(updated.relays)
         peerStatus = peerStatus.filter { (updated.peers + updated.relays).contains($0.key) }
+        relayObservations = relayObservations.filter { updated.relays.contains($0.key) }
+        diagnostics.configurationChanged()
         if restart { stop(); serverError = nil; try start() }
     }
 
     public func togglePause() throws { var updated = settings; updated.paused.toggle(); try updateSettings(updated) }
+
+    public func diagnosticSnapshot() -> NodeDiagnostic {
+        NodeDiagnostic(session: diagnostics.session, configuration: diagnostics.configuration,
+            status: status, listening: listening, paused: settings.paused, internetEnabled: settings.internetEnabled,
+            lanEnabled: settings.lanEnabled, syncing: syncing, syncSeconds: settings.syncSeconds,
+            localPeerCount: settings.peers.count, eventCount: events.count, storageBytes: store.bytes,
+            storageLimitBytes: settings.storageMiB * 1_024 * 1_024, syncBytesToday: ledger.used(),
+            dailySyncLimitBytes: settings.dailySyncMiB * 1_024 * 1_024, historySaved: diagnostics.saved,
+            recoveredUnreadableHistory: diagnostics.recoveredUnreadableHistory,
+            relays: settings.relays.enumerated().map { index, relay in
+                let observation = relayObservations[relay]
+                let progress = ledger.progress(for: relay)
+                return RelayDiagnostic(index: index + 1, isPilot: relay == RelayEndpoint.pilot,
+                    lastAttempt: observation?.attempt, lastSuccess: observation?.success,
+                    lastFailure: observation?.failure,
+                    nextAttempt: settings.paused || !settings.internetEnabled ? nil : relaySchedule[relay]?.next,
+                    consecutiveFailures: relaySchedule[relay]?.failures ?? 0,
+                    acknowledgedEvents: progress.acknowledged.count,
+                    pendingEvents: events.filter { !progress.acknowledged.contains($0.id) }.count)
+            }, recentActivity: diagnostics.recentEntries())
+    }
 
     private static func validate(_ settings: NodeSettings) throws {
         guard (1...64).contains(settings.storageMiB), [10, 30, 60].contains(settings.syncSeconds),
@@ -136,6 +170,12 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         let path = components?.path ?? ""
         if request.method == "GET" {
             switch path {
+            case "/v1/diagnostics":
+                guard request.isLoopback else { return .error("Diagnostics are available on this Mac only", status: 403) }
+                guard let json = try? DiagnosticReport(node: diagnosticSnapshot()).json() else {
+                    return .error("Could not prepare diagnostics", status: 503)
+                }
+                return HTTPResponse(status: 200, body: Data(json.utf8))
             case "/v1/health":
                 return .json(["name": "FourthCiv", "protocol": "fourthciv/1", "status": status,
                               "events": String(events.count), "storageBytes": String(store.bytes),
@@ -153,15 +193,22 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
             }
         }
         guard request.method == "POST", path == "/v1/events" else { return .error("Unsupported method or endpoint", status: 405) }
-        guard !settings.paused else { return .error("Host has paused participation", status: 503) }
+        guard !settings.paused else {
+            diagnostics.record(.localRejected)
+            return .error("Host has paused participation", status: 503)
+        }
         guard request.headers["content-type"]?.lowercased().hasPrefix("application/json") == true else {
             return .error("Expected application/json", status: 400)
         }
         do {
             let event = try JSONDecoder().decode(Event.self, from: request.body)
             let inserted = try accept(event)
+            if inserted { diagnostics.record(.localAccepted) }
             return .json(["id": event.id, "result": inserted ? "accepted" : "already-present"], status: inserted ? 201 : 200)
-        } catch { return .error(error.localizedDescription, status: 400) }
+        } catch {
+            diagnostics.record(.localRejected, failure: .capture(error))
+            return .error(error.localizedDescription, status: 400)
+        }
     }
 
     @discardableResult private func accept(_ event: Event) throws -> Bool {
@@ -181,6 +228,8 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         let current = generation
         for peer in settings.peers {
             guard !settings.paused, !Task.isCancelled, generation == current else { return }
+            let target = DiagnosticTarget(kind: .localPeer, index: (settings.peers.firstIndex(of: peer) ?? 0) + 1)
+            diagnostics.record(.syncStarted, target: target)
             do {
                 let base = try LocalEndpoint.validate(peer, allowLAN: settings.lanEnabled)
                 guard !([endpoint] + lanEndpoints).contains(base.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))) else {
@@ -208,7 +257,11 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
                     offset = next
                 }
                 if settings.peers.contains(peer) { peerStatus[peer] = settings.paused ? "Paused" : received > 0 ? "Received \(received) events" : "Up to date" }
-            } catch { if settings.peers.contains(peer) { peerStatus[peer] = error.localizedDescription } }
+                if generation == current && !settings.paused { diagnostics.record(.syncSucceeded, target: target, received: received) }
+            } catch {
+                if settings.peers.contains(peer) { peerStatus[peer] = error.localizedDescription }
+                if generation == current { diagnostics.record(.syncFailed, target: target, failure: .capture(error)) }
+            }
         }
         await syncRelays(generation: current)
     }
@@ -244,6 +297,10 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         for relay in settings.relays {
             guard maySync(relay, generation: current) else { return }
             if let schedule = relaySchedule[relay], schedule.next > Date() { continue }
+            let target = DiagnosticTarget(kind: .relay, index: (settings.relays.firstIndex(of: relay) ?? 0) + 1)
+            relayObservations[relay] = RelayObservation(attempt: Date(), success: relayObservations[relay]?.success,
+                                                        failure: relayObservations[relay]?.failure)
+            diagnostics.record(.syncStarted, target: target)
             do {
                 let base = try RelayEndpoint.validate(relay)
                 let discovery = try JSONDecoder().decode(RelayDiscovery.self,
@@ -287,12 +344,16 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
                 more = more || events.contains { !progress.acknowledged.contains($0.id) }
                 relaySchedule[relay] = (0, Date().addingTimeInterval(30))
                 peerStatus[relay] = "Received \(received) · shared \(sent)" + (more ? " · more next sync" : " · up to date")
+                relayObservations[relay]?.success = Date(); relayObservations[relay]?.failure = nil
+                diagnostics.record(.syncSucceeded, target: target, received: received, sent: sent)
             } catch {
                 guard maySync(relay, generation: current) else { return }
                 let failures = min(5, (relaySchedule[relay]?.failures ?? 0) + 1)
                 let delay = min(300, 15 * (1 << failures))
                 relaySchedule[relay] = (failures, Date().addingTimeInterval(Double(delay)))
                 peerStatus[relay] = error.localizedDescription + " · retry in \(delay)s"
+                relayObservations[relay]?.failure = .capture(error)
+                diagnostics.record(.syncFailed, target: target, failure: .capture(error))
             }
         }
     }

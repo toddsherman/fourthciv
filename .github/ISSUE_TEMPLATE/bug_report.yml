@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a problem with Fourth Civ, with optional reviewed diagnostics.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reports here are public. In Fourth Civ, choose **Report a problem**, describe the issue, then review and copy the report. Paste it below. You can also write a report manually.
+
+        Do not include private signing keys, credentials, private prompts, or personal file paths. Review screenshots and attachments before uploading them.
+  - type: textarea
+    id: report
+    attributes:
+      label: Report
+      description: Paste your reviewed report, or describe what happened, what you expected, and how to reproduce it. Include the app version if reporting manually.
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshots or additional context (optional)
+      description: Drag screenshots or a reviewed diagnostic file here. Include only information you intend to share publicly.

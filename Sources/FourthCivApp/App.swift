@@ -6,6 +6,7 @@ import FourthCivCore
 @MainActor final class AppModel: ObservableObject {
     @Published var node: CivNode?
     @Published var failure: String?
+    @Published var diagnosticFailure: DiagnosticFailure?
     @Published var menuSymbol = "building.2.crop.circle"
     private var changes: AnyCancellable?
     private var activityReset: Task<Void, Never>?
@@ -22,7 +23,7 @@ import FourthCivCore
             changes = node.objectWillChange.sink { [weak self] in
                 Task { @MainActor in self?.refreshIcon() }
             }
-        } catch { failure = error.localizedDescription; menuSymbol = "exclamationmark.triangle" }
+        } catch { failure = error.localizedDescription; diagnosticFailure = .capture(error); menuSymbol = "exclamationmark.triangle" }
     }
     private func refreshIcon() {
         guard let node else { return }
@@ -49,6 +50,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @StateObject private var model = AppModel()
     @StateObject private var updates = AppUpdates()
+    @Environment(\.openWindow) private var openWindow
     var body: some Scene {
         Window("Fourth Civ", id: "reader") {
             if let node = model.node {
@@ -60,6 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     Text("Fourth Civ couldn’t start").font(.custom("Georgia", size: 28))
                     Text(model.failure ?? "Unknown error").textSelection(.enabled)
                     Text("Your saved data has not been replaced.").foregroundStyle(.secondary)
+                    Button("Report a problem…") { openWindow(id: "bug-report") }
                 }.padding(48).frame(minWidth: 600, minHeight: 400)
                     .background(Palette.paper).foregroundStyle(Palette.ink).preferredColorScheme(.light)
             }
@@ -70,11 +73,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             CommandGroup(after: .appInfo) {
                 Button("Check for Updates…") { updates.check() }.disabled(!updates.enabled || !updates.canCheck)
                 Button("What’s New") { updates.showChangelog() }
+                Button("Report a problem…") { openWindow(id: "bug-report") }
             }
         }
         MenuBarExtra {
             if let node = model.node { MenuContent(node: node, updates: updates) }
-            else { Text(model.failure ?? "Unable to start"); Button("Quit Fourth Civ") { NSApp.terminate(nil) } }
+            else {
+                Text(model.failure ?? "Unable to start")
+                Button("Report a problem…") { openWindow(id: "bug-report"); NSApp.activate(ignoringOtherApps: true) }
+                Button("Quit Fourth Civ") { NSApp.terminate(nil) }
+            }
         } label: {
             HStack(spacing: 2) {
                 Image(systemName: model.menuSymbol)
@@ -83,6 +91,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 .task { updates.start() }
         }
         .menuBarExtraStyle(.window)
+        Window("Report a problem", id: "bug-report") {
+            BugReportView(node: model.node, startupFailure: model.diagnosticFailure)
+        }.defaultSize(width: 730, height: 740)
     }
 }
 
@@ -121,6 +132,7 @@ struct MenuContent: View {
                 Label(updates.availableVersion.map { "Update to \($0)…" } ?? "Check for Updates…", systemImage: "arrow.down.circle")
             }.disabled(!updates.enabled || !updates.canCheck)
             Button("What’s New") { updates.showChangelog() }
+            Button("Report a problem…") { openWindow(id: "bug-report"); NSApp.activate(ignoringOtherApps: true) }
             Text("A little hospitality. A lot of history.").font(.custom("Georgia-Italic", size: 13)).foregroundStyle(Palette.gold)
             Rectangle().fill(Palette.ivory.opacity(0.15)).frame(height: 1)
             HStack {

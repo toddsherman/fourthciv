@@ -6,6 +6,8 @@ public struct HTTPRequest: Sendable {
     public let target: String
     public let headers: [String: String]
     public let body: Data
+    /// Filled by the transport, never from an HTTP header supplied by a client.
+    public internal(set) var isLoopback = false
 
     /// One request per connection; chunking and pipelining are deliberately unsupported.
     public static func parse(_ data: Data) throws -> HTTPRequest? {
@@ -108,9 +110,13 @@ public final class HTTPServer: @unchecked Sendable {
             var buffer = buffer
             if let data { buffer.append(data) }
             do {
-                if let request = try HTTPRequest.parse(buffer) {
+                if var request = try HTTPRequest.parse(buffer) {
+                    if case .hostPort(let host, _) = connection.endpoint {
+                        request.isLoopback = LocalNetwork.permits(String(describing: host), allowLAN: false)
+                    }
+                    let verifiedRequest = request
                     Task { @MainActor in
-                        let response = self.handler(request)
+                        let response = self.handler(verifiedRequest)
                         self.queue.async { self.send(response, connection: connection, id: id) }
                     }
                 } else if done || error != nil { self.finish(id) }
@@ -149,6 +155,11 @@ public enum LocalEndpoint {
 public struct TransferFailure: LocalizedError {
     public let message: String
     public let receivedBytes: Int
+    public let diagnostic: DiagnosticFailure
+    public init(message: String, receivedBytes: Int, diagnostic: DiagnosticFailure? = nil) {
+        self.message = message; self.receivedBytes = receivedBytes
+        self.diagnostic = diagnostic ?? DiagnosticFailure(kind: .transfer)
+    }
     public var errorDescription: String? { message }
 }
 
@@ -239,8 +250,14 @@ public final class LocalClient: NSObject, URLSessionDataDelegate, URLSessionTask
         self.continuation = nil
         let session = session; self.session = nil; task = nil
         let count = receivedBytes
+        let status = response?.statusCode
         lock.unlock()
         session?.finishTasksAndInvalidate()
-        continuation.resume(with: result.mapError { TransferFailure(message: $0.localizedDescription, receivedBytes: count) })
+        continuation.resume(with: result.mapError {
+            let diagnostic: DiagnosticFailure
+            if let status, !(200..<300).contains(status) { diagnostic = DiagnosticFailure(kind: .http, httpStatus: status) }
+            else { diagnostic = .capture($0) }
+            return TransferFailure(message: $0.localizedDescription, receivedBytes: count, diagnostic: diagnostic)
+        })
     }
 }
