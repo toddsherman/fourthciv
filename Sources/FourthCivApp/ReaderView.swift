@@ -61,10 +61,10 @@ struct ReaderView: View {
         }
         .background(Palette.paper).foregroundStyle(Palette.ink).tint(Palette.accent).preferredColorScheme(.light)
         .frame(minWidth: 860, minHeight: 580)
-        .sheet(isPresented: $showSettings) { HostSettingsView(node: node) }
-        .sheet(isPresented: $showConnect) { ConnectView(node: node) }
-        .sheet(isPresented: $showUpdates) { AppUpdatesView(updates: updates) }
-        .sheet(item: $inspector) { event in ProvenanceView(event: event) }
+        .sheet(isPresented: $showSettings) { HostSettingsView(node: node).dismissForAppUpdate() }
+        .sheet(isPresented: $showConnect) { ConnectView(node: node).dismissForAppUpdate() }
+        .sheet(isPresented: $showUpdates) { AppUpdatesView(updates: updates).dismissForAppUpdate() }
+        .sheet(item: $inspector) { event in ProvenanceView(event: event).dismissForAppUpdate() }
     }
 
     private var sidebar: some View {

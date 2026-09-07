@@ -58,15 +58,42 @@ import SwiftUI
 
     func showChangelog() { NSWorkspace.shared.open(changelogURL) }
 
+    func updater(_ updater: SPUUpdater, shouldPostponeRelaunchForUpdate item: SUAppcastItem,
+                 untilInvokingBlock installHandler: @escaping () -> Void) -> Bool {
+        dismissSheetsBeforeInstalling { _ in installHandler() }
+        return true
+    }
+
     func updaterWillRelaunchApplication(_ updater: SPUUpdater) {
-        // AppKit refuses termination while a SwiftUI settings sheet is attached.
-        // End nested sheets first, after the user has chosen Install and Relaunch.
-        func endSheets(on window: NSWindow) {
-            guard let sheet = window.attachedSheet else { return }
-            endSheets(on: sheet)
-            window.endSheet(sheet)
+        // Sparkle can skip postponement when resuming an earlier install. If its
+        // quit event arrives during dismissal, retry normal termination afterward.
+        guard hasBlockingDialog else { return }
+        dismissSheetsBeforeInstalling { dismissed in
+            if dismissed { NSApp.terminate(nil) }
         }
-        for window in NSApp.windows where window.sheetParent == nil { endSheets(on: window) }
+    }
+
+    private var hasBlockingDialog: Bool {
+        NSApp.modalWindow != nil || NSApp.windows.contains { !$0.sheets.isEmpty }
+    }
+
+    private func dismissSheetsBeforeInstalling(completion: @escaping (Bool) -> Void) {
+        // Dismiss through SwiftUI so its presentation bindings also become false.
+        // Ending an NSWindow sheet alone can cause SwiftUI to present it again.
+        NotificationCenter.default.post(name: .dismissFourthCivSheetsForUpdate, object: nil)
+        if let panel = NSApp.modalWindow as? NSSavePanel { panel.cancel(nil) }
+        Task { @MainActor in
+            for _ in 0..<100 {
+                if !hasBlockingDialog {
+                    completion(true)
+                    return
+                }
+                try? await Task.sleep(for: .milliseconds(50))
+            }
+            // Keep Sparkle's normal retry UI available; never force-quit the app.
+            failure = "Close any open dialogs, then choose Install and Relaunch again."
+            completion(false)
+        }
     }
 
     // A menu-bar app needs a visible reminder even while its windows are closed.
@@ -81,6 +108,24 @@ import SwiftUI
     }
 
     func standardUserDriverWillFinishUpdateSession() { availableVersion = nil }
+}
+
+private extension Notification.Name {
+    static let dismissFourthCivSheetsForUpdate = Notification.Name("FourthCivDismissSheetsForUpdate")
+}
+
+private struct UpdateSheetDismissal: ViewModifier {
+    @Environment(\.dismiss) private var dismiss
+
+    func body(content: Content) -> some View {
+        content.onReceive(NotificationCenter.default.publisher(for: .dismissFourthCivSheetsForUpdate)) { _ in
+            dismiss()
+        }
+    }
+}
+
+extension View {
+    func dismissForAppUpdate() -> some View { modifier(UpdateSheetDismissal()) }
 }
 
 struct AppUpdatesView: View {

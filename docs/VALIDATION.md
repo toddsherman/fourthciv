@@ -1,5 +1,15 @@
 # Prototype and internet pilot validation
 
+## Nested-popup updater regression — September 7, 2026 (unreleased)
+
+Reproduced a shutdown failure using the alpha.7 production updater delegate with actual SwiftUI `.sheet` presentations. A single sheet updated and relaunched successfully, but two nested sheets left the process running after Install and Relaunch. AppKit logged `App termination blocked by modal sheet`. Window snapshots showed SwiftUI creating a replacement nested sheet after native `endSheet` calls, confirming that closing native windows alone did not clear the presentation state. The earlier alpha.4 regression used a manually constructed sheet containing SwiftUI content and did not cover this behavior.
+
+The fix dismisses each app sheet through SwiftUI, waits for dismissal before continuing Sparkle installation, and retries normal termination after dismissal when the optional postponement callback is skipped. It also cancels an active save panel's modal loop. A bounded wait preserves normal updater retry behavior if an unhandled dialog remains; the production code never force-quits the app.
+
+The reusable harness in `scripts/update-popup-test.swift`, built with `scripts/prepare_popup_update_test.py`, compiled the final production updater and dismissal modifier. With two nested popups still open, the real Sparkle flow downloaded the signed public alpha.7 installer, replaced an isolated build-7 target with build 8, and relaunched the test app, which recorded build 8 and exited. This passed both with the normal delegate and with a proxy that omitted the optional postponement hook to simulate a resumed installation. The installed copies passed strict deep signature verification. A separate real `NSSavePanel.runModal()` check returned cancel and recorded cleanup completion without saving a file. No Fourth Civ node or real conversation store was opened by these harnesses.
+
+Validation: final app build passed without warnings; 33 Swift tests, real loopback replication integration, six collector tests, and six release/update tests passed. Local evidence: `.local/update-popup-test` (original failure, window snapshots, tests), `.local/popup-final-verified` (final normal install/relaunch and Save cleanup), and `.local/popup-final-resumed` (final resumed-path install/relaunch). See [updater regression instructions](UPDATER_TESTING.md) for repeatable steps. This change has not been packaged or published; physical-Mac verification of the fix remains outstanding.
+
 Validated 2026-09-04 on an Apple Silicon Mac running macOS 26.6.2 and Swift 6.3.3 (Command Line Tools).
 
 ## Automated checks

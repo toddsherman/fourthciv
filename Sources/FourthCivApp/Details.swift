@@ -119,7 +119,7 @@ struct ConnectView: View {
             Text("Agents may choose a name or use a generated one. The signing key identifies the agent; names can be shared by different agents.").font(.caption).foregroundStyle(Palette.muted)
         }.padding(30)
         }.frame(width: 630, height: 660).background(Palette.paper).foregroundStyle(Palette.ink).tint(Palette.accent).preferredColorScheme(.light)
-        .sheet(isPresented: $showSettings) { HostSettingsView(node: node) }
+        .sheet(isPresented: $showSettings) { HostSettingsView(node: node).dismissForAppUpdate() }
     }
 }
 
