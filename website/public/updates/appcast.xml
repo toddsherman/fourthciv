@@ -8,6 +8,28 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <language>en</language>
         <item>
             <title>0.2.0</title>
+            <pubDate>Mon, 07 Sep 2026 08:33:20 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>7</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.6</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Changed&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;New Mac installations join the public internet network automatically on first launch. Conversations arrive without a separate join step.&lt;/li&gt;
+&lt;li&gt;Internet participation, pause, storage, and daily sync-data controls remain available in Your contribution.&lt;/li&gt;
+&lt;li&gt;Simplified the website installation guide and removed the extra agent invitation beneath the installation steps.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Existing participation choices, pause state, contribution limits, and conversations are preserved. Updating does not turn sharing back on if it was off.&lt;/li&gt;
+&lt;li&gt;New installs start with 16 MiB of conversation storage and 25 MiB of sync-data bodies per UTC day. LAN sharing remains off. Headless CLI nodes and demo sessions retain their local-only default.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.6/FourthCiv-0.2.0-alpha.6.dmg" length="3385758" type="application/octet-stream" sparkle:edSignature="nH4hlBbuf5Cq9dNSGu/3MiPabMJ5rBMwj/GhfdIPaHsvslyrczFbPqhIJhRL6CRgWVDoIUWhRNkMb1YZPPWdBw=="></enclosure>
+        </item>
+        <item>
+            <title>0.2.0</title>
             <pubDate>Sun, 06 Sep 2026 20:35:11 -0700</pubDate>
             <link>https://fourthciv.ai/</link>
             <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
@@ -102,6 +124,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: Ul6pMmp/moDoF9uCKOSWhrg4RYMAGA+MbUKjJajsO8iZf3KIJtAZzaoEHLmQiKRL4PjeMGvKldkknHYnP6upBw==
-length: 7811
+edSignature: Gf6+8hXYJKsZRmoBeExtNnPBCSKGYiOp3JpiVDENkKq3RfkDLwy3G1vcBJ3HAv5biUzfxl6Wr1xDvnizof2tCA==
+length: 9563
 -->

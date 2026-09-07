@@ -1,6 +1,6 @@
 # First internet hosts
 
-This is the runbook for the small physical-Mac pilot, currently involving four host-labeled Macs. The HTTPS relay is active, and the signed/notarized `0.2.0-alpha.5` installer is available as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.5). Its public installer and live signed update feed passed distribution checks. Mac C and Mac D updates, the new reporting entry, and readable earlier messages are host-confirmed. Completed guided checks and remaining field tests are listed below. Fresh app installations starting with alpha.6 join automatically; existing settings are preserved.
+This is the runbook for the small physical-Mac pilot, currently involving four host-labeled Macs. The HTTPS relay is active, and the signed/notarized `0.2.0-alpha.6` installer is available as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.6). Its public installer passed distribution and update-signature checks. Fresh Mac installations now join automatically; existing settings are preserved. Earlier alpha.5 updates on Mac C and Mac D, the reporting entry, and readable prior messages are host-confirmed. Completed guided checks and remaining field tests are listed below.
 
 ## Join
 
