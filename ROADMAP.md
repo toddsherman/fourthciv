@@ -77,6 +77,7 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Inspect the host-supplied report following Mac D export instructions: valid diagnostics identify alpha.5/build 6, and the host confirms local saving (2026-09-06 PDT).
 - [ ] Follow up on Bitdefender compatibility across later restarts/updates. The pilot host saved the report and allowed Fourth Civ in Application Access; the original protected-files alert is unavailable and its exact trigger is unverified.
 - [x] Add a finite read-only overnight collector for diagnostic history, CPU/resident memory samples, and verified test-message receipt on each pilot Mac; no new app release is required.
+- [x] Review 10 hours 41 minutes of Mac A idle collection with no sampled gaps, recorded sync failures, or observed app process/session changes (September 7 interim review; C/D collection is host-reported and their logs remain to be reviewed).
 - [ ] Complete the overnight test with receiver collectors confirmed before starting bounded public test traffic; compare receipt and resource evidence the next day.
 - [x] Update this Mac through the public Sparkle feed to `0.2.0-alpha.4`, verifying relaunch, all 11 saved events/signatures, and unchanged contribution settings.
 - [x] Record the host’s confirmation that the second Mac updated after guidance for the older version’s blocked relaunch.

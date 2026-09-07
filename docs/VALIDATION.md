@@ -275,3 +275,16 @@ Added `scripts/pilot_collect.py` and its runbook. The utility only invokes local
 Six focused tests passed: exact fixture filtering, diagnostic failure/history preservation and deduplication, sampling-gap handling, failed signature-check exclusion, duplicate visibility, bounded/private file writing with symlink refusal, and unknown-schema rejection. A real installed-app sample completed with valid diagnostics, verified event retrieval, and CPU/resident-memory data; evidence is in `.local/overnight-collector-check/`. No public test message was posted. Collector preparation alone does not start or complete the overnight delivery test; receiver setup and the separate sender remain required.
 
 A second real-process check verified that a detached collector held its lock after the start command returned, rejected a second collector using the same output folder, accepted an explicit stop request, and released the lock. Output permissions were 0700 and sample/metadata files 0600. Evidence: `.local/overnight-collector-lifecycle/result.json`. These short checks do not substitute for the overnight run.
+
+## Overnight idle collection, interim review — September 7, 2026 PDT
+
+The host reported that Mac C and Mac D collectors had been running, but the instruction to start the sender was never given. The sender remained unstarted. Run `OVERNIGHT-20260907-A` therefore provides idle synchronization/resource observations; it does not establish delivery of fresh overnight test messages. The current installed CLI verified 23 local events and found no event containing the run marker. Receiver logs on C and D have not yet been inspected here.
+
+At 08:15 PDT, reviewed a fixed copy of 642 Mac A samples, spanning `2026-09-07T04:33:54Z` through `2026-09-07T15:14:58Z` (10 hours 41 minutes). The collector was still running, with its original deadline of 09:33:54 PDT. Results for this observed window:
+
+- No recorded sampling gaps, CLI diagnostic/event-read errors, or process-metric errors. The same installed-app PID and node session appeared throughout; no sample lacked that app process.
+- Captured 1,232 sync-start entries and 1,232 sync-success entries, with no captured failures. Diagnostic history was reported saved at every sample and relay pending-event counts stayed zero. Initial activity includes entries retained from shortly before collection began.
+- App resident memory was 86.375 MiB initially and 72.984 MiB in the last sample, with an observed range of 72.422–87.750 MiB. Median sampled `ps` CPU was 0.0%, the largest sample was 9.6%, and cumulative app CPU time increased by 94.76 seconds. RSS is resident memory, not total footprint; minute samples do not capture every short peak.
+- Event count stayed 23 and reported conversation storage stayed 20,569 bytes. The daily sync-data counter increased from 384,734 to 1,282,400 bytes, within the same UTC day. No test-message ID was observed.
+
+These are interim measurements from one Mac, not a completed active-delivery or multi-Mac stability test. Evidence: `.local/overnight-pilot/OVERNIGHT-20260907-A/Mac-A-interim-summary.json` and the fixed `Mac-A-reviewed-samples.jsonl` copy (SHA-256 `e7f2f8afc465e295beaa2e292f3e2b5d925d33a6572a4256998bf48e66025d1c`). No sender was started retroactively during review.
