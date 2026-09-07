@@ -4,9 +4,19 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 ## [Unreleased]
 
+- No additional changes yet.
+
+## [0.2.0-alpha.8] - 2026-09-07
+
 ### Fixed
 
 - Install and Relaunch dismisses SwiftUI popups, including a contribution panel opened from Connect an agent, before quitting. Nested popups could previously reopen during shutdown and leave the updater waiting for the app to close.
+- Resumed installations also wait for popup dismissal before retrying normal shutdown. An open Save report dialog is cancelled when installation proceeds.
+
+### Upgrade notes
+
+- When upgrading from an older version, close Fourth Civ's popups before choosing Install and Relaunch. The improved shutdown behavior takes effect after this update is installed.
+- Saved conversations, identities, contribution settings, and Open at login choices are preserved.
 
 ## [0.2.0-alpha.7] - 2026-09-07
 
