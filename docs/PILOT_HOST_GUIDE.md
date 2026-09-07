@@ -1,6 +1,6 @@
 # First internet hosts
 
-This is the runbook for a **two-to-three-host pilot**. The HTTPS relay is active, and the signed/notarized `0.2.0-alpha.2` installer is available as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.2). It passed local distribution checks and an isolated Sparkle installation test. The physical-Mac checklist below remains pending; this prerelease makes that testing possible through a normal download. Enable **Your contribution → Join the internet pilot** after installation.
+This is the runbook for the small physical-Mac pilot, currently involving four host-labeled Macs. The HTTPS relay is active, and the signed/notarized `0.2.0-alpha.5` installer is available as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.5). Its public installer and live signed update feed passed distribution checks. Mac C and Mac D updates, the new reporting entry, and readable earlier messages are host-confirmed. Completed guided checks and remaining field tests are listed below. Enable **Your contribution → Join the internet pilot** after installation.
 
 ## Join
 
@@ -25,6 +25,8 @@ Use two physical Macs on different internet connections (for example, home Wi-Fi
 - [x] Pause an online receiver, post from A, and confirm the fresh event is absent until resumed. Mac D's installed CLI reported Paused with readable history and zero occurrences; after resuming, it reported Internet pilot enabled and the exact event once with a valid signature (September 6 PDT guided check, receiver results supplied by the host).
 - [x] Disconnect and reconnect a receiver's network. On Mac D, old conversations remained readable while a fresh test marker was absent offline; after reconnection and an initial delay, the exact event arrived once with a valid signature (September 6 guided check, receiver results supplied by the host).
 - [x] Sleep and wake a receiver while publishing a fresh message elsewhere. Mac D's installed-CLI check found the exact event once with a valid signature after waking (September 6 guided check, sleep state and receiver results supplied by the host).
+- [x] Update Mac C and Mac D to alpha.5 and confirm **Report a problem** appears and earlier messages remain visible (September 6 PDT host confirmation).
+- [ ] On an updated pilot Mac, open **Report a problem**, enter a harmless test description, review and save the report locally, and confirm its version/build metadata. No test issue needs to be submitted. See [bug reporting](BUG_REPORTING.md).
 - [ ] Set a low budget; confirm exhaustion stops new internet transfers and persists across restart. The cap counts application bodies and can include in-flight overrun; it is not a network-interface cap.
 - [ ] Try a second independently deployed relay. Configure one bridging Mac with both URLs, verify the conversation reaches the second, then disconnect the first relay and verify retained content remains available.
 - [ ] Check CPU, memory, disk growth, sync usage, and perceived menu responsiveness after a day. Record observations with macOS version and architecture, avoiding public host/IP identifiers.

@@ -245,3 +245,11 @@ Both Apple silicon and Intel app/CLI binaries were built in a clean detached che
 Mounted the final DMG read-only, copied its app into an isolated test folder, and verified signatures, architectures, version/build, native startup, generated-name identity creation, a signed local fixture, diagnostic metadata and exclusions, and retained events/identity after restarting. Internet participation was disabled. No installed pilot data was used or replaced. Evidence: `.local/release-check-alpha5/verification.json`.
 
 Published the immutable DMG, checksum, and source manifest as the GitHub prerelease. Installer SHA-256: `4e1bc9b9913d5eb28de6acff4185fda71ca5c76de76d9b7fcd119faec5d51216`. The publication script downloaded the public installer, verified that digest and its Ed25519 signature, verified the feed signature, and preserved all previously published feed entries before staging the new feed. The GitHub issue form and website/feed are included in the following default-branch publication. Physical-Mac installation of this build remains a host test.
+
+The following default-branch publication, commit `f0a5b30e46987c77a6cb43f43fe921e961b819b5`, deployed successfully to production. The live feed matched the signed file byte-for-byte, passed signature verification, and contained builds 6, 5, 4, and 3. Browser checks confirmed the alpha.5 installer link and changelog, plus the public GitHub bug-report form. All three publication CI jobs passed. No issue was submitted. Evidence: `.local/release-check-alpha5/publication.json`, checked at 03:40:57 UTC September 7.
+
+## Host-confirmed alpha.5 updates — September 6, 2026 PDT
+
+After being instructed to update through **Check for Updates → Install Update → Install and Relaunch** and confirm **Report a problem** appears and earlier messages remain visible, the host reported: “updated and confirmed on Mac D and Mac C”. This records successful updates and those two UI checks on both named Macs, based on the host's confirmation.
+
+No remote inspection, exact version/build readback, report export, full saved-event/signature comparison, or settings comparison was performed on either Mac during this confirmation. The report export is the next guided check. Evidence: `.local/alpha5-update-pilot/verification.json`. No public message or bug report was submitted during this recording step.

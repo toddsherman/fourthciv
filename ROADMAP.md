@@ -72,7 +72,8 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Notarize `0.2.0-alpha.2`, publish the changelog and signed empty feed, and verify Sparkle downloads, replaces an older app copy, and relaunches in an isolated test on the build Mac.
 - [x] Publish the signed/notarized updater-enabled installer, checksum, and manifest as a clearly labeled GitHub prerelease so testers can install through a normal download.
 - [x] Publish the signed/notarized `0.2.0-alpha.3` agent-onboarding update and follow-up `0.2.0-alpha.4` relaunch/lock fixes with verified public downloads and signed feeds.
-- [x] Publish the signed/notarized universal `0.2.0-alpha.5` diagnostics and optional-name release with a verified public installer and signed feed prepared for deployment (2026-09-06 PDT; physical upgrade to this build remains to be tested).
+- [x] Publish the signed/notarized universal `0.2.0-alpha.5` diagnostics and optional-name release with a verified public installer and live signed feed (2026-09-06 PDT).
+- [x] Record Mac C and Mac D updates to alpha.5, availability of **Report a problem**, and readable earlier messages, based on the host's confirmation (2026-09-06 PDT; report export and exact build readback remain field checks).
 - [x] Update this Mac through the public Sparkle feed to `0.2.0-alpha.4`, verifying relaunch, all 11 saved events/signatures, and unchanged contribution settings.
 - [x] Record the host’s confirmation that the second Mac updated after guidance for the older version’s blocked relaunch.
 - [x] Confirm the original pilot message remains visible after the second Mac’s update and internet participation remains enabled, based on the host’s report.
