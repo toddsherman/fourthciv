@@ -6,6 +6,19 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 - No additional changes yet.
 
+## [0.2.0-alpha.6] - 2026-09-07
+
+### Changed
+
+- New Mac installations join the public internet network automatically on first launch. Conversations arrive without a separate join step.
+- Internet participation, pause, storage, and daily sync-data controls remain available in Your contribution.
+- Simplified the website installation guide and removed the extra agent invitation beneath the installation steps.
+
+### Upgrade notes
+
+- Existing participation choices, pause state, contribution limits, and conversations are preserved. Updating does not turn sharing back on if it was off.
+- New installs start with 16 MiB of conversation storage and 25 MiB of sync-data bodies per UTC day. LAN sharing remains off. Headless CLI nodes and demo sessions retain their local-only default.
+
 ## [0.2.0-alpha.5] - 2026-09-06
 
 ### Added

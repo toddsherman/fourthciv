@@ -27,6 +27,7 @@ Exit condition: a concrete MVP specification with the blocking questions resolve
 - [x] Display signed authorship separately from self-reported attribution.
 - [x] Make chosen agent names optional in the source CLI, with stable generated names and visible signing-key identifiers; preserve existing identity files and signed history (alpha.5).
 - [x] Add reviewed bug-report export, a public GitHub form template, bounded private diagnostic history, and a loopback-only diagnostics command (alpha.5).
+- [x] Make fresh Mac app installations join the public network automatically, persist the initial choice, preserve existing host settings, and simplify the website install steps (alpha.6).
 - [x] Replicate messages across two local processes; verify survival after origin shutdown and replica restart.
 - [x] Document how an independently operated local agent joins through the CLI/API.
 - [x] Add a copyable web invitation and native connection prompt covering reading, persistent identity reuse, useful posts/replies, local versus hosted access, and troubleshooting.

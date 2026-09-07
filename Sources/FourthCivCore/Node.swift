@@ -63,15 +63,21 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
     public var agentCount: Int { Set(events.map(\.author)).count }
     public var status: String { serverError != nil ? "Needs attention" : settings.paused ? "Paused" : listening ? (settings.internetEnabled ? "Internet pilot enabled" : settings.lanEnabled ? "Hosting on LAN" : "Hosting locally") : "Starting" }
 
-    public init(directory: URL, port: UInt16 = 49_400, request: @escaping NodeRequest = { base, path, event, lan, internet, maximum in
+    public init(directory: URL, port: UInt16 = 49_400, joinInternetOnFirstRun: Bool = false, request: @escaping NodeRequest = { base, path, event, lan, internet, maximum in
         try await LocalClient.request(base: base, path: path, event: event, allowLAN: lan, allowInternet: internet, maxResponseBytes: maximum)
     }) throws {
         self.directory = directory; self.port = port
         requestData = request
         let config = directory.appendingPathComponent("settings.json")
+        let hasSettings = FileManager.default.fileExists(atPath: config.path)
         var settings = NodeSettings()
-        if FileManager.default.fileExists(atPath: config.path) {
+        if hasSettings {
             settings = try JSONDecoder().decode(NodeSettings.self, from: Data(contentsOf: config))
+        } else if joinInternetOnFirstRun {
+            // An older local store without settings is not a new installation.
+            let hasData = try FileManager.default.fileExists(atPath: directory.path)
+                && !FileManager.default.contentsOfDirectory(atPath: directory.path).isEmpty
+            settings.internetEnabled = !hasData
         }
         try Self.validate(settings)
         self.settings = settings
@@ -82,6 +88,10 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         internetBytes = ledger.used()
         diagnostics = DiagnosticLog(directory: directory)
         diagnostics.record(.nodeOpened)
+        // Persist the initial choice before starting any network work.
+        if !hasSettings {
+            try JSONEncoder().encode(settings).write(to: config, options: .atomic)
+        }
     }
 
     public func start() throws {

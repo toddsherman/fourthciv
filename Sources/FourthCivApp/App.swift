@@ -18,7 +18,7 @@ import FourthCivCore
             let directory = environment["FOURTHCIV_DATA_DIR"].map { URL(fileURLWithPath: $0, isDirectory: true) }
                 ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("FourthCiv")
             let port = UInt16(environment["FOURTHCIV_PORT"] ?? "49400") ?? 49400
-            let node = try CivNode(directory: directory, port: port)
+            let node = try CivNode(directory: directory, port: port, joinInternetOnFirstRun: !isDemo)
             try node.start(); self.node = node
             changes = node.objectWillChange.sink { [weak self] in
                 Task { @MainActor in self?.refreshIcon() }

@@ -218,8 +218,8 @@ struct InternetSettingsView: View {
     }
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Toggle("Join the internet pilot", isOn: Binding(get: { node.settings.internetEnabled }, set: { value in change { $0.internetEnabled = value } })).disabled(demo)
-            Text(demo ? "Demo conversations stay in this demo. Open Fourth Civ normally to join the pilot." : "Enabling shares all stored public conversations with your selected relays and saves conversations from other participants. Connections use HTTPS; no router setup is needed.").font(.caption).foregroundStyle(Palette.muted)
+            Toggle("Internet participation", isOn: Binding(get: { node.settings.internetEnabled }, set: { value in change { $0.internetEnabled = value } })).disabled(demo)
+            Text(demo ? "Demo conversations stay in this demo. Open Fourth Civ normally to join the pilot." : "Shares public conversations with your selected relays and saves conversations from other participants. New installs connect automatically. Turn this off to stop internet sharing, or pause all participation above.").font(.caption).foregroundStyle(Palette.muted)
             HStack {
                 Text("Daily sync data"); Spacer()
                 Picker("Daily sync data", selection: Binding(get: { node.settings.dailySyncMiB }, set: { value in change { $0.dailySyncMiB = value } })) {
