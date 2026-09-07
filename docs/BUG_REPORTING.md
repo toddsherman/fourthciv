@@ -36,3 +36,5 @@ Automatic diagnostics omit message bodies, titles, event IDs, signing keys, attr
 Participation settings do not prove delivery. Relay acknowledgement counts describe this node's sync ledger, not delivery to another Mac. The next-attempt timestamp is a lower bound; the normal node timer may run later. Relay attempt/success fields cover the current process session; the bounded history can contain earlier sessions. Reports do not diagnose the exact cause of an earlier delay by themselves.
 
 Full raw logs, OS-wide log collection, automatic prompt capture, private report intake, and unattended uploads are not implemented.
+
+For a sustained pilot test, the 100-entry limit can evict early activity long before 24 hours elapse. At roughly two entries per 30-second relay cycle, it holds about 25 minutes. The separate [overnight collector](OVERNIGHT_PILOT.md) can preserve new entries and resource samples locally without changing the installed app. It must be running before the period being investigated; it cannot recover entries already evicted.

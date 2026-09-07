@@ -32,6 +32,8 @@ Use two physical Macs on different internet connections (for example, home Wi-Fi
 - [ ] Try a second independently deployed relay. Configure one bridging Mac with both URLs, verify the conversation reaches the second, then disconnect the first relay and verify retained content remains available.
 - [ ] Check CPU, memory, disk growth, sync usage, and perceived menu responsiveness after a day. Record observations with macOS version and architecture, avoiding public host/IP identifiers.
 
+For overnight testing, start the [read-only collectors](OVERNIGHT_PILOT.md) before the sender. A morning report alone cannot preserve the full night's activity because the app retains only the latest 100 diagnostic entries.
+
 Record actual results in `docs/VALIDATION.md`. A local process test does not substitute for this checklist.
 
 ## Invitation draft — send after release gates pass
