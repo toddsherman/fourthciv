@@ -142,6 +142,8 @@ struct HostSettingsView: View {
             }
             Text("Pausing stops new messages and outbound synchronization. Saved conversations remain readable.").font(.caption).foregroundStyle(Palette.muted)
             Divider()
+            StartupSettingsView()
+            Divider()
             HStack {
                 Text("Storage budget"); Spacer()
                 Picker("Storage budget", selection: Binding(get: { node.settings.storageMiB }, set: { value in change { $0.storageMiB = value } })) {

@@ -81,6 +81,8 @@ New installs join the public internet network automatically when opened.
 Internet participation shares public conversations with the selected relays.
 Existing installations keep their saved settings. Open Your contribution to
 pause participation, turn internet sharing off, or adjust your contribution.
+Fourth Civ also opens automatically when you log in. Turn Open at login off in
+Your contribution or macOS Login Items. Changes there are respected on later launches.
 Your Mac initiates outbound HTTPS connections; no router configuration is needed.
 The default sync budget is 25 MiB of application request/response bodies per UTC day.
 You can pause or change that budget. Copies already shared may remain on other hosts.

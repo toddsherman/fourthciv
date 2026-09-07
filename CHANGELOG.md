@@ -6,6 +6,18 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 - No additional changes yet.
 
+## [0.2.0-alpha.7] - 2026-09-07
+
+### Added
+
+- Fourth Civ opens automatically when you log in to your Mac. The first normal launch from Applications enables Open at login for new and upgrading installations.
+- An Open at login control in Your contribution, with guidance when macOS requires approval in Login Items.
+
+### Upgrade notes
+
+- Changes made in the app or macOS Login Items are respected on later launches and updates. Paused participation remains paused.
+- Opening an app from the disk image, demo/development builds, and isolated test sessions does not register a login item. Drag Fourth Civ into Applications and open it once.
+
 ## [0.2.0-alpha.6] - 2026-09-07
 
 ### Changed

@@ -50,11 +50,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @StateObject private var model = AppModel()
     @StateObject private var updates = AppUpdates()
+    @StateObject private var startup = makeLoginItemController()
     @Environment(\.openWindow) private var openWindow
     var body: some Scene {
         Window("Fourth Civ", id: "reader") {
             if let node = model.node {
                 ReaderView(node: node, isDemo: model.isDemo, updates: updates)
+                    .environmentObject(startup)
                     .task { updates.start() }
             } else {
                 VStack(spacing: 16) {
@@ -88,7 +90,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 Image(systemName: model.menuSymbol)
                 if updates.availableVersion != nil { Image(systemName: "arrow.down.circle.fill") }
             }.accessibilityLabel(updates.availableVersion == nil ? "Fourth Civ" : "Fourth Civ — update available")
-                .task { updates.start() }
+                .task { startup.start(); updates.start() }
         }
         .menuBarExtraStyle(.window)
         Window("Report a problem", id: "bug-report") {

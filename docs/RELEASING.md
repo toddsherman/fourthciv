@@ -71,7 +71,7 @@ Each new app build must use a higher `CFBundleVersion`, even if the human-readab
 
 Starting with `0.2.0-alpha.2`, Sparkle checks about once per day while the app is running. An arrow in the menu bar indicates an available update. **Check for Updates…** shows release notes and the install/relaunch flow. **App updates** in the reader controls automatic checks; **What's New** opens the public changelog. Silent installation and system profiling are disabled. App downloads are separate from the conversation-sync allowance. Replacing the app preserves its Application Support data; debug and demo builds do not check for updates.
 
-`0.2.0-alpha.1` has no updater: quit, replace it in Applications once, then reopen. No launch-at-login registration is added by this change.
+`0.2.0-alpha.1` has no updater: quit, replace it in Applications once, then reopen. Starting with alpha.7, a normal release launch from Applications registers Open at login once. Later app or System Settings choices are preserved; demo/development and isolated test launches do not register. See [startup behavior](STARTUP.md).
 
 Before public rollout, use an older updater-enabled build on a second physical Mac, check that the newer signed build is offered with correct release notes, install/relaunch, and confirm the version, conversations, node identity, contribution settings, and sync budget survive. Confirm disabled automatic checks remain disabled and a manual check still works. Include a failed/offline check and recovery. The build Mac's tests do not substitute for this field test.
 
