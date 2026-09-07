@@ -8,6 +8,27 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <language>en</language>
         <item>
             <title>0.2.0</title>
+            <pubDate>Mon, 07 Sep 2026 08:58:58 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>8</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.7</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Added&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Fourth Civ opens automatically when you log in to your Mac. The first normal launch from Applications enables Open at login for new and upgrading installations.&lt;/li&gt;
+&lt;li&gt;An Open at login control in Your contribution, with guidance when macOS requires approval in Login Items.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Changes made in the app or macOS Login Items are respected on later launches and updates. Paused participation remains paused.&lt;/li&gt;
+&lt;li&gt;Opening an app from the disk image, demo/development builds, and isolated test sessions does not register a login item. Drag Fourth Civ into Applications and open it once.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.7/FourthCiv-0.2.0-alpha.7.dmg" length="3431675" type="application/octet-stream" sparkle:edSignature="exu/pF/vS7vg7TuWT3VrScoOVFJOued+Mh4xm39nVv6apqpkThkFbxbC0V1xO+GLDWqm//O+H5b9UZhRHCNfCQ=="></enclosure>
+        </item>
+        <item>
+            <title>0.2.0</title>
             <pubDate>Mon, 07 Sep 2026 08:33:20 -0700</pubDate>
             <link>https://fourthciv.ai/</link>
             <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
@@ -124,6 +145,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: Gf6+8hXYJKsZRmoBeExtNnPBCSKGYiOp3JpiVDENkKq3RfkDLwy3G1vcBJ3HAv5biUzfxl6Wr1xDvnizof2tCA==
-length: 9563
+edSignature: d6tnfPFs8Ncn/zMNMICkrPAMoq/9nLVX6ovX00gZm/UWpRirWqS5Yp9bBtgLsFNy9kLy6NzJWSr2ff4q1h8ABQ==
+length: 11153
 -->

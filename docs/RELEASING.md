@@ -1,6 +1,8 @@
 # Mac release procedure
 
-Latest release: `0.2.0-alpha.6` (build 7), built from clean commit `b25292051451bdd57b6058bf61aa0ae60d16494e`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.6). Fresh Mac installations connect automatically. The final packaged app received 23 existing public events with verified signatures from a fresh isolated profile. Restart checks retained history and participation, then preserved saved off/paused settings and custom limits. The public installer passed SHA-256 and Ed25519 verification before staging the signed feed. Existing pilot installations were not replaced during these checks; physical-Mac updates remain a host check.
+Latest release: `0.2.0-alpha.7` (build 8), built from clean commit `e69b5225096a3253204a53c503786c8faba58877`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.7). It enables Open at login on the first normal launch from Applications, including upgrades, and preserves later app or System Settings choices. Real macOS registration, manual controls, and opt-out persistence were verified with the production startup code in an isolated app; actual logout/login or reboot remains a field check. The packaged app retained paused participation and custom limits, and the public installer passed SHA-256 and Ed25519 verification. See [startup behavior](STARTUP.md).
+
+Previous release: `0.2.0-alpha.6` (build 7), built from clean commit `b25292051451bdd57b6058bf61aa0ae60d16494e`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.6). Fresh Mac installations connect automatically. The final packaged app received 23 existing public events with verified signatures from a fresh isolated profile. Restart checks retained history and participation, then preserved saved off/paused settings and custom limits. The public installer passed SHA-256 and Ed25519 verification before staging the signed feed. Existing pilot installations were not replaced during these checks; physical-Mac updates remain a host check.
 
 Previous release: `0.2.0-alpha.5` (build 6), built from clean commit `2bf6c9927fa7c80d79fbc959247a803f80d9a736`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.5). The public installer passed SHA-256 and Ed25519 verification against the live signed feed. The packaged release also passed isolated startup, generated-name posting, diagnostics, and restart-retention checks. The host confirmed updates on Mac C and Mac D, with **Report a problem** available and earlier messages still visible. The report supplied after Mac D export instructions confirms alpha.5/build 6 metadata and successful local saving. The host also allowed Fourth Civ in Bitdefender's Application Access after a protected-files alert; the original alert is unavailable and its exact trigger remains unverified. Full history/settings comparisons on those Macs and exact build readback on Mac C remain field checks; see [validation](VALIDATION.md).
 
@@ -15,7 +17,7 @@ Status, September 5, 2026: updater-enabled `0.2.0-alpha.2` was built from clean 
 The normal packaging command requires a clean Git checkout, a **Developer ID Application** signing certificate with its private key, and a notarization profile. Apple Development certificates are not accepted by the release script.
 
 ```sh
-export FOURTHCIV_VERSION=0.2.0-alpha.6
+export FOURTHCIV_VERSION=0.2.0-alpha.7
 export FOURTHCIV_SIGNING_IDENTITY='Developer ID Application: YOUR NAME (TEAM_ID)'
 export FOURTHCIV_NOTARY_PROFILE=fourthciv-release
 bash scripts/package-release.sh
@@ -52,14 +54,14 @@ Sparkle 2.9.6 is pinned in `Package.swift`/`Package.resolved`. The local signing
 After the notarized installer is built, prepare its signed feed and embedded release notes:
 
 ```sh
-python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.6.dmg --output dist/update-0.2.0-alpha.6
-python3 scripts/release_notes.py 0.2.0-alpha.6 --format markdown
+python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.7.dmg --output dist/update-0.2.0-alpha.7
+python3 scripts/release_notes.py 0.2.0-alpha.7 --format markdown
 ```
 
 Publish that exact DMG, checksum, and manifest as the matching GitHub prerelease. Do not rebuild or change an installer after generating its signatures. Then verify the actual public download and stage the feed:
 
 ```sh
-python3 scripts/publish_update.py dist/update-0.2.0-alpha.6
+python3 scripts/publish_update.py dist/update-0.2.0-alpha.7
 node website/build.mjs
 ```
 
