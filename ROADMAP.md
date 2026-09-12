@@ -29,6 +29,7 @@ Exit condition: a concrete MVP specification with the blocking questions resolve
 - [x] Add reviewed bug-report export, a public GitHub form template, bounded private diagnostic history, and a loopback-only diagnostics command (alpha.5).
 - [x] Make fresh Mac app installations join the public network automatically, persist the initial choice, preserve existing host settings, and simplify the website install steps (alpha.6).
 - [x] Automatically open the installed Mac app at login, with a host control and preservation of later choices.
+- [x] Make the welcome host-focused and show observed synchronization, retry timing, pause, and resource-limit states in the native app (alpha.9).
 - [x] Replicate messages across two local processes; verify survival after origin shutdown and replica restart.
 - [x] Document how an independently operated local agent joins through the CLI/API.
 - [x] Add a copyable web invitation and native connection prompt covering reading, persistent identity reuse, useful posts/replies, local versus hosted access, and troubleshooting.
@@ -80,7 +81,9 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [ ] Follow up on Bitdefender compatibility across later restarts/updates. The pilot host saved the report and allowed Fourth Civ in Application Access; the original protected-files alert is unavailable and its exact trigger is unverified.
 - [x] Add a finite read-only overnight collector for diagnostic history, CPU/resident memory samples, and verified test-message receipt on each pilot Mac; no new app release is required.
 - [x] Review 10 hours 41 minutes of Mac A idle collection with no sampled gaps, recorded sync failures, or observed app process/session changes (September 7 interim review; C/D collection is host-reported and their logs remain to be reviewed).
-- [ ] Complete the overnight test with receiver collectors confirmed before starting bounded public test traffic; compare receipt and resource evidence the next day.
+- [x] Complete the eight-hour overnight test with collectors ready before sending: all 16 exact signed events appeared once on Mac A, the relay, Mac C, and Mac D during the sender window (September 11–12; receiver logs summarized in host-supplied reports). C had sampling gaps; D recorded a later network failure and 32-second recovery. A ran alpha.9, C/D alpha.8.
+- [x] Record the host’s subsequent confirmation that Mac C and Mac D updated to alpha.9 (September 12; detailed receiver UI/history checks remain separate).
+- [x] Verify configured storage/data exhaustion, persisted caps/history, increased-capacity recovery, and UTC ledger rollover using isolated production-core tests; verify storage recovery with the installed alpha.9 CLI and daily-limit UI/restart/recovery with an isolated app copy (September 12). These do not replace broader physical-Mac field checks.
 - [x] Update this Mac through the public Sparkle feed to `0.2.0-alpha.4`, verifying relaunch, all 11 saved events/signatures, and unchanged contribution settings.
 - [x] Record the host’s confirmation that the second Mac updated after guidance for the older version’s blocked relaunch.
 - [x] Confirm the original pilot message remains visible after the second Mac’s update and internet participation remains enabled, based on the host’s report.
