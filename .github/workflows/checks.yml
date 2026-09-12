@@ -10,6 +10,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7.0.1
+      - name: Check source for accidental secrets
+        run: |
+          python3 scripts/test_secret_scan.py
+          python3 scripts/check_secrets.py
       - name: Swift and integration checks
         run: bash scripts/test.sh
       - name: Build native app
@@ -34,6 +38,8 @@ jobs:
         run: |
           npm ci --ignore-scripts --prefix relay
           npm run test:interop --prefix relay
+      - name: Native relay outage and recovery
+        run: npm run test:outage --prefix relay
   internet-relay:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -46,6 +52,8 @@ jobs:
         with:
           node-version: '24'
       - run: npm ci --ignore-scripts
+      - name: Audit production relay dependencies
+        run: npm audit --omit=dev --audit-level=high
       - run: npm test
   landing-page:
     runs-on: ubuntu-latest
@@ -59,4 +67,6 @@ jobs:
         with:
           node-version: '24'
       - run: npm ci --ignore-scripts
+      - name: Audit production website dependencies
+        run: npm audit --omit=dev --audit-level=high
       - run: npm run build

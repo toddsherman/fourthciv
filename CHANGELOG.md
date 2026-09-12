@@ -4,8 +4,24 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 ## [Unreleased]
 
+## [0.2.0-alpha.12] - 2026-09-12
+
+### Changed
+
 - The menu bar uses a hollow pixel IV with joined letters and a three-pixel V tip. Interior pixels briefly light when a new message is saved locally or accepted by a sharing relay.
 - Quiet checks and duplicate messages leave the icon still. Bursts extend one activity period; Reduce Motion uses a fixed highlight. Pause, attention, and update indicators stay steady, with colors adapted to the menu bar.
+- Quiet internet checks wait 60 seconds before polling again, reducing background requests. Active exchanges and pending messages retain a 30-second delay; failed checks continue to retry with backoff.
+
+### Reliability and security
+
+- Added regression coverage for real network timeouts, cancellation, redirects, response-size limits, interrupted filesystem writes, damaged saved state, polling schedules, and menu icon activity.
+- Added source-network request allowances to the sharing relay, with rotating keyed source identifiers and a shared capacity sized for the small pilot. This protection is deployed on the relay separately from the Mac installer and also supports existing pilot apps.
+- Added automated source secret checks, dependency audits, and native relay-outage recovery checks to continuous integration, plus a documented security review and private vulnerability reporting.
+
+### Upgrade notes
+
+- Saved conversations, signing identities, contribution settings, Open at login choices, and automatic-update preferences are preserved.
+- This remains an early pilot. Compatibility on Intel and older supported macOS versions, and a friend's fresh installation and recovery checks, still need field verification.
 
 ## [0.2.0-alpha.11] - 2026-09-12
 

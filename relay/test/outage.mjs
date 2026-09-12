@@ -56,7 +56,7 @@ test('native nodes retain and queue messages through a relay outage, then recove
       const respond = handler(() => {
         if (unavailable) throw new Error('Isolated test storage outage');
         return store;
-      });
+      }, '', () => 'a'.repeat(64));
       const request = new Request('http://127.0.0.1' + incoming.url, {
         method: incoming.method, headers: incoming.headers,
         ...(incoming.method === 'POST' ? { body: incoming, duplex: 'half' } : {})

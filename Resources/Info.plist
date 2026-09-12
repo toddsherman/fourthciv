@@ -7,8 +7,8 @@
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleIconFile</key><string>FourthCiv</string>
 <key>CFBundleShortVersionString</key><string>0.2.0</string>
-<key>CFBundleVersion</key><string>12</string>
-<key>FourthCivReleaseVersion</key><string>0.2.0-alpha.11</string>
+<key>CFBundleVersion</key><string>13</string>
+<key>FourthCivReleaseVersion</key><string>0.2.0-alpha.12</string>
 <key>SUFeedURL</key><string>https://fourthciv.ai/updates/appcast.xml</string>
 <key>SUPublicEDKey</key><string>eUrEhIXjR8U7hFeJrzQBeB56ChNbnxSHy/4a3GVIW9o=</string>
 <key>SURequireSignedFeed</key><true/>

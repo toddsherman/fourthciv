@@ -39,6 +39,8 @@ jobs:
           done
       - name: Verify Mac implementation
         run: |
+          python3 scripts/test_secret_scan.py
+          python3 scripts/check_secrets.py
           bash scripts/test.sh
           python3 scripts/test_updates.py
       - uses: actions/setup-node@v7.0.0
@@ -47,8 +49,11 @@ jobs:
       - name: Verify relay and interoperability
         run: |
           npm ci --ignore-scripts --prefix relay
+          npm audit --omit=dev --audit-level=high --prefix relay
           npm test --prefix relay
           npm run test:interop --prefix relay
+      - name: Native relay outage and recovery
+        run: npm run test:outage --prefix relay
       - name: Require the pilot relay to be live
         run: |
           .build/debug/fourthciv discover --node https://fourthciv-pilot.vercel.app --internet true > "$RUNNER_TEMP/relay-discovery.json"

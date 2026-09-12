@@ -19,7 +19,7 @@ function event(key, values = {}) {
 async function context(t) {
   const db = new PGlite(); t.after(()=>db.close()); await db.exec(schema);
   const store = new RelayStore(async(text,params)=>(await db.query(text,params)).rows);
-  const respond = handler(()=>store,'https://relay.example,http://unsafe.example');
+  const respond = handler(()=>store,'https://relay.example,http://unsafe.example', () => 'a'.repeat(64));
   const call = (path='/.well-known/fourthciv', value, headers={}) => respond(new Request('https://relay.example'+path, value === undefined ? {} :
     {method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(value)}));
   return {db,store,respond,call};

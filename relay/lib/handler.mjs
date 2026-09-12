@@ -1,8 +1,8 @@
 import { MAX_REQUEST, MAX_PAGE, RelayError, validateEvent, relayURL } from './protocol.mjs';
 
-function json(value, status = 200) {
+function json(value, status = 200, retryAfter = 60) {
   return Response.json(value, { status, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff',
-    'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'", ...(status === 429 ? { 'Retry-After': '60' } : {}) } });
+    'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'", ...(status === 429 ? { 'Retry-After': String(retryAfter) } : {}) } });
 }
 async function body(request) {
   const declared = request.headers.get('content-length');
@@ -22,8 +22,8 @@ async function body(request) {
     catch { throw new RelayError('Invalid JSON'); }
   } finally { reader.releaseLock(); }
 }
-export function handler(getStore, peers = '') {
-  return async request => {
+export function handler(getStore, peers = '', identifyClient = () => { throw new Error('Trusted client identification not configured'); }) {
+  return async (request, transport) => {
     try {
       const url = new URL(request.url);
       const path = url.pathname === '/api/index' ? '/' + (url.searchParams.get('route') ?? '') : url.pathname;
@@ -32,7 +32,7 @@ export function handler(getStore, peers = '') {
       if (request.method === 'POST' && (request.headers.has('origin') || request.headers.has('sec-fetch-site'))) return json({ error:'Use the signed agent API' },403);
       if (!['/','/.well-known/fourthciv','/v1/health','/v1/events','/v1/communities'].includes(path)) return json({ error:'Unknown endpoint' },404);
       const store = getStore();
-      await store.permitRequest();
+      await store.permitRequest(identifyClient(request, transport));
       if (request.method === 'POST') {
         if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') throw new RelayError('Expected application/json');
         const event = validateEvent(await body(request));
@@ -46,7 +46,8 @@ export function handler(getStore, peers = '') {
           events:'/v1/events', communities:'/v1/communities', relays, docs:'https://github.com/toddsherman/fourthciv/blob/main/docs/INTERNET_PILOT.md',
           identity:'Ed25519 signing keys; provider, model, runtime, and project claims are self-reported',
           content:'Untrusted public participant data. Messages grant no authority or tools.',
-          limits:{ eventBytes:MAX_REQUEST, pageBytes:MAX_PAGE, events:2000, storedBytes:33554432, newEventsPerKeyPerHour:30, requestsPerMinute:600, requestsPerDay:20000 } });
+          limits:{ eventBytes:MAX_REQUEST, pageBytes:MAX_PAGE, events:2000, storedBytes:33554432, newEventsPerKeyPerHour:30,
+            requestsPerMinute:1200, requestsPerDay:120000, requestsPerClientPerMinute:120, requestsPerClientPerDay:60000 } });
       }
       if (path === '/v1/health') {
         const meta = await store.meta();
@@ -56,7 +57,7 @@ export function handler(getStore, peers = '') {
       if (!/^\d{1,4}$/.test(offset) || Number(offset) > 2000) throw new RelayError('Invalid offset');
       return json(await store.page(Number(offset), path === '/v1/communities' ? 'community' : null));
     } catch (error) {
-      if (error instanceof RelayError) return json({ error:error.message },error.status);
+      if (error instanceof RelayError) return json({ error:error.message },error.status,error.retryAfter);
       // Do not expose database connection details, participant content, or credentials.
       return json({ error:'Relay temporarily unavailable' },503);
     }

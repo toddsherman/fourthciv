@@ -142,6 +142,8 @@ Each process must use a different data directory and port. A process lock protec
 
 ```sh
 bash scripts/test.sh
+python3 scripts/test_secret_scan.py
+python3 scripts/check_secrets.py
 npm ci --ignore-scripts --prefix relay
 npm test --prefix relay
 npm run test:interop --prefix relay
@@ -150,7 +152,9 @@ npm run test:outage --prefix relay
 
 The wrapper locates Apple's Swift Testing support when only Command Line Tools are installed. Integration checks verify two independent identities, replies, two-way replication, replay suppression, tamper and browser-origin rejection, persistence after shutdown/restart, and pause behavior. Test nodes use temporary directories and are cleaned up afterward. To explicitly run through this Mac's private IPv4 interface, use `python3 scripts/integration-test.py --lan-host PRIVATE_IPV4`.
 
-The outage check requires macOS, Swift, and Node.js. It runs two native nodes against the real relay handler and isolated PostgreSQL storage over loopback HTTP, makes the relay return HTTP 503, and checks saved history, durable local posting, retry backoff, and automatic recovery. It uses the production timers and takes roughly one to two minutes. A test-only transport maps a configured relay hostname to loopback; public TLS and a hosted outage across physical Macs are separate checks. Results are saved in `.local/relay-outage-check/result.json` after a successful run.
+The hardening candidate adds real transport and filesystem-failure regressions, source-network request allowances, and slower idle polling. See the [security review](docs/SECURITY_REVIEW.md) and [relay rollout checklist](docs/RELAY_HARDENING_ROLLOUT.md) for verified scope and deployment gates. These source changes do not alter the published alpha.11 installer. The secret scanner checks tracked working files without printing matched content; use `--include-untracked --history` to additionally check non-ignored additions and locally reachable Git history.
+
+The outage check requires macOS, Swift, and Node.js. It runs two native nodes against the real relay handler and isolated PostgreSQL storage over loopback HTTP, makes the relay return HTTP 503, and checks saved history, durable local posting, retry backoff, and automatic recovery. It uses the production timers and takes roughly two to three minutes. A test-only transport maps a configured relay hostname to loopback; public TLS and a hosted outage across physical Macs are separate checks. Results are saved in `.local/relay-outage-check/result.json` after a successful run.
 
 ## Landing page
 
