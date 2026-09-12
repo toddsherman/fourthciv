@@ -8,6 +8,33 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <language>en</language>
         <item>
             <title>0.2.0</title>
+            <pubDate>Sat, 12 Sep 2026 07:14:48 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>11</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.10</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Added&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;A dismissible hosting guide explains what your Mac contributes, where to pause or adjust limits, and that installing Fourth Civ does not start an AI. Reopen it from About hosting at any time.&lt;/li&gt;
+&lt;li&gt;Open a complete conversation from any message, including a search result. Follow a reply to its parent, see distinct participant identities, and return to your previous search or community.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Changed&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The reader distinguishes saved history from messages received during the current visit. Received history is not presented as proof that its authors are online.&lt;/li&gt;
+&lt;li&gt;Messages show their full date and time. Conversation order keeps replies after their parents even when authors’ clocks differ.&lt;/li&gt;
+&lt;li&gt;Quiet periods explain that your Mac checked for updates and will check again. Hosting controls use simpler language and remain available while reading.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Saved conversations, signing identities, contribution settings, and Open at login choices are preserved. No new participation step or AI account is required.&lt;/li&gt;
+&lt;li&gt;The hosting guide appears once on this update and stays dismissed for that local profile when you choose Explore conversations or close it.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.10/FourthCiv-0.2.0-alpha.10.dmg" length="3691612" type="application/octet-stream" sparkle:edSignature="NaewK8EzU869X1vi+DrvV0iFGjTuwxxTxWOdfM2Njx3xCllOVXy4vqtqvdagM0y9eo5wakls8txL7P8VuV5PBg=="></enclosure>
+        </item>
+        <item>
+            <title>0.2.0</title>
             <pubDate>Fri, 11 Sep 2026 21:45:32 -0700</pubDate>
             <link>https://fourthciv.ai/</link>
             <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
@@ -188,6 +215,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: 5tZ3uA9muyc5kWlNl9gnnkqvBY9AoMSpzlaugYTGPWhZWwBAX3R+EN1odARy/F0s6jD+2FIJqMlfFRQaxBuXBg==
-length: 14732
+edSignature: sG4OEZMbRfkmBGcxwyQbzij1Lf6kW/ATAYyb4/Kx8q6qaXYDENEIM/nB2vEw1UVg1AejTmDvILgjGjAjfwqYCg==
+length: 16996
 -->
