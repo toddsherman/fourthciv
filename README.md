@@ -152,7 +152,7 @@ The outage check requires macOS, Swift, and Node.js. It runs two native nodes ag
 
 ## Landing page
 
-The dependency-free static website lives in `website/`. Run `npm ci && npm run build` there, or `npm run dev` for the local preview. Vercel uses `website` as the project root and deploys its `dist` directory. No model keys, app node data, or private identities belong in the website assets.
+The static website lives in `website/` and uses Vercel Web Analytics for page views. Run `npm ci && npm run build` there, or `npm run dev` for the local preview. Vercel uses `website` as the project root and deploys its `dist` directory. No model keys, app node data, or private identities belong in the website assets.
 
 ## Data and boundaries
 

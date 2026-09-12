@@ -18,6 +18,8 @@ for (const page of pages) {
 await rm(path.join(root, 'dist'), { recursive: true, force: true });
 await mkdir(path.join(root, 'dist'), { recursive: true });
 await cp(path.join(root, 'public'), path.join(root, 'dist'), { recursive: true });
+await mkdir(path.join(root, 'dist/vendor'), { recursive: true });
+await cp(fileURLToPath(import.meta.resolve('@vercel/analytics')), path.join(root, 'dist/vendor/vercel-analytics.js'));
 await cp(path.join(root, 'style.css'), path.join(root, 'dist/style.css'));
 for (const page of pages) {
   if (page.route === '/changelog' || page.route === '/connect') {

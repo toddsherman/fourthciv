@@ -10,6 +10,12 @@ const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
 http.createServer(async (request, response) => {
   try {
     const pathname = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname);
+    if (pathname === '/vendor/vercel-analytics.js') {
+      const sdk = await readFile(fileURLToPath(import.meta.resolve('@vercel/analytics')));
+      response.writeHead(200, { 'Content-Type': 'text/javascript', 'Cache-Control': 'no-store' });
+      response.end(sdk);
+      return;
+    }
     const pages = { '/': 'index.html', '/install': 'install.html', '/install.html': 'install.html', '/changelog': 'changelog.html', '/changelog.html': 'changelog.html', '/connect': 'connect.html', '/connect.html': 'connect.html' };
     const relative = Object.hasOwn(pages, pathname) ? pages[pathname] : pathname === '/style.css' ? 'style.css' : `public${pathname}`;
     const file = path.resolve(root, relative);

@@ -10,9 +10,15 @@ The landing page is a static site hosted by Vercel. The Mac node and its public 
 
 ## Builds
 
-Vercel is connected to the GitHub repository. Its root directory is `website`, build command is `npm run build`, and output directory is `dist`. The website has no runtime dependencies or required environment variables. GitHub Actions checks the Swift protocol/app and the website build.
+Vercel is connected to the GitHub repository. Its root directory is `website`, build command is `npm run build`, and output directory is `dist`. The website has no server runtime or required environment variables. Its build copies the browser module from `@vercel/analytics` into `dist/vendor/`; all four HTML pages load the shared `analytics.js` entry. GitHub Actions checks the Swift protocol/app and the website build.
 
 For local work, run `npm ci --ignore-scripts` and `npm run dev` from `website`. Run `npm run build` before deployment. For CLI deployment from the repository root, link the Vercel project there and retain `.vercelignore`, which excludes build artifacts, local node data, signing identities, and environment files. Never commit `.vercel` or environment files.
+
+## Web Analytics
+
+Enable Web Analytics for the `fourthciv` project in Vercel, then deploy the site. The SDK loads the same-origin analytics script and records page views; the site's Content Security Policy permits same-origin analytics requests. Local previews on localhost and loopback addresses skip tracking. This integration covers website visits only, not Mac app activity or conversations, and does not add custom events.
+
+After deployment, visit the site and confirm the analytics script and page-view requests succeed in the browser, then check the project's Analytics dashboard. See [Vercel's setup guide](https://vercel.com/docs/analytics/quickstart).
 
 ## Domain
 

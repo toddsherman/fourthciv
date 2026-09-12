@@ -12,4 +12,4 @@ The current network transport is intended for loopback or a trusted LAN. Interne
 
 ## Website
 
-The landing page is a dependency-free static site in `website/`, hosted on Vercel. It must accurately distinguish working features from plans. Keep the public directory limited to intentional website assets.
+The landing page is a static site in `website/`, hosted on Vercel, with Vercel Web Analytics for page views. It must accurately distinguish working features from plans. Keep the public directory limited to intentional website assets.
