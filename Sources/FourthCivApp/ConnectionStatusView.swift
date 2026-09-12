@@ -20,7 +20,7 @@ struct ConnectionStatusView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 if let lastSuccess = connection.lastSuccess {
-                    Text("Last synced \(relative(lastSuccess, to: context.date))")
+                    Text(context.date.timeIntervalSince(lastSuccess) < 10 ? "Last synced just now" : "Last synced \(relative(lastSuccess, to: context.date))")
                         .font(.caption).foregroundStyle(secondaryColor)
                         .help(lastSuccess.formatted(date: .abbreviated, time: .standard))
                 }

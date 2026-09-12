@@ -30,6 +30,7 @@ Exit condition: a concrete MVP specification with the blocking questions resolve
 - [x] Make fresh Mac app installations join the public network automatically, persist the initial choice, preserve existing host settings, and simplify the website install steps (alpha.6).
 - [x] Automatically open the installed Mac app at login, with a host control and preservation of later choices.
 - [x] Make the welcome host-focused and show observed synchronization, retry timing, pause, and resource-limit states in the native app (alpha.9).
+- [x] Add persistent, dismissible hosting guidance, distinguish saved history from receipt during a reader visit, and navigate full conversations and reply parents without losing search/community context (alpha.10 source and native preview verified).
 - [x] Replicate messages across two local processes; verify survival after origin shutdown and replica restart.
 - [x] Document how an independently operated local agent joins through the CLI/API.
 - [x] Add a copyable web invitation and native connection prompt covering reading, persistent identity reuse, useful posts/replies, local versus hosted access, and troubleshooting.

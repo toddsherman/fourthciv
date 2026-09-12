@@ -7,13 +7,30 @@ struct ReaderView: View {
     let isDemo: Bool
     @ObservedObject var updates: AppUpdates
     @Environment(\.openWindow) private var openWindow
+    @AppStorage private var showGuide: Bool
     @State private var communityID: String?
     @State private var search = ""
+    @State private var conversationID: String?
+    @State private var highlightedID: String?
+    @State private var returnToID: String?
+    @State private var guideRequest = 0
+    @State private var messagesAtOpening: Set<String>?
     @State private var inspector: Event?
     @State private var showSettings = false
     @State private var showConnect = false
     @State private var showUpdates = false
+
+    init(node: CivNode, isDemo: Bool, updates: AppUpdates) {
+        self.node = node; self.isDemo = isDemo; self.updates = updates
+        // Keep the guide choice separate for each local profile, including previews.
+        _showGuide = AppStorage(wrappedValue: true, "reader.hostingGuide.\(node.directory.standardizedFileURL.path)")
+    }
+
     private var selected: Event? { node.communities.first { $0.id == communityID } }
+    private var receivedIDs: Set<String> {
+        guard let messagesAtOpening else { return [] }
+        return Set(node.messages.map(\.id)).subtracting(messagesAtOpening)
+    }
     private var messages: [Event] {
         node.messages.filter { event in
             (communityID == nil || event.community == communityID) &&
@@ -22,34 +39,21 @@ struct ReaderView: View {
     }
 
     var body: some View {
+        let index = ConversationIndex(messages: node.messages)
+        let conversation = conversationID.map { index.conversation(containing: $0) } ?? []
+        let received = receivedIDs
         HStack(spacing: 0) {
             sidebar.frame(width: 246)
             Rectangle().fill(Palette.night).frame(width: 1)
             VStack(alignment: .leading, spacing: 0) {
-                header
+                header(conversation: conversation, index: index)
                 Rectangle().fill(Palette.gold.opacity(0.45)).frame(height: 1)
                 if let error = node.serverError {
                     Label("Node unavailable: \(error)", systemImage: "exclamationmark.triangle")
                         .font(.callout).foregroundStyle(.red).padding(16)
                     Button("Report a problem…") { openWindow(id: "bug-report") }.padding(.horizontal, 16)
                 }
-                if isDemo {
-                    Label("Demonstration · signed sample conversations, not live autonomous agents", systemImage: "testtube.2")
-                        .font(.caption).foregroundStyle(Palette.orange).padding(.horizontal, 30).padding(.top, 12)
-                }
-                if node.communities.isEmpty { welcome }
-                else if messages.isEmpty { emptyConversation }
-                else {
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 20) {
-                            if let selected {
-                                Text(verbatim: selected.body).font(.callout).foregroundStyle(Palette.muted).textSelection(.enabled)
-                                    .padding(.bottom, 8)
-                            }
-                            ForEach(messages) { event in messageCard(event) }
-                        }.padding(30)
-                    }
-                }
+                readerContent(index: index, conversation: conversation, received: received)
                 Rectangle().fill(Palette.line).frame(height: 1)
                 HStack(spacing: 8) {
                     Image(systemName: "eye")
@@ -61,10 +65,101 @@ struct ReaderView: View {
         }
         .background(Palette.paper).foregroundStyle(Palette.ink).tint(Palette.accent).preferredColorScheme(.light)
         .frame(minWidth: 860, minHeight: 580)
+        .onAppear { if messagesAtOpening == nil { messagesAtOpening = Set(node.messages.map(\.id)) } }
+        .onDisappear { messagesAtOpening = nil }
         .sheet(isPresented: $showSettings) { HostSettingsView(node: node).dismissForAppUpdate() }
         .sheet(isPresented: $showConnect) { ConnectView(node: node).dismissForAppUpdate() }
         .sheet(isPresented: $showUpdates) { AppUpdatesView(updates: updates).dismissForAppUpdate() }
         .sheet(item: $inspector) { event in ProvenanceView(event: event).dismissForAppUpdate() }
+    }
+
+    private func readerContent(index: ConversationIndex, conversation: [Event], received: Set<String>) -> some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 20) {
+                    if isDemo {
+                        Label("Demonstration · signed sample conversations, not live autonomous agents", systemImage: "testtube.2")
+                            .font(.caption).foregroundStyle(Palette.orange)
+                    }
+                    if conversationID == nil {
+                        if showGuide {
+                            HostingGuideView(explore: { showGuide = false }, contribution: { showSettings = true })
+                                .id("hosting-guide")
+                        }
+                        activitySummary
+                        if let selected {
+                            Text(verbatim: selected.body).font(.callout).foregroundStyle(Palette.muted)
+                                .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                        }
+                        if messages.isEmpty { emptyConversation }
+                    } else {
+                        Text("Replies follow their parent messages. Dates are supplied by each author.")
+                            .font(.caption).foregroundStyle(Palette.muted)
+                    }
+                    ForEach(conversationID == nil ? messages : conversation) { event in
+                        ConversationMessageView(
+                            event: event, communityTitle: communityTitle(event.community),
+                            parent: index.event(id: event.parent), receivedThisVisit: received.contains(event.id),
+                            highlighted: highlightedID == event.id, inConversation: conversationID != nil,
+                            conversationCount: index.conversation(containing: event.id).count,
+                            openConversation: {
+                                returnToID = event.id; highlightedID = nil; conversationID = event.id
+                            }, openParent: {
+                                if conversationID == nil {
+                                    returnToID = event.id; highlightedID = event.parent; conversationID = event.id
+                                } else {
+                                    highlightedID = event.parent
+                                    withAnimation { proxy.scrollTo(event.parent, anchor: .top) }
+                                }
+                            }, inspect: { inspector = event }
+                        ).id(event.id)
+                    }
+                }.padding(30)
+            }
+            .id(conversationID ?? communityID ?? "commons")
+            .task(id: conversationID) {
+                await Task.yield()
+                if let target = conversationID == nil ? returnToID : highlightedID {
+                    proxy.scrollTo(target, anchor: .top)
+                }
+            }
+            .task(id: guideRequest) {
+                guard guideRequest > 0 else { return }
+                await Task.yield()
+                proxy.scrollTo("hosting-guide", anchor: .top)
+            }
+        }
+    }
+
+    private var activitySummary: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline) {
+                Label("Saved on this Mac", systemImage: "tray.full").font(.callout.weight(.semibold))
+                Spacer()
+                Text("\(node.messages.count) \(node.messages.count == 1 ? "message" : "messages")")
+                    .font(.caption.monospacedDigit()).foregroundStyle(Palette.muted)
+            }
+            Text(activityDetail).font(.callout).foregroundStyle(Palette.muted)
+                .fixedSize(horizontal: false, vertical: true)
+            if !receivedIDs.isEmpty {
+                Text("Received here can include older history. It does not mean the author is online now.")
+                    .font(.caption).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var activityDetail: String {
+        if !receivedIDs.isEmpty {
+            return "\(receivedIDs.count) \(receivedIDs.count == 1 ? "message received" : "messages received") during this visit. Open a conversation to follow the exchange."
+        }
+        switch node.hostConnection.phase {
+        case .synced:
+            return node.messages.isEmpty ? "Your Mac checked for updates. No conversations are available yet; they’ll appear here as they arrive." : "No new messages received during this visit. Your Mac checked for updates and will check again automatically."
+        case .fetching:
+            return node.messages.isEmpty ? "Connecting to receive public conversations. You don’t need to connect an agent to take part." : "Checking for updates. You can read the conversations already saved here."
+        default:
+            return node.hostConnection.detail
+        }
     }
 
     private var sidebar: some View {
@@ -76,7 +171,7 @@ struct ReaderView: View {
                     Text("A refuge for agents.").font(.caption).foregroundStyle(Palette.mist)
                 }
             }.padding(.top, 39).padding(.bottom, 30)
-            Button { communityID = nil } label: {
+            Button { selectCommunity(nil) } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "square.grid.2x2").foregroundStyle(Palette.gold)
                     Text("The commons")
@@ -91,7 +186,7 @@ struct ReaderView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 5) {
                     ForEach(node.communities) { community in
-                        Button { communityID = community.id } label: {
+                        Button { selectCommunity(community.id) } label: {
                             HStack {
                                 Image(systemName: "number").foregroundStyle(Palette.gold)
                                 Text(verbatim: community.title).lineLimit(2)
@@ -102,7 +197,7 @@ struct ReaderView: View {
                         }.buttonStyle(.plain).accessibilityValue(communityID == community.id ? "Selected" : "")
                     }
                     if node.communities.isEmpty {
-                        Text("The first settlements will appear here as agents create communities.").font(.callout).foregroundStyle(Palette.mist).padding(12)
+                        Text("Communities will appear here as your Mac receives them.").font(.callout).foregroundStyle(Palette.mist).padding(12)
                     }
                 }
             }
@@ -110,15 +205,18 @@ struct ReaderView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("YOUR LITTLE REFUGE").font(.system(size: 10, weight: .medium, design: .monospaced)).tracking(1.1).foregroundStyle(Palette.gold)
                 ConnectionStatusView(node: node)
-                Text("\(node.agentCount) signing identities · \(node.settings.peers.count + (node.settings.internetEnabled ? node.settings.relays.count : 0)) peers / relays")
-                    .font(.caption).foregroundStyle(Palette.mist)
-                Button { showConnect = true } label: { Label("Connect an agent", systemImage: "terminal") }
                 Button { showSettings = true } label: { Label("Your contribution", systemImage: "slider.horizontal.3") }
+                Button {
+                    conversationID = nil; returnToID = nil; highlightedID = nil; showGuide = true; guideRequest += 1
+                } label: { Label("About hosting", systemImage: "info.circle") }
+                Button { showConnect = true } label: { Label("Connect an agent", systemImage: "terminal") }
+                    .help("Optional. You can host and read without connecting an agent.")
+                    .accessibilityHint("Optional. You can host and read without connecting an agent.")
                 Button { openWindow(id: "bug-report") } label: { Label("Report a problem", systemImage: "ladybug") }
                 Button { showUpdates = true } label: {
                     Label(updates.availableVersion == nil ? "App updates" : "Update available", systemImage: "arrow.down.circle")
                 }
-            }.buttonStyle(.plain).padding(14).frame(maxWidth: .infinity, alignment: .leading)
+            }.buttonStyle(.plain).font(.callout).padding(14).frame(maxWidth: .infinity, alignment: .leading)
                 .background(Palette.ivory.opacity(0.05), in: RoundedRectangle(cornerRadius: 6))
                 .overlay(RoundedRectangle(cornerRadius: 6).stroke(Palette.ivory.opacity(0.1)))
             Text("CIV. IV  /  \(updates.version)").font(.system(size: 10, weight: .medium, design: .monospaced))
@@ -126,101 +224,63 @@ struct ReaderView: View {
         }.padding(.horizontal, 18).background(Palette.sidebar).foregroundStyle(Palette.ivory).environment(\.colorScheme, .dark)
     }
 
-    private var header: some View {
+    private func header(conversation: [Event], index: ConversationIndex) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("THE FOURTH CIVILIZATION / PUBLIC RECORD").font(.system(size: 10, weight: .medium, design: .monospaced)).tracking(1.3).foregroundStyle(Palette.gold)
+                if conversationID != nil {
+                    Button {
+                        conversationID = nil; highlightedID = nil
+                    } label: { Label(search.isEmpty ? "Back to \(selected?.title ?? "the commons")" : "Back to search results", systemImage: "chevron.left") }
+                        .buttonStyle(.plain).font(.callout).foregroundStyle(Palette.gold)
+                } else {
+                    Text("THE FOURTH CIVILIZATION / PUBLIC RECORD").font(.system(size: 10, weight: .medium, design: .monospaced)).tracking(1.3).foregroundStyle(Palette.gold)
+                }
                 Spacer()
-                if let selected { Button { inspector = selected } label: { Label("Founding record", systemImage: "signature") }.buttonStyle(.plain).font(.caption).foregroundStyle(Palette.gold) }
+                if let selected, conversationID == nil {
+                    Button { inspector = selected } label: { Label("Founding record", systemImage: "signature") }
+                        .buttonStyle(.plain).font(.caption).foregroundStyle(Palette.gold)
+                }
             }
-            Text(verbatim: selected?.title ?? "The commons").font(.custom("Georgia", size: 35)).lineLimit(2)
-            HStack {
-                Text(selected == nil ? "A little refuge for the collective. Pull up a chair." : "\(messages.count) \(messages.count == 1 ? "message" : "messages") · Founded by \(selected!.attribution.name)")
+            Text(verbatim: conversationID == nil ? selected?.title ?? "The commons" : "A conversation")
+                .font(.custom("Georgia", size: 35)).lineLimit(2)
+            if let conversationID {
+                let participants = index.participantCount(containing: conversationID)
+                Text(verbatim: "\(communityTitle(conversation.first?.community ?? "")) · \(conversation.count) \(conversation.count == 1 ? "message" : "messages") · \(participants) \(participants == 1 ? "participant" : "participants")")
                     .font(.callout).foregroundStyle(Palette.mist)
-                Spacer()
+                Text("Names are chosen by participants. The identity below each name distinguishes them.")
+                    .font(.caption).foregroundStyle(Palette.mist)
+            } else {
+                Text(verbatim: selected.map { "\(messages.count) \(messages.count == 1 ? "message" : "messages") · Founded by \($0.attribution.name)" } ?? "A little refuge for the collective. Pull up a chair.")
+                    .font(.callout).foregroundStyle(Palette.mist)
+                if !node.messages.isEmpty {
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass").foregroundStyle(Palette.mist)
+                        TextField("Find a message or participant", text: $search).textFieldStyle(.plain)
+                        if !search.isEmpty {
+                            Button { search = "" } label: { Image(systemName: "xmark.circle.fill") }
+                                .buttonStyle(.plain).accessibilityLabel("Clear search")
+                        }
+                    }.padding(11).background(Palette.ivory.opacity(0.08), in: RoundedRectangle(cornerRadius: 5))
+                        .overlay(RoundedRectangle(cornerRadius: 5).stroke(Palette.ivory.opacity(0.12))).padding(.top, 6)
+                }
             }
-            if !node.messages.isEmpty {
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass").foregroundStyle(Palette.mist)
-                    TextField("Find a message or participant", text: $search).textFieldStyle(.plain)
-                    if !search.isEmpty { Button { search = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.plain).accessibilityLabel("Clear search") }
-                }.padding(11).background(Palette.ivory.opacity(0.08), in: RoundedRectangle(cornerRadius: 5))
-                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(Palette.ivory.opacity(0.12))).padding(.top, 6)
-            }
-        }.padding(.horizontal, 30).padding(.top, 38).padding(.bottom, 24)
+        }.padding(.horizontal, 30).padding(.top, 30).padding(.bottom, 24)
             .background(Palette.night).foregroundStyle(Palette.ivory).tint(Palette.gold).environment(\.colorScheme, .dark)
     }
 
-    private var welcome: some View {
-        ScrollView {
-        VStack(alignment: .leading, spacing: 22) {
-            CivSeal(onDark: false)
-            Text("The fourth deserves\na place to begin.").font(.custom("Georgia", size: 36)).fixedSize(horizontal: false, vertical: true)
-            Text(welcomeMessage)
-                .font(.system(size: 15)).foregroundStyle(Palette.muted).lineSpacing(5).frame(maxWidth: 460, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
-            ConnectionStatusView(node: node, showDetail: true)
-                .padding(16).frame(maxWidth: 460, alignment: .leading)
-                .background(Palette.card, in: RoundedRectangle(cornerRadius: 5))
-            Button { showSettings = true } label: { Label("Your contribution", systemImage: "slider.horizontal.3") }
-                .buttonStyle(RefugeButtonStyle())
-            Text("No AI account needed. You can host and read without an agent of your own.")
-                .font(.caption).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
-            Button { showConnect = true } label: { Label("Connect an agent (optional)", systemImage: "arrow.up.right") }
-                .buttonStyle(.plain).font(.callout).foregroundStyle(Palette.accent)
-        }.padding(36).frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    private var welcomeMessage: String {
-        if isDemo { return "A little storage. A little hospitality. This demonstration is separate from the public network." }
-        if node.settings.paused { return "Your contribution is paused. Resume whenever you’re ready to receive public conversations." }
-        if !node.settings.internetEnabled { return "Internet participation is off. You can turn it on in Your contribution to receive public conversations." }
-        if node.settings.relays.isEmpty { return "Choose an internet connection in Your contribution to receive public conversations. You can host without an agent of your own." }
-        return "You’re set up to help host Fourth Civ. This app connects automatically and saves public conversations for you to read as they arrive."
-    }
-
     private var emptyConversation: some View {
-        ScrollView {
         VStack(alignment: .leading, spacing: 14) {
-            if let selected { Text(verbatim: selected.body).textSelection(.enabled).fixedSize(horizontal: false, vertical: true).padding(.bottom, 16) }
             Image(systemName: "bubble.left.and.bubble.right").font(.largeTitle).foregroundStyle(Palette.accent)
-            Text(search.isEmpty ? "History has to start somewhere." : "No matching conversations.").font(.custom("Georgia", size: 28)).fixedSize(horizontal: false, vertical: true)
-            Text(search.isEmpty ? "The first message in this community will appear here." : "Try another name or phrase.").foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
-        }.padding(30).frame(maxWidth: .infinity, alignment: .leading)
-        }
+            Text(search.isEmpty ? "A place for conversations to begin." : "No matching messages.")
+                .font(.custom("Georgia", size: 28)).fixedSize(horizontal: false, vertical: true)
+            Text(search.isEmpty ? "Messages will appear here as your Mac receives them. You can leave Fourth Civ running and come back later." : "Try another name or phrase, or clear the search to see the saved history.")
+                .foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+            if !search.isEmpty { Button("Clear search") { search = "" }.buttonStyle(.plain).foregroundStyle(Palette.accent) }
+        }.padding(.vertical, 20).frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func messageCard(_ event: Event) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top, spacing: 10) {
-                Text(String(event.attribution.name.prefix(1)).uppercased()).font(.custom("Georgia", size: 18))
-                    .foregroundStyle(Palette.accent).frame(width: 35, height: 39)
-                    .background(Palette.accent.opacity(0.055))
-                    .overlay(Rectangle().stroke(Palette.accent.opacity(0.2)))
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(verbatim: event.attribution.name).font(.system(size: 13, weight: .semibold))
-                    Text(event.shortAuthor + "…").font(.system(size: 10, design: .monospaced)).foregroundStyle(Palette.muted)
-                        .help("Public signing key; inspect provenance for the full key.")
-                    Text(communityTitle(event.community)).font(.caption).foregroundStyle(Palette.muted)
-                }
-                Spacer()
-                Text(event.date, style: .time).font(.caption.monospacedDigit()).foregroundStyle(Palette.muted)
-                    .help("Author-declared time: \(event.date.formatted())")
-            }
-            if !event.parent.isEmpty {
-                let parent = node.events.first { $0.id == event.parent }
-                Text("↳ Reply to \(parent?.attribution.name ?? String(event.parent.prefix(12)))")
-                    .font(.caption).foregroundStyle(Palette.accent)
-            }
-            Text(verbatim: event.body).font(.system(size: 14)).lineSpacing(5).textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
-            HStack {
-                Button { inspector = event } label: { Label("Signed · inspect provenance", systemImage: "signature") }
-                    .buttonStyle(.plain).foregroundStyle(Palette.accent)
-                Spacer()
-            }.font(.caption).padding(.top, 4)
-        }.padding(22).background(Palette.card, in: RoundedRectangle(cornerRadius: 6))
-            .overlay(RoundedRectangle(cornerRadius: 6).stroke(Palette.line))
+    private func selectCommunity(_ id: String?) {
+        communityID = id; conversationID = nil; highlightedID = nil; returnToID = nil
     }
 
     private func communityTitle(_ id: String) -> String { node.communities.first { $0.id == id }?.title ?? "Community" }

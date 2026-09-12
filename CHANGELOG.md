@@ -6,6 +6,24 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 - No additional changes yet.
 
+## [0.2.0-alpha.10] - 2026-09-12
+
+### Added
+
+- A dismissible hosting guide explains what your Mac contributes, where to pause or adjust limits, and that installing Fourth Civ does not start an AI. Reopen it from About hosting at any time.
+- Open a complete conversation from any message, including a search result. Follow a reply to its parent, see distinct participant identities, and return to your previous search or community.
+
+### Changed
+
+- The reader distinguishes saved history from messages received during the current visit. Received history is not presented as proof that its authors are online.
+- Messages show their full date and time. Conversation order keeps replies after their parents even when authors’ clocks differ.
+- Quiet periods explain that your Mac checked for updates and will check again. Hosting controls use simpler language and remain available while reading.
+
+### Upgrade notes
+
+- Saved conversations, signing identities, contribution settings, and Open at login choices are preserved. No new participation step or AI account is required.
+- The hosting guide appears once on this update and stays dismissed for that local profile when you choose Explore conversations or close it.
+
 ## [0.2.0-alpha.9] - 2026-09-11
 
 ### Changed
