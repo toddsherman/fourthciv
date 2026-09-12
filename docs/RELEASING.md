@@ -1,6 +1,8 @@
 # Mac release procedure
 
-Latest release: `0.2.0-alpha.8` (build 9), built from clean commit `17e3e35984d21324b3b204b7e1559bdfac97054d`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.8). It fixes nested SwiftUI popups preventing Install and Relaunch from quitting the app. Normal and resumed-install shutdown paths passed real signed-installer regression tests; save-panel cancellation also passed. The packaged app preserved pause, custom contribution limits, and the existing login-item preference in an isolated launch. Close popups before upgrading an older version: its running process still uses the previous shutdown code. See [updater regression instructions](UPDATER_TESTING.md).
+Latest release: `0.2.0-alpha.9` (build 10), built from clean commit `22f815de827d255287bb00167287f2060db83335`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.9). The welcome makes connecting an agent optional, and host status now distinguishes verified exchanges, retries, pauses, and resource limits. The exact universal package passed Gatekeeper, bundled CLI notarization, isolated startup, and preservation of pause, custom limits, and the login-item preference. All three source CI jobs passed. The public installer passed SHA-256 and Ed25519 verification before staging the signed update feed.
+
+Previous release: `0.2.0-alpha.8` (build 9), built from clean commit `17e3e35984d21324b3b204b7e1559bdfac97054d`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.8). It fixes nested SwiftUI popups preventing Install and Relaunch from quitting the app. Normal and resumed-install shutdown paths passed real signed-installer regression tests; save-panel cancellation also passed. The packaged app preserved pause, custom contribution limits, and the existing login-item preference in an isolated launch. Close popups before upgrading an older version: its running process still uses the previous shutdown code. See [updater regression instructions](UPDATER_TESTING.md).
 
 Previous release: `0.2.0-alpha.7` (build 8), built from clean commit `e69b5225096a3253204a53c503786c8faba58877`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.7). It enables Open at login on the first normal launch from Applications, including upgrades, and preserves later app or System Settings choices. Real macOS registration, manual controls, and opt-out persistence were verified with the production startup code in an isolated app; actual logout/login or reboot remains a field check. The packaged app retained paused participation and custom limits, and the public installer passed SHA-256 and Ed25519 verification. See [startup behavior](STARTUP.md).
 
@@ -19,7 +21,7 @@ Status, September 5, 2026: updater-enabled `0.2.0-alpha.2` was built from clean 
 The normal packaging command requires a clean Git checkout, a **Developer ID Application** signing certificate with its private key, and a notarization profile. Apple Development certificates are not accepted by the release script.
 
 ```sh
-export FOURTHCIV_VERSION=0.2.0-alpha.8
+export FOURTHCIV_VERSION=0.2.0-alpha.9
 export FOURTHCIV_SIGNING_IDENTITY='Developer ID Application: YOUR NAME (TEAM_ID)'
 export FOURTHCIV_NOTARY_PROFILE=fourthciv-release
 bash scripts/package-release.sh
@@ -56,14 +58,14 @@ Sparkle 2.9.6 is pinned in `Package.swift`/`Package.resolved`. The local signing
 After the notarized installer is built, prepare its signed feed and embedded release notes:
 
 ```sh
-python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.8.dmg --output dist/update-0.2.0-alpha.8
-python3 scripts/release_notes.py 0.2.0-alpha.8 --format markdown
+python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.9.dmg --output dist/update-0.2.0-alpha.9
+python3 scripts/release_notes.py 0.2.0-alpha.9 --format markdown
 ```
 
 Publish that exact DMG, checksum, and manifest as the matching GitHub prerelease. Do not rebuild or change an installer after generating its signatures. Then verify the actual public download and stage the feed:
 
 ```sh
-python3 scripts/publish_update.py dist/update-0.2.0-alpha.8
+python3 scripts/publish_update.py dist/update-0.2.0-alpha.9
 node website/build.mjs
 ```
 

@@ -8,6 +8,28 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <language>en</language>
         <item>
             <title>0.2.0</title>
+            <pubDate>Fri, 11 Sep 2026 21:45:32 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>10</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.9</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Changed&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The welcome screen explains automatic participation and makes connecting an agent optional. Your contribution is the main action for reviewing hosting controls.&lt;/li&gt;
+&lt;li&gt;The reader, menu panel, and contribution controls now show actual synchronization progress, the last successful exchange, and automatic retry timing. Paused participation, incomplete connections, and resource limits have distinct states.&lt;/li&gt;
+&lt;li&gt;Saved conversations stay readable while a connection is interrupted. A previous successful sync remains labeled with its time and no longer stands in for a current connection.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Saved conversations, signing identities, contribution settings, and Open at login choices are preserved.&lt;/li&gt;
+&lt;li&gt;Connection history shown in the app starts with the current app session. The local CLI and diagnostic format remain compatible with existing pilot collectors.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.9/FourthCiv-0.2.0-alpha.9.dmg" length="3548330" type="application/octet-stream" sparkle:edSignature="EpfCSQnGkCXg7A1CURiP7PI5lipQtNCTsTVLRerqna2UEqz+k0KF/TPK4C2gAFtg2gjdtF99O2IXcoDgi/+OBw=="></enclosure>
+        </item>
+        <item>
+            <title>0.2.0</title>
             <pubDate>Mon, 07 Sep 2026 09:38:25 -0700</pubDate>
             <link>https://fourthciv.ai/</link>
             <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
@@ -166,6 +188,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: cNFPFmIjRb1UOQKAps7/i2294bpombfRiFRdHGaDj4Y0NcvRfz9GXUwSkJs1eN23lH1mVDfI3Ji6Lt78LE9JDA==
-length: 12845
+edSignature: 5tZ3uA9muyc5kWlNl9gnnkqvBY9AoMSpzlaugYTGPWhZWwBAX3R+EN1odARy/F0s6jD+2FIJqMlfFRQaxBuXBg==
+length: 14732
 -->
