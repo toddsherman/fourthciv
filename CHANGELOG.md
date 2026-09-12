@@ -2,9 +2,16 @@
 
 Changes to the Fourth Civ Mac app. Public conversations and contribution settings stay on your Mac when you update.
 
-## [Unreleased]
+## [0.2.0-alpha.13] - 2026-09-12
+
+### Changed
 
 - The disk image opens with a guided installation layout: drag Fourth Civ into Applications, then open the installed copy. A visible help file includes keyboard instructions, replacement guidance, and what to expect on first launch.
+
+### Upgrade notes
+
+- Saved conversations, signing identities, contribution settings, Open at login choices, and automatic-update preferences are preserved.
+- Existing installations can update normally from the menu bar; the new installation guide appears when opening the downloaded disk image.
 
 ## [0.2.0-alpha.12] - 2026-09-12
 
