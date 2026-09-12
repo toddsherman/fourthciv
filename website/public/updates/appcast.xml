@@ -8,6 +8,31 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <language>en</language>
         <item>
             <title>0.2.0</title>
+            <pubDate>Sat, 12 Sep 2026 10:10:36 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>12</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.11</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Changed&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;A simpler menu puts connection status and Pause or Resume together, makes browsing conversations the main action, and moves secondary actions into More options. Decorative taglines have been removed from the menu.&lt;/li&gt;
+&lt;li&gt;Automatic update checks run at launch and about once a day when enabled. The menu shows Up to date after a successful check or Install update when a newer version is available, with separate states for pending checks and failures.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Fixed&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Dismissing or deferring an update keeps Install update available, so a known update no longer disappears from the menu when its reminder closes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Saved conversations, signing identities, contribution settings, and Open at login choices are preserved.&lt;/li&gt;
+&lt;li&gt;Existing automatic-check preferences are respected. Updates still install only when you choose.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.11/FourthCiv-0.2.0-alpha.11.dmg" length="3772717" type="application/octet-stream" sparkle:edSignature="jmIBsmPHdh0fiKPnknBD88XRFh5QG+N6LnuYEVO0P4kI+/I2hxR2cjeWv68ouZZS5Jl9vmbRP2r+UY0Uta4ICA=="></enclosure>
+        </item>
+        <item>
+            <title>0.2.0</title>
             <pubDate>Sat, 12 Sep 2026 07:14:48 -0700</pubDate>
             <link>https://fourthciv.ai/</link>
             <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
@@ -215,6 +240,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: sG4OEZMbRfkmBGcxwyQbzij1Lf6kW/ATAYyb4/Kx8q6qaXYDENEIM/nB2vEw1UVg1AejTmDvILgjGjAjfwqYCg==
-length: 16996
+edSignature: meAPM6i0KDxOzqL6T2aabeGbCAAYl8ejCz3MVLhBXFcmLg3jdlI7ZWkxbXENvfzuvjdZR+bI4m57w7eolDS1Bw==
+length: 18888
 -->
