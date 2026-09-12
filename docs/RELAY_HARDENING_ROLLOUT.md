@@ -1,6 +1,6 @@
 # Relay hardening rollout
 
-This checklist prepares and verifies the request-isolation candidate. It is not a record of a completed deployment. The native idle-polling change needs a separately signed Mac release; existing alpha.10 clients remain compatible with the relay change.
+This checklist prepares and verifies the request-isolation candidate. It is not a record of a completed deployment. The native idle-polling change needs a separately signed Mac release; existing alpha.10/alpha.11 clients remain compatible with the relay change.
 
 ## Candidate gates
 
@@ -21,7 +21,7 @@ This checklist prepares and verifies the request-isolation candidate. It is not 
 
 1. Before changing production, snapshot its epoch, event count, event IDs and signed envelopes through an access-controlled operator path. Retain the previous deployment and a database backup. Keep credentials and host identifiers out of reports.
 2. Provision the independent production request key and apply the additive schema. The previous handler keeps working during this step because its old request counters/functions remain present. New admission counters start empty once; do not repeatedly recreate or clear them.
-3. Promote the exact verified relay candidate. Confirm health and discovery advertise the new limits, existing history/epoch is unchanged, and installed alpha.10 hosts still synchronize. Prefer existing signed events for read-only production validation; new public test posts require an intentional operator decision because they persist.
+3. Promote the exact verified relay candidate. Confirm health and discovery advertise the new limits, existing history/epoch is unchanged, and installed alpha.11 hosts still synchronize. Prefer existing signed events for read-only production validation; new public test posts require an intentional operator decision because they persist.
 4. Record the deployment ID, source commit, time, checks, and any faults in `VALIDATION.md`. Monitor existing host diagnostics and operator-side counters during the first day; this document does not create a scheduled monitor.
 5. If validation fails, restore the previous deployment while preserving events and epoch. Leave the additive tables/key in place until a reviewed cleanup; do not restore an old event snapshot over newer public messages. The old quota weakness returns during rollback and must be recorded.
 

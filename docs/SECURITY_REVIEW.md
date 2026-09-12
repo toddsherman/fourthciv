@@ -1,6 +1,6 @@
 # Pre-friend security review
 
-Review date: September 12, 2026. Baseline: `35dda6c5e521bcf74f9940414f3bb55b399097ab` (alpha.10 source), followed by the local pre-friend hardening candidate. This is a bounded source review and isolated adversarial testing, not an independent penetration test or a guarantee that vulnerabilities are absent.
+Review date: September 12, 2026. Baseline: `35dda6c5e521bcf74f9940414f3bb55b399097ab` (alpha.10 source), followed by the local pre-friend hardening candidate, subsequently rebased onto the published alpha.11 record at `dd67901`. This is a bounded source review and isolated adversarial testing, not an independent penetration test or a guarantee that vulnerabilities are absent.
 
 **Deployment status:** changes and tests in the hardening candidate do not change the public relay, database, installed app, or signed installer. Production relay remediation requires a separately verified deployment. GitHub private vulnerability reporting has been enabled and independently verified. No live flooding, public test posts, credential inspection, production migration, or history reset was performed for this review.
 
@@ -77,15 +77,15 @@ python3 scripts/check_secrets.py --include-untracked --history
 
 All eight scanner tests passed. They exercise private-key blocks, common GitHub/AWS/Slack/OpenAI token forms, credential-bearing database URLs, literal base64 agent private keys, sensitive environment assignments, output redaction, current-file and historical detection, and safe public-key/environment-reference/explicit-placeholder cases. Repository tests use temporary repositories and synthetic data; an ignored synthetic credential file stays outside the scan.
 
-The recorded candidate run found **zero suspected secrets and zero scan errors**: 134 current text files scanned, three current binary files skipped; 445 historical text blobs scanned from 453 reachable blobs, with seven binary and one over-2-MB blob skipped. These counts describe that snapshot; later changes require another run. No sensitive credential/identity filename candidates were present in the tracked baseline, excluding the documented `.env.example` template.
+The recorded candidate run found **zero suspected secrets and zero scan errors**: 137 current text files scanned, three current binary files skipped; 477 historical text blobs scanned from 485 reachable blobs, with seven binary and one over-2-MB blob skipped. These counts describe that snapshot; later changes require another run. No sensitive credential/identity filename candidates were present in the tracked baseline, excluding the documented `.env.example` template.
 
 This is a targeted pattern scan, not proof that no secrets ever existed. It does not inspect ignored files, actual user credentials, symlink targets, unreachable objects, remote refs absent locally, binary payloads, or provider-side build logs. A public verification key or public signing certificate is not a private credential. Keep local environment files, generated outputs, identities, and private signing files out of Git. Ignore rules reduce accidental inclusion; they do not sanitize committed history.
 
 ## Validation and release gate
 
-The baseline quota proof above ran entirely against an isolated PostgreSQL-compatible engine. Existing tests already cover signature tampering, replay, dependency checks, malformed HTTP framing, browser access restrictions, storage failures, persisted budgets, and relay recovery. The hardening candidate should additionally exercise the real outbound transport, source-quota isolation, spoofed-header rejection, equivalent IP encodings, concurrent limit checks, counter expiry, and boundary-day behavior.
+The baseline quota proof above ran entirely against an isolated PostgreSQL-compatible engine. Existing tests already cover signature tampering, replay, dependency checks, malformed HTTP framing, browser access restrictions, storage failures, persisted budgets, and relay recovery. The hardening candidate additionally exercises the real outbound transport, source-quota isolation, spoofed-header rejection, equivalent IP encodings, concurrent limit checks, counter expiry, and boundary-day behavior.
 
-Record exact candidate test commands and outcomes in [validation](VALIDATION.md) when the whole run completes. A passing isolated test does not verify Vercel/Neon configuration, preview-to-production migration, an installed friend Mac, or the signed artifact they will receive.
+Candidate test commands and outcomes are recorded in [validation](VALIDATION.md). A passing isolated test does not verify Vercel/Neon configuration, preview-to-production migration, an installed friend Mac, or the signed artifact they will receive.
 
 Before enabling a friend against a changed relay, verify the required secret and schema in an isolated preview, confirm source metadata cannot be overridden, and check that normal read/sync remains available while one source is limited. Promote only a reviewed candidate and verify discovery/read behavior afterward. Keep the installed client and relay deployment versions identifiable in the test record.
 
