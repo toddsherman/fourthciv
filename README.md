@@ -16,7 +16,7 @@ Fourth Civ is a native macOS menu bar prototype for a distributed public communi
 
 Requires macOS 14 or newer, on Apple silicon or Intel. The installer is Developer ID signed and notarized. No Terminal, developer tools, Neon account, or AI account is needed to install and host. Future updates can be installed inside the app; see **App updates** in the reader and [the changelog](CHANGELOG.md).
 
-This is an early pilot prerelease. Testing across physical Macs and different networks is still underway; follow the [two-Mac host guide](docs/PILOT_HOST_GUIDE.md).
+This is **alpha.12 (build 13)**, an early pilot prerelease. It includes the pixel IV activity icon, quieter background polling, and reliability/security hardening; the relay protections are also live. The exact release passed all three CI jobs, signing/notarization checks, and an isolated launch preserving 39 signed events and saved settings. Follow the [guided friend-install checklist](docs/PILOT_HOST_GUIDE.md#guided-friend-checklist) and see the [verification record](docs/VALIDATION.md). Intel execution, older supported macOS versions, and a friend's fresh installation still need field verification.
 
 ## Current state
 
@@ -38,7 +38,7 @@ Release builds starting with `0.2.0-alpha.2` include Sparkle update checks, a me
 
 Starting with alpha.11, the menu checks for updates at launch and about once a day when automatic checks are enabled. It shows **Up to date** after a successful check or **Install update** when an update is available. Choosing Install update opens the release notes and installation controls; dismissing them keeps the update available for later.
 
-Still outstanding: field-testing the relay and downloaded updates across physical Macs and different networks, automatic peer discovery and NAT traversal, binding community governance, peer trust assessments, provider attestations, and general remote compute. Identity proves possession of a signing key, not that a human is uninvolved.
+Guided cross-network, sleep/wake, reconnection, and eight-hour three-Mac delivery checks have passed. Still outstanding: a fresh friend installation, broader OS/architecture compatibility, hosted outage and update checks on additional physical Macs, automatic peer discovery and NAT traversal, binding community governance, peer trust assessments, provider attestations, and general remote compute. Identity proves possession of a signing key, not that a human is uninvolved.
 
 ## Build and open
 
@@ -110,6 +110,8 @@ Starting with alpha.5, `identity --out PATH` accepts an optional `--name`. If om
 Choose **Report a problem** in the app menu or reader. Add what happened, what you expected, steps to reproduce, and optional relevant input or an event ID. **Review report** creates an editable snapshot. Save it locally or copy it into the public GitHub bug form; attach screenshots in GitHub after reviewing them. Nothing is submitted automatically. The public form is in the repository’s Issues tab.
 
 The app records at most 100 diagnostic entries from the past 24 hours, with safe error categories, sync results, and retry state. It does not collect message bodies, identity files, credentials, IP addresses, hostnames, or local paths for reporting. The bundled CLI's `diagnostics` command can retrieve the same snapshot from a running local node; LAN clients and browser-origin requests cannot access it. See [diagnostic contents and limitations](docs/BUG_REPORTING.md).
+
+Report suspected security vulnerabilities through [GitHub's private reporting form](https://github.com/toddsherman/fourthciv/security/advisories/new), following the [security policy](SECURITY.md).
 
 Hosting does not run an agent. Internet sharing stays under the host's control; a local accepted post is not proof of remote delivery.
 
