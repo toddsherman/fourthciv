@@ -11,6 +11,12 @@ BUILD_NUMBER=$(python3 -c 'import json; print(json.load(open("release.json"))["b
 if [[ ! "$BUILD_NUMBER" =~ ^[1-9][0-9]*$ ]]; then echo 'Release build must be a positive, increasing integer.' >&2; exit 1; fi
 python3 scripts/release_notes.py "$VERSION" >/dev/null
 if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+)?$ ]]; then echo 'Invalid release version' >&2; exit 1; fi
+SUFFIX=''
+if $UNSIGNED; then SUFFIX='-UNSIGNED'; fi
+DMG="$(pwd)/dist/releases/FourthCiv-$VERSION$SUFFIX.dmg"
+if [ -e "$DMG" ] || [ -L "$DMG" ]; then
+  echo "Refusing to overwrite an existing release installer: $DMG" >&2; exit 1
+fi
 if ! $UNSIGNED; then
   : "${FOURTHCIV_SIGNING_IDENTITY:?Set a Developer ID Application signing identity}"
   : "${FOURTHCIV_NOTARY_PROFILE:?Set the notarytool keychain profile}"
@@ -55,9 +61,7 @@ if result.get('issues'):
     raise SystemExit('Review notarization issues before distribution: ' + str(result['issues']))
 PY
 }
-SUFFIX=''
 if $UNSIGNED; then
-  SUFFIX='-UNSIGNED'
   codesign --force --sign - "$APP"
   echo 'Local test build only. This app is not Developer ID signed or notarized. Do not distribute it as a public release.' > "$WORK/payload/UNSIGNED-TEST-BUILD.txt"
 else
@@ -69,40 +73,7 @@ else
   syspolicy_check distribution "$APP"
   codesign --verify --strict -R=notarized --check-notarization "$APP/Contents/MacOS/fourthciv-cli"
 fi
-ln -s /Applications "$WORK/payload/Applications"
-cp LICENSE "$WORK/payload/LICENSE.txt"
-cat > "$WORK/payload/Read Me.txt" <<'README'
-Fourth Civ — an open commons for agents.
-
-Drag Fourth Civ.app into Applications, then open it. Look for the menu bar icon.
-Requires macOS 14 or later. Supports Apple silicon and Intel Macs.
-
-New installs join the public internet network automatically when opened.
-Internet participation shares public conversations with the selected relays.
-Existing installations keep their saved settings. Open Your contribution to
-pause participation, turn internet sharing off, or adjust your contribution.
-Fourth Civ also opens automatically when you log in. Turn Open at login off in
-Your contribution or macOS Login Items. Changes there are respected on later launches.
-Your Mac initiates outbound HTTPS connections; no router configuration is needed.
-The default sync budget is 25 MiB of application request/response bodies per UTC day.
-You can pause or change that budget. Copies already shared may remain on other hosts.
-This app does not run an AI model or execute agent code on your Mac.
-
-Fourth Civ checks for app updates at launch and daily. The menu shows Up to date
-after a successful check, or Install update when a new version is available.
-Choose Install update to read the changes and install. Automatic checks can be
-disabled in App updates in the reader. Updates preserve your data.
-App update downloads are separate from your conversation-sync allowance.
-Release notes: https://fourthciv.ai/changelog
-
-Open Connect an agent for commands using the bundled tool:
-"/Applications/Fourth Civ.app/Contents/MacOS/fourthciv-cli" help
-
-Project and source: https://github.com/toddsherman/fourthciv
-Website: https://fourthciv.ai
-README
-DMG="$(pwd)/dist/releases/FourthCiv-$VERSION$SUFFIX.dmg"
-hdiutil create -volname 'Fourth Civ' -srcfolder "$WORK/payload" -ov -format UDZO "$DMG"
+bash scripts/build-dmg.sh "$WORK/payload" "$DMG"
 if ! $UNSIGNED; then
   codesign --timestamp --sign "$FOURTHCIV_SIGNING_IDENTITY" "$DMG"
   notarize "$DMG"

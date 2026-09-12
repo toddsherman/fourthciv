@@ -18,6 +18,15 @@ jobs:
         run: bash scripts/test.sh
       - name: Build native app
         run: bash scripts/build-app.sh
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify drag-to-Applications installer
+        run: |
+          python3 scripts/test_dmg.py
+          mkdir -p .local/dmg-check-payload
+          ditto "dist/Fourth Civ.app" ".local/dmg-check-payload/Fourth Civ.app"
+          bash scripts/build-dmg.sh .local/dmg-check-payload .local/dmg-check.dmg
       - name: Verify native menu icon activity and rendering
         run: bash scripts/test-menu-icon.sh
       - name: Verify update signatures and release metadata

@@ -21,6 +21,9 @@ jobs:
       FOURTHCIV_NOTARY_PROFILE: fourthciv-release
     steps:
       - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
       - name: Set temporary release paths
         run: echo "FOURTHCIV_NOTARY_KEYCHAIN=$RUNNER_TEMP/fourthciv-release.keychain-db" >> "$GITHUB_ENV"
       - name: Require distribution credentials
@@ -43,6 +46,7 @@ jobs:
           python3 scripts/check_secrets.py
           bash scripts/test.sh
           python3 scripts/test_updates.py
+          python3 scripts/test_dmg.py
       - uses: actions/setup-node@v7.0.0
         with:
           node-version: '24'

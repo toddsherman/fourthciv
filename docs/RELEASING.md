@@ -24,6 +24,10 @@ Status, September 5, 2026: updater-enabled `0.2.0-alpha.2` was built from clean 
 
 `bash scripts/package-release.sh --unsigned` builds optimized Apple silicon and Intel executables, combines both into universal binaries, and creates an explicitly named `UNSIGNED.dmg` in `dist/releases`. This is a local packaging test, with an unsigned-build notice. It is not a public download and must not be presented as passing Gatekeeper.
 
+Disk-image packaging requires Python 3.10 or later. Set `FOURTHCIV_DMG_PYTHON` to a suitable interpreter if it is not in PATH. The helper creates a build-only virtual environment under `.build/dmg-tools` and installs hash-pinned `dmgbuild` dependencies; these are not included in the app. CI supplies Python 3.12. Finder view metadata is written directly, without controlling Finder or requesting Automation permission. See the [dmgbuild settings reference](https://dmgbuild.readthedocs.io/en/latest/settings.html).
+
+The installer layout is defined in `Resources/DMG/layout.json`, with artwork rendered at standard and Retina resolutions by `scripts/make-dmg-background.swift`. It presents the app beside an Applications shortcut, visible drag/open instructions, and `Installation help.txt` for accessible text and keyboard steps. Use `bash scripts/build-dmg.sh PAYLOAD_DIRECTORY NEW_OUTPUT.dmg` to preview packaging around an already built `Fourth Civ.app`. The helper refuses to overwrite an existing image and checks the compressed image's mounted layout and app integrity before returning. Public installers must still pass the signing and notarization steps below.
+
 The normal packaging command requires a clean Git checkout, a **Developer ID Application** signing certificate with its private key, and a notarization profile. Apple Development certificates are not accepted by the release script.
 
 ```sh

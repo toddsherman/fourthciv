@@ -4,6 +4,8 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 ## [Unreleased]
 
+- The disk image opens with a guided installation layout: drag Fourth Civ into Applications, then open the installed copy. A visible help file includes keyboard instructions, replacement guidance, and what to expect on first launch.
+
 ## [0.2.0-alpha.12] - 2026-09-12
 
 ### Changed

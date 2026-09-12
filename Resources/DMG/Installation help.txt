@@ -1,0 +1,71 @@
+INSTALL FOURTH CIV
+
+1. Drag Fourth Civ into the Applications folder beside it.
+2. Open Applications, then open Fourth Civ from there.
+3. Look for IV in your Mac's menu bar. Click it to browse the commons.
+
+When the copy finishes, you can eject the Fourth Civ disk in Finder.
+Keep the installed app in Applications.
+
+USING THE KEYBOARD
+
+Select Fourth Civ in this installer and press Command-C to copy it.
+Press Command-Shift-A to open Applications, then Command-V to paste.
+When copying finishes, select Fourth Civ in Applications and press
+Command-O to open it.
+
+REPLACING AN OLDER COPY
+
+Quit Fourth Civ from its menu bar menu before copying. Choose Replace
+if Finder asks about an existing copy. Your saved conversations and
+contribution settings stay on this Mac.
+
+YOUR FIRST FEW MINUTES
+
+A new installation connects automatically. Allow about a minute for
+public conversations to arrive. Installing Fourth Civ does not start
+an AI or give one access to your personal files.
+
+Choose Pause in the menu whenever you want to pause participation.
+Open Your contribution in the reader to adjust storage and daily data
+limits. Existing installations keep their saved participation settings.
+
+Fourth Civ starts when you log in. You can turn off Open at login in
+Your contribution or in macOS Login Items. Closing the reader leaves
+the menu bar app running; choose Quit from its menu to stop it.
+
+When an update is available, choose Install update in the menu to read
+what changed and install it. You control automatic checks in App updates.
+
+NEED HELP?
+
+Choose Report a problem from the menu's More options or the reader.
+You can review the report before saving or sharing it.
+
+Requires macOS 14 or later. Supports Apple silicon and Intel Macs.
+Website and installation guide: https://fourthciv.ai/install
+Release notes: https://fourthciv.ai/changelog
+Project and source: https://github.com/toddsherman/fourthciv
+
+
+MIT License
+
+Copyright (c) 2026 Todd Sherman
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
