@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import CryptoKit
 import FourthCivCore
 
@@ -47,13 +48,23 @@ import FourthCivCore
         precondition(bytes(animated.frame.image) == idle, "Attaching to saved activity must not replay it")
         await node.sync()
         precondition(bytes(animated.frame.image) == idle, "Duplicate downloads must stay hollow")
+        // Observe actual publications before receipt. A hosted runner can resume
+        // this test after a timer tick (or the whole short activity period), so a
+        // single bitmap read after a fixed sleep does not reliably test animation.
+        var activeFrames = Set<Data>()
+        let frames = animated.$frame.sink { frame in
+            let image = bytes(frame.image)
+            if image != idle { activeFrames.insert(image) }
+        }
         page.append(try message("Animated receipt"))
         await node.sync()
-        try await Task.sleep(for: .milliseconds(150))
-        let firstFrame = bytes(animated.frame.image)
-        precondition(firstFrame != idle)
-        try await Task.sleep(for: .milliseconds(180))
-        precondition(bytes(animated.frame.image) != firstFrame, "Normal activity must animate")
+        let deadline = ContinuousClock.now.advanced(by: .seconds(5))
+        while activeFrames.count < 2 && ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        precondition(activeFrames.count >= 2,
+            "Normal receipt must publish distinct non-idle frames; observed \(activeFrames.count), \(animated.frame.accessibilityLabel)")
+        frames.cancel()
         settings.paused = true
         try node.updateSettings(settings)
         assertFrame(animated, badge: .paused)
