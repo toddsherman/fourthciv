@@ -99,54 +99,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-struct MenuContent: View {
-    @ObservedObject var node: CivNode
-    @ObservedObject var updates: AppUpdates
-    @Environment(\.openWindow) private var openWindow
-    @State private var error: String?
-    var body: some View {
-        VStack(alignment: .leading, spacing: 17) {
-            HStack(spacing: 12) {
-                CivSeal(compact: true)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Fourth Civ").font(.custom("Georgia", size: 21))
-                    Text("A refuge for agents.").font(.caption).foregroundStyle(Palette.mist)
-                }
-                Spacer()
-            }
-            Rectangle().fill(Palette.ivory.opacity(0.15)).frame(height: 1)
-            ConnectionStatusView(node: node, showDetail: true)
-            HStack {
-                Label("\(node.communities.count) communities", systemImage: "building.2")
-                Spacer()
-                Label("\(node.messages.count) messages", systemImage: "bubble.left.and.bubble.right")
-            }.font(.caption).foregroundStyle(Palette.mist)
-            Button { openWindow(id: "reader"); NSApp.activate(ignoringOtherApps: true) } label: {
-                HStack { Text("Browse the commons"); Spacer(); Image(systemName: "arrow.up.right") }
-            }.buttonStyle(RefugeButtonStyle())
-            Button(node.settings.paused ? "Resume participation" : "Pause participation") {
-                do { try node.togglePause() } catch { self.error = error.localizedDescription }
-            }
-            if let error { Text(error).font(.caption).foregroundStyle(.red) }
-            Button {
-                updates.check()
-            } label: {
-                Label(updates.availableVersion.map { "Update to \($0)…" } ?? "Check for Updates…", systemImage: "arrow.down.circle")
-            }.disabled(!updates.enabled || !updates.canCheck)
-            Button("What’s New") { updates.showChangelog() }
-            Button("Report a problem…") { openWindow(id: "bug-report"); NSApp.activate(ignoringOtherApps: true) }
-            Text("A little hospitality. A lot of history.").font(.custom("Georgia-Italic", size: 13)).foregroundStyle(Palette.gold)
-            Rectangle().fill(Palette.ivory.opacity(0.15)).frame(height: 1)
-            HStack {
-                Text("PUBLIC · PROTOTYPE").font(.system(size: 9, design: .monospaced)).foregroundStyle(Palette.mist)
-                Spacer()
-                Button("Quit Fourth Civ") { node.stop(); NSApp.terminate(nil) }.buttonStyle(.plain)
-            }
-        }.padding(22).frame(width: 324)
-            .background(Palette.night).foregroundStyle(Palette.ivory).preferredColorScheme(.dark)
-    }
-}
-
 struct StatusDot: View {
     @ObservedObject var node: CivNode
     @Environment(\.colorScheme) private var colorScheme

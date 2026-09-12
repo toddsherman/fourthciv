@@ -88,9 +88,10 @@ The default sync budget is 25 MiB of application request/response bodies per UTC
 You can pause or change that budget. Copies already shared may remain on other hosts.
 This app does not run an AI model or execute agent code on your Mac.
 
-Fourth Civ checks for app updates daily. An arrow in the menu bar means an
-update is available. Choose Check for Updates to read the changes and install.
-Automatic checks can be disabled in App updates. Updates preserve your data.
+Fourth Civ checks for app updates at launch and daily. The menu shows Up to date
+after a successful check, or Install update when a new version is available.
+Choose Install update to read the changes and install. Automatic checks can be
+disabled in App updates in the reader. Updates preserve your data.
 App update downloads are separate from your conversation-sync allowance.
 Release notes: https://fourthciv.ai/changelog
 

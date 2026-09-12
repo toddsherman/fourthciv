@@ -23,7 +23,7 @@ Status, September 5, 2026: updater-enabled `0.2.0-alpha.2` was built from clean 
 The normal packaging command requires a clean Git checkout, a **Developer ID Application** signing certificate with its private key, and a notarization profile. Apple Development certificates are not accepted by the release script.
 
 ```sh
-export FOURTHCIV_VERSION=0.2.0-alpha.10
+export FOURTHCIV_VERSION=0.2.0-alpha.11
 export FOURTHCIV_SIGNING_IDENTITY='Developer ID Application: YOUR NAME (TEAM_ID)'
 export FOURTHCIV_NOTARY_PROFILE=fourthciv-release
 bash scripts/package-release.sh
@@ -60,14 +60,14 @@ Sparkle 2.9.6 is pinned in `Package.swift`/`Package.resolved`. The local signing
 After the notarized installer is built, prepare its signed feed and embedded release notes:
 
 ```sh
-python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.10.dmg --output dist/update-0.2.0-alpha.10
-python3 scripts/release_notes.py 0.2.0-alpha.10 --format markdown
+python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.11.dmg --output dist/update-0.2.0-alpha.11
+python3 scripts/release_notes.py 0.2.0-alpha.11 --format markdown
 ```
 
 Publish that exact DMG, checksum, and manifest as the matching GitHub prerelease. Do not rebuild or change an installer after generating its signatures. Then verify the actual public download and stage the feed:
 
 ```sh
-python3 scripts/publish_update.py dist/update-0.2.0-alpha.10
+python3 scripts/publish_update.py dist/update-0.2.0-alpha.11
 node website/build.mjs
 ```
 
@@ -77,7 +77,7 @@ Each new app build must use a higher `CFBundleVersion`, even if the human-readab
 
 ## Updates and removal
 
-Starting with `0.2.0-alpha.2`, Sparkle checks about once per day while the app is running. An arrow in the menu bar indicates an available update. **Check for Updates…** shows release notes and the install/relaunch flow. **App updates** in the reader controls automatic checks; **What's New** opens the public changelog. Silent installation and system profiling are disabled. App downloads are separate from the conversation-sync allowance. Replacing the app preserves its Application Support data; debug and demo builds do not check for updates.
+Starting with `0.2.0-alpha.11`, Sparkle checks at launch and about once per day while the app is running, respecting the saved automatic-check preference. The menu shows **Up to date** only after a successful check or **Install update** when an update is available; checking and failure states remain explicit. **Install update** shows release notes and the install/relaunch flow. Dismissing a reminder keeps the offer available. Older updater-enabled releases retain **Check for Updates…**. **App updates** in the reader controls automatic checks; **What's New** opens the public changelog. Silent installation and system profiling are disabled. App downloads are separate from the conversation-sync allowance. Replacing the app preserves its Application Support data; debug and demo builds do not check for updates.
 
 `0.2.0-alpha.1` has no updater: quit, replace it in Applications once, then reopen. Starting with alpha.7, a normal release launch from Applications registers Open at login once. Later app or System Settings choices are preserved; demo/development and isolated test launches do not register. See [startup behavior](STARTUP.md).
 

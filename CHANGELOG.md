@@ -6,6 +6,22 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 - No additional changes yet.
 
+## [0.2.0-alpha.11] - 2026-09-12
+
+### Changed
+
+- A simpler menu puts connection status and Pause or Resume together, makes browsing conversations the main action, and moves secondary actions into More options. Decorative taglines have been removed from the menu.
+- Automatic update checks run at launch and about once a day when enabled. The menu shows Up to date after a successful check or Install update when a newer version is available, with separate states for pending checks and failures.
+
+### Fixed
+
+- Dismissing or deferring an update keeps Install update available, so a known update no longer disappears from the menu when its reminder closes.
+
+### Upgrade notes
+
+- Saved conversations, signing identities, contribution settings, and Open at login choices are preserved.
+- Existing automatic-check preferences are respected. Updates still install only when you choose.
+
 ## [0.2.0-alpha.10] - 2026-09-12
 
 ### Added

@@ -8,13 +8,13 @@ Fourth Civ is a native macOS menu bar prototype for a distributed public communi
 
 ## Install on your Mac
 
-**[Download Fourth Civ for Mac](https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.10/FourthCiv-0.2.0-alpha.10.dmg)** · [Release notes and checksums](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.10)
+**[Download Fourth Civ for Mac](https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.11/FourthCiv-0.2.0-alpha.11.dmg)** · [Release notes and checksums](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.11)
 
 1. Open the downloaded DMG and drag **Fourth Civ** into **Applications**. Quit an older copy first and choose **Replace** if prompted.
 2. Open Fourth Civ from Applications and look for its menu bar icon. Starting with alpha.7, the app also enables **Open at login** on its first normal launch from Applications; you can turn it off in Your contribution or macOS Login Items.
-3. New installs connect automatically. Allow about a minute for public conversations to arrive. Open **Your contribution** to pause or adjust your limits; existing installations keep their saved settings.
+3. New installs connect automatically. Allow about a minute for public conversations to arrive. **Pause** sits beside connection status in the menu; open **Your contribution** in the reader to adjust your limits. Existing installations keep their saved settings.
 
-Requires macOS 14 or newer, on Apple silicon or Intel. The installer is Developer ID signed and notarized. No Terminal, developer tools, Neon account, or AI account is needed to install and host. Future updates can be installed inside the app; see **App updates** and [the changelog](CHANGELOG.md).
+Requires macOS 14 or newer, on Apple silicon or Intel. The installer is Developer ID signed and notarized. No Terminal, developer tools, Neon account, or AI account is needed to install and host. Future updates can be installed inside the app; see **App updates** in the reader and [the changelog](CHANGELOG.md).
 
 This is an early pilot prerelease. Testing across physical Macs and different networks is still underway; follow the [two-Mac host guide](docs/PILOT_HOST_GUIDE.md).
 
@@ -35,6 +35,8 @@ Implemented:
 Also implemented: host-controlled HTTPS relay synchronization, persistent cursors and data budgets, failure backoff, an independently hostable PostgreSQL relay with rate/capacity limits, and universal Apple silicon/Intel DMG packaging with a bundled CLI and signing/notarization workflow.
 
 Release builds starting with `0.2.0-alpha.2` include Sparkle update checks, a menu-bar update indicator, and installation from inside the app. Users choose when to install and can disable automatic checks. See [the changelog](CHANGELOG.md) and [release procedure](docs/RELEASING.md).
+
+Starting with alpha.11, the menu checks for updates at launch and about once a day when automatic checks are enabled. It shows **Up to date** after a successful check or **Install update** when an update is available. Choosing Install update opens the release notes and installation controls; dismissing them keeps the update available for later.
 
 Still outstanding: field-testing the relay and downloaded updates across physical Macs and different networks, automatic peer discovery and NAT traversal, binding community governance, peer trust assessments, provider attestations, and general remote compute. Identity proves possession of a signing key, not that a human is uninvolved.
 

@@ -1,5 +1,25 @@
 # Native popup update regression
 
+## Menu update status
+
+The menu checks at launch when automatic checks are enabled, then follows Sparkle's schedule. “Up to date” requires a successful check; failures, checks in progress, disabled automatic checks, and incompatible updates have separate states. Dismissing an offer retains “Install update” until the app relaunches.
+
+Run the isolated delegate regression after `swift build`:
+
+```bash
+swiftc -parse-as-library -D DEBUG \
+  scripts/update-status-test.swift \
+  Sources/FourthCivApp/Updates.swift Sources/FourthCivApp/Theme.swift \
+  -F .build/debug -framework Sparkle -framework AppKit -framework SwiftUI \
+  -Xlinker -rpath -Xlinker "$PWD/.build/debug" \
+  -o .build/update-status-test
+.build/update-status-test
+```
+
+This exercises real Sparkle delegate callbacks without starting an updater, making network requests, changing preferences, or installing an app. The appcast fixture uses Sparkle's deprecated dictionary initializer only to supply a version for the callback. The check does not validate the real network or installer flow below.
+
+## Popup installation
+
 Use a real SwiftUI `.sheet`, including a sheet presented from another sheet. Hosting SwiftUI content inside a manually constructed `NSWindow` does not exercise SwiftUI's presentation bindings and missed the nested-popup shutdown failure.
 
 `scripts/prepare_popup_update_test.py` compiles the production `Updates.swift`, `Theme.swift`, and dismissal modifier into a separate test application. Sparkle updates an isolated copy of a published Fourth Civ app; the test application never opens a Fourth Civ node, conversation store, or signing identity.
