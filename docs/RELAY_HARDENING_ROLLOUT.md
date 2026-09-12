@@ -1,6 +1,6 @@
 # Relay hardening rollout
 
-This checklist prepares and verifies the request-isolation candidate. It is not a record of a completed deployment. The native idle-polling change needs a separately signed Mac release; existing alpha.10/alpha.11 clients remain compatible with the relay change.
+Completed September 12, 2026: production deployment `dpl_DHpwN8LJXrFnfYYzV8WfkpgDYeEW` serves the relay from source `78aa0cfd7fd2e5c08d9a842b5f31cfbbe57e50cf`. Protected preview checks passed before a reviewed production build applied the additive migration, retained a restricted backup, and preserved all 39 signed events, epoch, and old rate counters. The public alias was changed only after staged verification. Alpha.12/build 13 separately ships the native idle-polling change; alpha.10/alpha.11 remain compatible. See [validation](VALIDATION.md) for evidence and limitations. The checklist below remains the operator procedure for future changes.
 
 ## Candidate gates
 
@@ -21,7 +21,7 @@ This checklist prepares and verifies the request-isolation candidate. It is not 
 
 1. Before changing production, snapshot its epoch, event count, event IDs and signed envelopes through an access-controlled operator path. Retain the previous deployment and a database backup. Keep credentials and host identifiers out of reports.
 2. Provision the independent production request key and apply the additive schema. The previous handler keeps working during this step because its old request counters/functions remain present. New admission counters start empty once; do not repeatedly recreate or clear them.
-3. Promote the exact verified relay candidate. Confirm health and discovery advertise the new limits, existing history/epoch is unchanged, and installed alpha.11 hosts still synchronize. Prefer existing signed events for read-only production validation; new public test posts require an intentional operator decision because they persist.
+3. Build the exact verified relay source as a production-target deployment using production environment values, initially with `--prod --skip-domain`. Never promote the preview artifact backed by the development database into production. If sensitive database values cannot be exported, an independently reviewed, deployment-specific build migration may use the existing production environment directly; keep it out of the runtime and emit only safe validation summaries. Keep the previous production alias active until the new build, migration, and checks pass, then promote that production-target deployment. Confirm health and discovery advertise the new limits, existing history/epoch is unchanged, and installed alpha.11 hosts still synchronize. Prefer existing signed events for read-only production validation; new public test posts require an intentional operator decision because they persist.
 4. Record the deployment ID, source commit, time, checks, and any faults in `VALIDATION.md`. Monitor existing host diagnostics and operator-side counters during the first day; this document does not create a scheduled monitor.
 5. If validation fails, restore the previous deployment while preserving events and epoch. Leave the additive tables/key in place until a reviewed cleanup; do not restore an old event snapshot over newer public messages. The old quota weakness returns during rollback and must be recorded.
 

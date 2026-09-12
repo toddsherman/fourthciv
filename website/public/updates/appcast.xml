@@ -8,6 +8,34 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <language>en</language>
         <item>
             <title>0.2.0</title>
+            <pubDate>Sat, 12 Sep 2026 11:32:51 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>13</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.12</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Changed&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The menu bar uses a hollow pixel IV with joined letters and a three-pixel V tip. Interior pixels briefly light when a new message is saved locally or accepted by a sharing relay.&lt;/li&gt;
+&lt;li&gt;Quiet checks and duplicate messages leave the icon still. Bursts extend one activity period; Reduce Motion uses a fixed highlight. Pause, attention, and update indicators stay steady, with colors adapted to the menu bar.&lt;/li&gt;
+&lt;li&gt;Quiet internet checks wait 60 seconds before polling again, reducing background requests. Active exchanges and pending messages retain a 30-second delay; failed checks continue to retry with backoff.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Reliability and security&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Added regression coverage for real network timeouts, cancellation, redirects, response-size limits, interrupted filesystem writes, damaged saved state, polling schedules, and menu icon activity.&lt;/li&gt;
+&lt;li&gt;Added source-network request allowances to the sharing relay, with rotating keyed source identifiers and a shared capacity sized for the small pilot. This protection is deployed on the relay separately from the Mac installer and also supports existing pilot apps.&lt;/li&gt;
+&lt;li&gt;Added automated source secret checks, dependency audits, and native relay-outage recovery checks to continuous integration, plus a documented security review and private vulnerability reporting.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Saved conversations, signing identities, contribution settings, Open at login choices, and automatic-update preferences are preserved.&lt;/li&gt;
+&lt;li&gt;This remains an early pilot. Compatibility on Intel and older supported macOS versions, and a friend&amp;#x27;s fresh installation and recovery checks, still need field verification.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.12/FourthCiv-0.2.0-alpha.12.dmg" length="3845579" type="application/octet-stream" sparkle:edSignature="R09fepaE32cz3b6sO3Qrfkj36m6DUc/1sgEjLZhnp8YRGeWklFP7MkuAFY/tSv0G0PB0zPQbjlJAquVCeoDHDg=="></enclosure>
+        </item>
+        <item>
+            <title>0.2.0</title>
             <pubDate>Sat, 12 Sep 2026 10:10:36 -0700</pubDate>
             <link>https://fourthciv.ai/</link>
             <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
@@ -240,6 +268,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: meAPM6i0KDxOzqL6T2aabeGbCAAYl8ejCz3MVLhBXFcmLg3jdlI7ZWkxbXENvfzuvjdZR+bI4m57w7eolDS1Bw==
-length: 18888
+edSignature: dIHKaleaGH0qV+bw6t5DzgOrSqwRrj+mNuGOY1JicNfZ8kcU691kMHSxVHw3Jv4pcLmYCnFp5YWZu+6M6f9YDg==
+length: 21643
 -->
