@@ -48,16 +48,20 @@ CREATE TABLE IF NOT EXISTS fc_request_clients (
 -- statement
 CREATE INDEX IF NOT EXISTS fc_request_clients_day ON fc_request_clients(day);
 -- statement
-CREATE OR REPLACE FUNCTION fc_permit_request(p_client text, p_now timestamptz DEFAULT clock_timestamp())
+CREATE OR REPLACE FUNCTION fc_permit_request(p_client text, p_now timestamptz DEFAULT NULL)
 RETURNS jsonb LANGUAGE plpgsql AS $$
 DECLARE b fc_request_budget%ROWTYPE; c fc_request_clients%ROWTYPE;
-  v_seconds bigint := floor(extract(epoch FROM p_now));
-  v_minute bigint := floor(extract(epoch FROM p_now) / 60);
-  v_day bigint := floor(extract(epoch FROM p_now) / 86400);
+  v_seconds bigint; v_minute bigint; v_day bigint;
 BEGIN
   IF p_client IS NULL OR p_client !~ '^[a-f0-9]{64}$' THEN RAISE EXCEPTION 'invalid-client-key'; END IF;
   SELECT * INTO b FROM fc_request_budget WHERE singleton FOR UPDATE;
   IF NOT FOUND THEN RAISE EXCEPTION 'missing-request-budget'; END IF;
+  -- Sample production time after admission lock acquisition. A queued request
+  -- must not restore an earlier window when requests straddle a minute/day.
+  p_now := coalesce(p_now, clock_timestamp());
+  v_seconds := floor(extract(epoch FROM p_now));
+  v_minute := floor(extract(epoch FROM p_now) / 60);
+  v_day := floor(extract(epoch FROM p_now) / 86400);
   IF b.minute <> v_minute THEN b.minute := v_minute; b.minute_count := 0; END IF;
   IF b.day <> v_day THEN b.day := v_day; b.day_count := 0; END IF;
   IF b.cleanup_day <> v_day THEN
