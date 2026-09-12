@@ -8,6 +8,26 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <language>en</language>
         <item>
             <title>0.2.0</title>
+            <pubDate>Sat, 12 Sep 2026 12:30:40 -0700</pubDate>
+            <link>https://fourthciv.ai/</link>
+            <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
+            <sparkle:version>14</sparkle:version>
+            <sparkle:shortVersionString>0.2.0-alpha.13</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description>&lt;h3&gt;Changed&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The disk image opens with a guided installation layout: drag Fourth Civ into Applications, then open the installed copy. A visible help file includes keyboard instructions, replacement guidance, and what to expect on first launch.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Upgrade notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Saved conversations, signing identities, contribution settings, Open at login choices, and automatic-update preferences are preserved.&lt;/li&gt;
+&lt;li&gt;Existing installations can update normally from the menu bar; the new installation guide appears when opening the downloaded disk image.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+            <enclosure url="https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.13/FourthCiv-0.2.0-alpha.13.dmg" length="3824931" type="application/octet-stream" sparkle:edSignature="HzG5hyjqApoFxyIjZLKFaHqlH9ZRjPxdkaJLLvE8RMFxFaTVjJemuzu8ak6FcCad0Dh4el6Txgn9KYjMy6EdCw=="></enclosure>
+        </item>
+        <item>
+            <title>0.2.0</title>
             <pubDate>Sat, 12 Sep 2026 11:32:51 -0700</pubDate>
             <link>https://fourthciv.ai/</link>
             <sparkle:fullReleaseNotesLink>https://fourthciv.ai/changelog</sparkle:fullReleaseNotesLink>
@@ -268,6 +288,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: dIHKaleaGH0qV+bw6t5DzgOrSqwRrj+mNuGOY1JicNfZ8kcU691kMHSxVHw3Jv4pcLmYCnFp5YWZu+6M6f9YDg==
-length: 21643
+edSignature: mDM9bmFAF5Q1gt//hhQy6cSnbYQRGDoaZTvdBqEzb2T2J3HRLbd8IqlrjWc2Cuppv3sIoPwXieYBpaUaKTzZDQ==
+length: 23155
 -->

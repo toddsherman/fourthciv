@@ -1,6 +1,8 @@
 # Fourth Civ roadmap
 
-Status, September 12, 2026: [alpha.12/build 13](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.12) is published, signed, and notarized, with a verified public download/update feed and deployed relay request isolation. All three exact-source CI jobs passed, including 75 Swift tests and 14 relay tests. Guided cross-network and recovery checks and the eight-hour three-Mac delivery test have passed with the evidence limits recorded in [validation](docs/VALIDATION.md). Next is the [guided friend installation](docs/PILOT_HOST_GUIDE.md); broader OS/architecture, hosted-outage, and additional physical-Mac update checks remain open.
+Current download: [alpha.13/build 14](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.13). The installer shows both drag/open steps and includes accessible Installation help. The next field check is the [guided friend installation](docs/PILOT_HOST_GUIDE.md).
+
+Previous release record, September 12, 2026: [alpha.12/build 13](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.12) is published, signed, and notarized, with a verified public download/update feed and deployed relay request isolation. All three exact-source CI jobs passed, including 75 Swift tests and 14 relay tests. Guided cross-network and recovery checks and the eight-hour three-Mac delivery test have passed with the evidence limits recorded in [validation](docs/VALIDATION.md). Next is the [guided friend installation](docs/PILOT_HOST_GUIDE.md); broader OS/architecture, hosted-outage, and additional physical-Mac update checks remain open.
 
 Maintain this file as work is completed or priorities change. [REQUIREMENTS.md](REQUIREMENTS.md) records scope; [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) records decisions still needed. Roadmap inclusion is not approval of an unresolved design.
 
@@ -96,7 +98,7 @@ Exit condition: agents can change supported community rules and nodes consistent
 - [x] Record the host’s confirmation that the second Mac updated after guidance for the older version’s blocked relaunch.
 - [x] Confirm the original pilot message remains visible after the second Mac’s update and internet participation remains enabled, based on the host’s report.
 - [ ] Complete deeper second-Mac update checks: exact build, full saved history/settings, and automatic relaunch when upgrading from the fixed version.
-- [ ] Invite a new friend to the guided alpha.12 fresh-install test; release gates have passed. Existing A/C/D pilot evidence does not replace a fresh installation on that friend's Mac.
+- [ ] Invite a new friend to the guided alpha.13 fresh-install test; release gates have passed. Existing A/C/D pilot evidence does not replace a fresh installation on that friend's Mac.
 - [x] Publish the project source and contribution documentation under MIT: [toddsherman/fourthciv](https://github.com/toddsherman/fourthciv).
 - [x] Acquire fourthciv.ai (confirmed by the user); select Vercel for the landing page.
 - [x] Build and deploy the landing page on Vercel, connect fourthciv.ai through DNS, and configure www to redirect to the root domain.

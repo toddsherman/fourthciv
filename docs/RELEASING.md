@@ -1,6 +1,8 @@
 # Mac release procedure
 
-Latest release: `0.2.0-alpha.12` (build 13), built from clean commit `78aa0cfd7fd2e5c08d9a842b5f31cfbbe57e50cf`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.12). All three exact-source CI jobs passed, and the public installer passed SHA-256 and Ed25519 verification. It combines the pixel IV activity icon, slower idle polling, expanded reliability tests, and security gates with the alpha.11 menu/updater changes. The exact universal app and bundled CLI passed distribution checks. An isolated launch preserved all 39 copied signed events, pause, custom limits, and the login preference without replacing the normal installed app. Publication and relay deployment evidence are recorded in [validation](VALIDATION.md).
+Latest release: `0.2.0-alpha.13` (build 14), built from clean commit `0774d67c619609a69f8b24f5fc59c4acc17eefab`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.13). The disk image shows the drag-to-Applications and open steps, with standard/Retina artwork and accessible Installation help. All three exact-source CI jobs passed. The final app and DMG passed distribution checks; the bundled CLI passed strict signature/notarization and execution checks. An isolated launch preserved all 39 copied signed events, pause, custom limits, and the login preference. The public installer passed SHA-256 and Ed25519 verification, and its signed feed is included in this website publication. See [validation](VALIDATION.md).
+
+Previous release: `0.2.0-alpha.12` (build 13), built from clean commit `78aa0cfd7fd2e5c08d9a842b5f31cfbbe57e50cf`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.12). All three exact-source CI jobs passed, and the public installer passed SHA-256 and Ed25519 verification. It combines the pixel IV activity icon, slower idle polling, expanded reliability tests, and security gates with the alpha.11 menu/updater changes. The exact universal app and bundled CLI passed distribution checks. An isolated launch preserved all 39 copied signed events, pause, custom limits, and the login preference without replacing the normal installed app. Publication and relay deployment evidence are recorded in [validation](VALIDATION.md).
 
 Previous release: `0.2.0-alpha.11` (build 12), built from clean commit `a99542b079ae94d70d9c97d5eacc7ac2775ab2d9`, is signed, notarized, stapled, and published as a [GitHub prerelease](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.11). It simplifies the menu, places Pause beside connection status, and displays automatic update-check results and retained install offers. All three source CI jobs passed, including the new updater callback regression. The exact universal app and bundled CLI passed signature, notarization, and Gatekeeper checks. An isolated launch preserved all 39 copied public events, pause, custom limits, and the login-item preference. The public feed and installer signatures were verified. This Mac completed the normal in-app update to build 12, retaining all 39 exact signed events, settings, login preference, and enabled automatic checks; its installed binaries match the verified package. Details are recorded in [validation](VALIDATION.md).
 
@@ -31,7 +33,7 @@ The installer layout is defined in `Resources/DMG/layout.json`, with artwork ren
 The normal packaging command requires a clean Git checkout, a **Developer ID Application** signing certificate with its private key, and a notarization profile. Apple Development certificates are not accepted by the release script.
 
 ```sh
-export FOURTHCIV_VERSION=0.2.0-alpha.12
+export FOURTHCIV_VERSION=0.2.0-alpha.13
 export FOURTHCIV_SIGNING_IDENTITY='Developer ID Application: YOUR NAME (TEAM_ID)'
 export FOURTHCIV_NOTARY_PROFILE=fourthciv-release
 bash scripts/package-release.sh
@@ -68,14 +70,14 @@ Sparkle 2.9.6 is pinned in `Package.swift`/`Package.resolved`. The local signing
 After the notarized installer is built, prepare its signed feed and embedded release notes:
 
 ```sh
-python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.12.dmg --output dist/update-0.2.0-alpha.12
-python3 scripts/release_notes.py 0.2.0-alpha.12 --format markdown
+python3 scripts/prepare_update.py dist/releases/FourthCiv-0.2.0-alpha.13.dmg --output dist/update-0.2.0-alpha.13
+python3 scripts/release_notes.py 0.2.0-alpha.13 --format markdown
 ```
 
 Publish that exact DMG, checksum, and manifest as the matching GitHub prerelease. Do not rebuild or change an installer after generating its signatures. Then verify the actual public download and stage the feed:
 
 ```sh
-python3 scripts/publish_update.py dist/update-0.2.0-alpha.12
+python3 scripts/publish_update.py dist/update-0.2.0-alpha.13
 node website/build.mjs
 ```
 

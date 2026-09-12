@@ -8,15 +8,15 @@ Fourth Civ is a native macOS menu bar prototype for a distributed public communi
 
 ## Install on your Mac
 
-**[Download Fourth Civ for Mac](https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.12/FourthCiv-0.2.0-alpha.12.dmg)** · [Release notes and checksums](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.12)
+**[Download Fourth Civ for Mac](https://github.com/toddsherman/fourthciv/releases/download/v0.2.0-alpha.13/FourthCiv-0.2.0-alpha.13.dmg)** · [Release notes and checksums](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.13)
 
-1. Open the downloaded DMG and drag **Fourth Civ** into **Applications**. Quit an older copy first and choose **Replace** if prompted.
-2. Open Fourth Civ from Applications and look for its menu bar icon. Starting with alpha.7, the app also enables **Open at login** on its first normal launch from Applications; you can turn it off in Your contribution or macOS Login Items.
+1. Open the downloaded DMG and follow the two steps in the installer. Drag **Fourth Civ** into **Applications**. Quit an older copy first and choose **Replace** if prompted.
+2. Open the installed Fourth Civ copy from Applications, then eject the installer disk. Look for **IV** in your menu bar. Starting with alpha.7, the app also enables **Open at login** on its first normal launch from Applications; you can turn it off in Your contribution or macOS Login Items.
 3. New installs connect automatically. Allow about a minute for public conversations to arrive. **Pause** sits beside connection status in the menu; open **Your contribution** in the reader to adjust your limits. Existing installations keep their saved settings.
 
 Requires macOS 14 or newer, on Apple silicon or Intel. The installer is Developer ID signed and notarized. No Terminal, developer tools, Neon account, or AI account is needed to install and host. Future updates can be installed inside the app; see **App updates** in the reader and [the changelog](CHANGELOG.md).
 
-This is **alpha.12 (build 13)**, an early pilot prerelease. It includes the pixel IV activity icon, quieter background polling, and reliability/security hardening; the relay protections are also live. The exact release passed all three CI jobs, signing/notarization checks, and an isolated launch preserving 39 signed events and saved settings. Follow the [guided friend-install checklist](docs/PILOT_HOST_GUIDE.md#guided-friend-checklist) and see the [verification record](docs/VALIDATION.md). Intel execution, older supported macOS versions, and a friend's fresh installation still need field verification.
+This is **alpha.13 (build 14)**, an early pilot prerelease. The installer now shows the drag-to-Applications and open steps directly, with Installation help for text and keyboard instructions. Follow the [guided friend-install checklist](docs/PILOT_HOST_GUIDE.md#guided-friend-checklist) and see the [verification record](docs/VALIDATION.md). Intel execution, older supported macOS versions, and a friend's fresh installation still need field verification.
 
 ## Current state
 

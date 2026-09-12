@@ -1,5 +1,17 @@
 # Prototype and internet pilot validation
 
+## Current release — alpha.13, build 14
+
+Published September 12, 2026 from clean source `0774d67c619609a69f8b24f5fc59c4acc17eefab`: [installer and checksums](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.13). All three [exact-source CI jobs](https://github.com/toddsherman/fourthciv/actions/runs/34714234435) passed, including the new compressed-DMG layout and app-integrity check, native app/protocol and outage-recovery checks, relay tests, website build, secret scanning, and dependency audits.
+
+The universal app and CLI were built for Apple silicon and Intel. Apple accepted app submission `f1f487d9-3c16-4f33-b2b8-b145ae52b76c` and DMG submission `b74a4a9a-5327-427e-a924-b9a9be8e93c1` with no issues. App and DMG staples, strict signatures, and Gatekeeper checks passed; the app also passed `syspolicy_check distribution`. The bundled CLI passed strict signature/notarization verification and actual execution. A standalone app-style Gatekeeper assessment of the bare CLI was removed from the local harness because macOS identifies it as valid code but not an app.
+
+The final compressed installer retains the 720 × 560 Finder layout, Applications shortcut, Installation help, standard/Retina background, and all 169 app entries with framework symlinks and signatures intact. The exact release app launched in an isolated paused profile and preserved all 39 copied signed events, custom limits, and the login preference. The isolated process stopped and its port closed; normal app settings and saved history were unchanged. No installed app was replaced and no public messages were posted.
+
+The exact public GitHub installer passed SHA-256 and Ed25519 verification before the signed update feed was copied into this website publication. Existing feed entries were retained. Installer SHA-256: `01fdc4b4c4e3cad1082a8d0704642b4ec93ebe1c0f0192ca3485db5bcef31a65`. Local evidence: `.local/alpha13-package.log`, `.local/notarization/0.2.0-alpha.13-{app,dmg}.json`, `.local/release-check-alpha13-fj633cwj/verification.json`, and `.local/alpha13-publish-update.log`.
+
+A friend's fresh install, Intel execution, older supported macOS versions, and additional physical-host recovery/update checks remain open. See the [host checklist](PILOT_HOST_GUIDE.md). Prior release and preview observations below retain their original scope.
+
 ## Guided DMG installation — September 12, 2026 (unreleased)
 
 Built a local installer preview around the exact signed alpha.12 app, without rebuilding or modifying it. Opening the compressed DMG normally in Finder automatically showed the 720×560 installation window, app-to-Applications arrow, two numbered steps, and visible Installation help file. The window leaves room for Finder's title/path controls, so all instructions and icon labels fit without scrolling. The same layout was verified after ejecting and opening a fresh image. Both opened as `Fourth Civ 2` alongside existing mounted disks; the background resolved correctly. Quick Look exposed the complete help text through accessibility, including keyboard copying, replacement instructions, and first-launch guidance.
@@ -8,7 +20,7 @@ The packaging checks compare all 169 entries of the released app for unchanged b
 
 Four packaging unit tests, an end-to-end unsigned packaging smoke test, six release/feed compatibility tests, source-secret checks, and shell syntax checks passed. CI now builds and verifies the installer after its native app build. The release pipeline uses the same helper before DMG signing/notarization and refuses to overwrite an existing installer. Local final preview: `.local/dmg-preview/FourthCiv-Installation-Preview.dmg`. Its contained app remains signed, but the preview container is not a newly signed/notarized release. No installed app or public download was replaced.
 
-## Current release — alpha.12, build 13
+## Previous release — alpha.12, build 13
 
 Published September 12, 2026 from `78aa0cfd7fd2e5c08d9a842b5f31cfbbe57e50cf`: [installer and checksums](https://github.com/toddsherman/fourthciv/releases/tag/v0.2.0-alpha.12). All three [exact-source CI jobs](https://github.com/toddsherman/fourthciv/actions/runs/34711475493) passed, including 75 Swift tests, 14 relay tests, real-process integration, native outage recovery, menu/updater checks, secret scanning, and dependency audits. The universal app and CLI passed signing, notarization, and Gatekeeper checks. An isolated launch retained 39 signed events, pause, custom limits, and the login preference. The published download and live update feed passed signature verification.
 
