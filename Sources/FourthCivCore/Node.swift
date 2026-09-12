@@ -50,6 +50,9 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
     private var serverGeneration = UUID()
     private var activeRequest: Task<Data, Error>?
     private var relaySchedule: [String: (failures: Int, next: Date)] = [:]
+    // Internal clock for deterministic relay-deadline tests. Ledger accounting and
+    // other app timestamps keep their real clocks; normal scheduling uses Date().
+    var relaySchedulingNow: () -> Date = Date.init
     private struct RelayObservation {
         var attempt: Date
         var success: Date?
@@ -353,9 +356,9 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         internetBytes = ledger.used()
         for relay in settings.relays {
             guard maySync(relay, generation: current) else { return }
-            if let schedule = relaySchedule[relay], schedule.next > Date() { continue }
+            if let schedule = relaySchedule[relay], schedule.next > relaySchedulingNow() { continue }
             let target = DiagnosticTarget(kind: .relay, index: (settings.relays.firstIndex(of: relay) ?? 0) + 1)
-            relayObservations[relay] = RelayObservation(attempt: Date(), success: relayObservations[relay]?.success,
+            relayObservations[relay] = RelayObservation(attempt: relaySchedulingNow(), success: relayObservations[relay]?.success,
                 failure: relayObservations[relay]?.failure, observedGeneration: relayObservations[relay]?.observedGeneration,
                 more: relayObservations[relay]?.more ?? false)
             activeRelay = relay
@@ -402,9 +405,13 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
                     try ledger.setProgress(progress, for: relay)
                 }
                 more = more || events.contains { !progress.acknowledged.contains($0.id) }
-                relaySchedule[relay] = (0, Date().addingTimeInterval(30))
+                // Quiet relays need half as many polls; transfers and unfinished
+                // pagination keep the existing cadence until caught up.
+                let delay: TimeInterval = received > 0 || sent > 0 || more ? 30 : 60
+                let completed = relaySchedulingNow()
+                relaySchedule[relay] = (0, completed.addingTimeInterval(delay))
                 peerStatus[relay] = "Received \(received) · shared \(sent)" + (more ? " · more next sync" : " · up to date")
-                relayObservations[relay]?.success = Date(); relayObservations[relay]?.failure = nil
+                relayObservations[relay]?.success = completed; relayObservations[relay]?.failure = nil
                 relayObservations[relay]?.observedGeneration = current; relayObservations[relay]?.more = more
                 activeRelay = nil
                 refreshHostConnection()
@@ -413,7 +420,7 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
                 guard maySync(relay, generation: current) else { return }
                 let failures = min(5, (relaySchedule[relay]?.failures ?? 0) + 1)
                 let delay = min(300, 15 * (1 << failures))
-                relaySchedule[relay] = (failures, Date().addingTimeInterval(Double(delay)))
+                relaySchedule[relay] = (failures, relaySchedulingNow().addingTimeInterval(Double(delay)))
                 peerStatus[relay] = error.localizedDescription + " · retry in \(delay)s"
                 relayObservations[relay]?.failure = .capture(error)
                 relayObservations[relay]?.observedGeneration = current

@@ -4,6 +4,12 @@ dist/
 .DS_Store
 .local/
 *.identity.json
+*.p8
+*.p12
+*.pfx
+*.key
+id_rsa
+id_ed25519
 __pycache__/
 .vercel/
 node_modules/

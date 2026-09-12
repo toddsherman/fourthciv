@@ -18,7 +18,7 @@ test('Swift CLI signs events accepted by PostgreSQL relay and verifies relay rea
   const db = new PGlite(join(directory,'postgres')); t.after(()=>db.close());
   await db.exec(await readFile(new URL('../schema.sql',import.meta.url),'utf8'));
   const store = new RelayStore(async(text,params)=>(await db.query(text,params)).rows);
-  const respond = handler(()=>store);
+  const respond = handler(()=>store, '', () => 'a'.repeat(64));
   const server = createServer(async(req,res)=>{
     try {
       const request = new Request('http://127.0.0.1'+req.url,{method:req.method,headers:req.headers,

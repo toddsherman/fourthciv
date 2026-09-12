@@ -2,9 +2,13 @@ import { RelayError, MAX_PAGE } from './protocol.mjs';
 
 export class RelayStore {
   constructor(query) { this.query = query; }
-  async permitRequest() {
-    const [row] = await this.query("SELECT fc_take('requests-minute',600,60) AND fc_take('requests-day',20000,86400) AS allowed", []);
-    if (!row.allowed) throw new RelayError('Relay request budget reached; try again later', 429);
+  async permitRequest(client) {
+    if (typeof client !== 'string' || !/^[a-f0-9]{64}$/.test(client)) throw new Error('Trusted client key unavailable');
+    const [row] = await this.query('SELECT fc_permit_request($1) AS permission', [client]);
+    const permission = row.permission;
+    if (!permission.allowed) throw new RelayError(permission.scope === 'client'
+      ? 'This network has reached its request allowance; try again later'
+      : 'Relay request allowance reached; try again later', 429, permission.retryAfter);
   }
   async meta() { return (await this.query('SELECT epoch,event_count,stored_bytes FROM fc_meta WHERE singleton', []))[0]; }
   async insert(event) {

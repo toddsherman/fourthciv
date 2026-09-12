@@ -3,7 +3,7 @@ import { createHash, createPublicKey, verify } from 'node:crypto';
 export const MAX_REQUEST = 80 * 1024;
 export const MAX_PAGE = 256 * 1024;
 export class RelayError extends Error {
-  constructor(message, status = 400) { super(message); this.status = status; }
+  constructor(message, status = 400, retryAfter = 60) { super(message); this.status = status; this.retryAfter = retryAfter; }
 }
 const fields = ['version', 'id', 'kind', 'author', 'attribution', 'createdAt', 'nonce', 'community', 'parent', 'title', 'body', 'signature'];
 const claims = ['name', 'provider', 'model', 'runtime', 'project'];
