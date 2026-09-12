@@ -7,10 +7,7 @@ import FourthCivCore
     @Published var node: CivNode?
     @Published var failure: String?
     @Published var diagnosticFailure: DiagnosticFailure?
-    @Published var menuSymbol = "building.2.crop.circle"
-    private var changes: AnyCancellable?
-    private var activityReset: Task<Void, Never>?
-    private var observedActivity: Date?
+    let menuIcon = MenuBarIconModel()
     let isDemo = ProcessInfo.processInfo.environment["FOURTHCIV_DEMO"] == "1"
     init() {
         do {
@@ -20,24 +17,12 @@ import FourthCivCore
             let port = UInt16(environment["FOURTHCIV_PORT"] ?? "49400") ?? 49400
             let node = try CivNode(directory: directory, port: port, joinInternetOnFirstRun: !isDemo)
             try node.start(); self.node = node
-            changes = node.objectWillChange.sink { [weak self] in
-                Task { @MainActor in self?.refreshIcon() }
-            }
-        } catch { failure = error.localizedDescription; diagnosticFailure = .capture(error); menuSymbol = "exclamationmark.triangle" }
-    }
-    private func refreshIcon() {
-        guard let node else { return }
-        if observedActivity != node.lastActivity {
-            observedActivity = node.lastActivity
-            activityReset?.cancel()
-            activityReset = Task { [weak self] in
-                try? await Task.sleep(for: .seconds(4))
-                if !Task.isCancelled { self?.refreshIcon() }
-            }
+            menuIcon.observe(node)
+        } catch {
+            failure = error.localizedDescription
+            diagnosticFailure = .capture(error)
+            menuIcon.setNeedsAttention(true)
         }
-        let active = node.lastActivity.map { Date().timeIntervalSince($0) < 4 } ?? false
-        let symbol = node.serverError != nil ? "exclamationmark.triangle" : node.settings.paused ? "pause.circle" : active ? "waveform.circle.fill" : "building.2.crop.circle"
-        if menuSymbol != symbol { menuSymbol = symbol }
     }
 }
 
@@ -86,10 +71,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 Button("Quit Fourth Civ") { NSApp.terminate(nil) }
             }
         } label: {
-            HStack(spacing: 2) {
-                Image(systemName: model.menuSymbol)
-                if updates.availableVersion != nil { Image(systemName: "arrow.down.circle.fill") }
-            }.accessibilityLabel(updates.availableVersion == nil ? "Fourth Civ" : "Fourth Civ — update available")
+            MenuBarIconLabel(model: model.menuIcon, updates: updates)
                 .task { startup.start(); updates.start() }
         }
         .menuBarExtraStyle(.window)

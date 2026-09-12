@@ -1,5 +1,13 @@
 # Prototype and internet pilot validation
 
+## Pixel IV menu icon — September 12, 2026 (unreleased source)
+
+The native bitmap follows the approved prototype: capped hollow I joined to a straight-sided V, with a three-pixel bottom tip. Its template images provide 1× and 2× representations. A native SwiftUI rendering fixture was visually checked at actual size and 4× enlargement in light and dark treatments, including message activity, Reduce Motion, pause, update, and attention. Automated native access does not expose the system menu-bar extra for direct capture, so the visual check uses the production renderer in a separate native window.
+
+`bash scripts/test.sh` passed 62 Swift tests in 12 suites, real loopback integration, six collector tests, and ten sender tests. New signal checks hold outbound acknowledgements to prove activity starts after acceptance, and exclude communities, duplicates, invalid messages, failed acknowledgements, loaded history, and paused transfers. Geometry checks preserve the approved outline and tip; timing checks cover burst extension, expiry, and fixed Reduce Motion pixels.
+
+`bash scripts/test-menu-icon.sh` compiles the production app renderer and controller and verifies receipt-driven animation, automatic return to idle, fixed Reduce Motion frames, pause/resume cancellation, badge priority, and exact alpha masks at both display scales. It runs in CI. The native app build and six release/feed compatibility checks also passed. An isolated built app accepted six signed fixture messages over loopback while its activity controller ran; paired post/health requests completed in 31–63 ms, and the CLI reverified all seven events afterward. Internet and LAN sharing remained disabled, with zero sync bytes. Local rendering evidence is under `.local/menu-icon-check`; fixture stores and transports are isolated from the installed app and public relay. This change has not yet been packaged as an app update.
+
 ## Nested-popup updater regression — September 7, 2026 (alpha.8, build 9)
 
 Reproduced a shutdown failure using the alpha.7 production updater delegate with actual SwiftUI `.sheet` presentations. A single sheet updated and relaunched successfully, but two nested sheets left the process running after Install and Relaunch. AppKit logged `App termination blocked by modal sheet`. Window snapshots showed SwiftUI creating a replacement nested sheet after native `endSheet` calls, confirming that closing native windows alone did not clear the presentation state. The earlier alpha.4 regression used a manually constructed sheet containing SwiftUI content and did not cover this behavior.

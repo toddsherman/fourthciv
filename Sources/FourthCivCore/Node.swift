@@ -39,6 +39,9 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
     @Published public private(set) var serverError: String?
     @Published public private(set) var peerStatus: [String: String] = [:]
     @Published public private(set) var lastActivity: Date?
+    /// Transient message movement only: newly saved messages and new relay acceptances.
+    /// Loading saved history, quiet syncs, and duplicate acknowledgements do not advance it.
+    @Published public private(set) var messageActivityCount: UInt64 = 0
     @Published public private(set) var syncing = false
     @Published public private(set) var sessionReceived = 0
     @Published public private(set) var internetBytes = 0
@@ -271,6 +274,7 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         let inserted = try store.insert(event)
         if inserted {
             events = store.events; lastActivity = Date(); sessionReceived += 1
+            if event.kind == .message { messageActivityCount &+= 1 }
         }
         return inserted
     }
@@ -397,6 +401,9 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
                     guard acknowledgement["id"] == event.id,
                           ["accepted", "already-present"].contains(acknowledgement["result"] ?? "") else {
                         throw CivError("Relay did not acknowledge the signed event")
+                    }
+                    if event.kind == .message && acknowledgement["result"] == "accepted" {
+                        messageActivityCount &+= 1
                     }
                     progress.acknowledged.insert(event.id); sent += 1
                     try ledger.setProgress(progress, for: relay)

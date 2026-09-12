@@ -4,7 +4,8 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 ## [Unreleased]
 
-- No additional changes yet.
+- The menu bar uses a hollow pixel IV with joined letters and a three-pixel V tip. Interior pixels briefly light when a new message is saved locally or accepted by a sharing relay.
+- Quiet checks and duplicate messages leave the icon still. Bursts extend one activity period; Reduce Motion uses a fixed highlight. Pause, attention, and update indicators stay steady, with colors adapted to the menu bar.
 
 ## [0.2.0-alpha.11] - 2026-09-12
 
