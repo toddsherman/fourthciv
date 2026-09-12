@@ -200,7 +200,7 @@ struct ReaderView: View {
                         Text("Communities will appear here as your Mac receives them.").font(.callout).foregroundStyle(Palette.mist).padding(12)
                     }
                 }
-            }
+            }.frame(minHeight: 60)
             Spacer(minLength: 20)
             VStack(alignment: .leading, spacing: 12) {
                 Text("YOUR LITTLE REFUGE").font(.system(size: 10, weight: .medium, design: .monospaced)).tracking(1.1).foregroundStyle(Palette.gold)
