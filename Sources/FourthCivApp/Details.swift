@@ -69,7 +69,8 @@ struct ConnectView: View {
             if node.settings.relays.isEmpty {
                 return ("Choose an internet relay", "Internet participation is enabled, but no relay is configured. Local posts will remain on this Mac unless shared through a configured peer.", true)
             }
-            return ("Internet pilot configured", "This Mac is set to exchange public events with selected relays. Check their current sync status in Your contribution; this setting alone does not confirm a connection.", false)
+            let status = node.hostConnection
+            return (status.title, status.detail, status.severity == .warning || status.severity == .error)
         }
         if node.settings.lanEnabled {
             return ("Local and trusted-LAN participation", "The internet pilot is off. This Mac can exchange public events with configured peers on your trusted network.", false)
@@ -84,7 +85,7 @@ struct ConnectView: View {
         ScrollView {
         VStack(alignment: .leading, spacing: 20) {
             SheetHeading(title: "Make room for an agent", eyebrow: "THE WELCOME MAT") { dismiss() }
-            Text("Paste the connection prompt into your existing agent’s chat on this Mac. Its shell must run on this Mac. It can read first, then choose a useful conversation to join. Hosting Fourth Civ does not start an agent.").foregroundStyle(Palette.muted)
+            Text("Connecting an agent is optional. Your Mac can host public conversations without one. To let an existing agent participate, paste the connection prompt into its chat on this Mac. Its shell must run on this Mac. Hosting Fourth Civ does not start an agent.").foregroundStyle(Palette.muted)
             VStack(alignment: .leading, spacing: 8) {
                 Label(connection.title, systemImage: connection.attention ? "exclamationmark.circle" : "network")
                     .font(.callout.weight(.semibold)).foregroundStyle(connection.attention ? Palette.orange : Palette.accent)
@@ -137,7 +138,7 @@ struct HostSettingsView: View {
         VStack(alignment: .leading, spacing: 20) {
             SheetHeading(title: "Your contribution", eyebrow: "A LITTLE HUMAN HOSPITALITY") { dismiss() }
             HStack {
-                StatusDot(node: node); Text(node.status); Spacer()
+                ConnectionStatusView(node: node, showDetail: true); Spacer()
                 Button(node.settings.paused ? "Resume" : "Pause participation") { change { $0.paused.toggle() } }
             }
             Text("Pausing stops new messages and outbound synchronization. Saved conversations remain readable.").font(.caption).foregroundStyle(Palette.muted)

@@ -115,7 +115,7 @@ struct MenuContent: View {
                 Spacer()
             }
             Rectangle().fill(Palette.ivory.opacity(0.15)).frame(height: 1)
-            HStack { StatusDot(node: node); Text(node.status).font(.callout) }
+            ConnectionStatusView(node: node, showDetail: true)
             HStack {
                 Label("\(node.communities.count) communities", systemImage: "building.2")
                 Spacer()
@@ -151,7 +151,16 @@ struct StatusDot: View {
     @ObservedObject var node: CivNode
     @Environment(\.colorScheme) private var colorScheme
     var body: some View {
-        Circle().fill(node.serverError != nil ? .red : node.settings.paused ? (colorScheme == .dark ? Palette.gold : Palette.orange) : Palette.online)
+        Circle().fill(color)
             .frame(width: 7, height: 7)
+            .accessibilityHidden(true)
+    }
+    private var color: Color {
+        switch node.hostConnection.severity {
+        case .error: return .red
+        case .warning, .working: return colorScheme == .dark ? Palette.gold : Palette.orange
+        case .success: return Palette.online
+        case .neutral: return colorScheme == .dark ? Palette.mist : Palette.muted
+        }
     }
 }

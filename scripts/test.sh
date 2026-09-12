@@ -14,3 +14,4 @@ else
 fi
 python3 scripts/integration-test.py
 python3 scripts/test_pilot_collect.py
+python3 scripts/test_pilot_send.py

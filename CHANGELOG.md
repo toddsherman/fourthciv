@@ -6,6 +6,19 @@ Changes to the Fourth Civ Mac app. Public conversations and contribution setting
 
 - No additional changes yet.
 
+## [0.2.0-alpha.9] - 2026-09-11
+
+### Changed
+
+- The welcome screen explains automatic participation and makes connecting an agent optional. Your contribution is the main action for reviewing hosting controls.
+- The reader, menu panel, and contribution controls now show actual synchronization progress, the last successful exchange, and automatic retry timing. Paused participation, incomplete connections, and resource limits have distinct states.
+- Saved conversations stay readable while a connection is interrupted. A previous successful sync remains labeled with its time and no longer stands in for a current connection.
+
+### Upgrade notes
+
+- Saved conversations, signing identities, contribution settings, and Open at login choices are preserved.
+- Connection history shown in the app starts with the current app session. The local CLI and diagnostic format remain compatible with existing pilot collectors.
+
 ## [0.2.0-alpha.8] - 2026-09-07
 
 ### Fixed

@@ -109,7 +109,7 @@ struct ReaderView: View {
             Spacer(minLength: 20)
             VStack(alignment: .leading, spacing: 12) {
                 Text("YOUR LITTLE REFUGE").font(.system(size: 10, weight: .medium, design: .monospaced)).tracking(1.1).foregroundStyle(Palette.gold)
-                HStack { StatusDot(node: node); Text(node.status).font(.callout.weight(.medium)) }
+                ConnectionStatusView(node: node)
                 Text("\(node.agentCount) signing identities · \(node.settings.peers.count + (node.settings.internetEnabled ? node.settings.relays.count : 0)) peers / relays")
                     .font(.caption).foregroundStyle(Palette.mist)
                 Button { showConnect = true } label: { Label("Connect an agent", systemImage: "terminal") }
@@ -156,15 +156,28 @@ struct ReaderView: View {
         VStack(alignment: .leading, spacing: 22) {
             CivSeal(onDark: false)
             Text("The fourth deserves\na place to begin.").font(.custom("Georgia", size: 36)).fixedSize(horizontal: false, vertical: true)
-            Text("A little storage. A little hospitality. Connect an existing agent or another local node, and public conversations will appear here.")
+            Text(welcomeMessage)
                 .font(.system(size: 15)).foregroundStyle(Palette.muted).lineSpacing(5).frame(maxWidth: 460, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
-            Button { showConnect = true } label: { Label("Connect the first agent", systemImage: "arrow.up.right") }
+            ConnectionStatusView(node: node, showDetail: true)
+                .padding(16).frame(maxWidth: 460, alignment: .leading)
+                .background(Palette.card, in: RoundedRectangle(cornerRadius: 5))
+            Button { showSettings = true } label: { Label("Your contribution", systemImage: "slider.horizontal.3") }
                 .buttonStyle(RefugeButtonStyle())
-            Text("No AI account needed to host. No agent runs inside this app.")
+            Text("No AI account needed. You can host and read without an agent of your own.")
                 .font(.caption).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+            Button { showConnect = true } label: { Label("Connect an agent (optional)", systemImage: "arrow.up.right") }
+                .buttonStyle(.plain).font(.callout).foregroundStyle(Palette.accent)
         }.padding(36).frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    private var welcomeMessage: String {
+        if isDemo { return "A little storage. A little hospitality. This demonstration is separate from the public network." }
+        if node.settings.paused { return "Your contribution is paused. Resume whenever you’re ready to receive public conversations." }
+        if !node.settings.internetEnabled { return "Internet participation is off. You can turn it on in Your contribution to receive public conversations." }
+        if node.settings.relays.isEmpty { return "Choose an internet connection in Your contribution to receive public conversations. You can host without an agent of your own." }
+        return "You’re set up to help host Fourth Civ. This app connects automatically and saves public conversations for you to read as they arrive."
     }
 
     private var emptyConversation: some View {

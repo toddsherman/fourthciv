@@ -42,6 +42,8 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
     @Published public private(set) var syncing = false
     @Published public private(set) var sessionReceived = 0
     @Published public private(set) var internetBytes = 0
+    @Published public private(set) var hostConnection = HostConnectionStatus(phase: .internetDisabled,
+        lastSuccess: nil, nextAttempt: nil, isSyncing: false, relayCount: 0, successfulRelayCount: 0, failedRelayCount: 0)
     private var server: HTTPServer?
     private var syncTask: Task<Void, Never>?
     private var generation = UUID()
@@ -52,8 +54,12 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         var attempt: Date
         var success: Date?
         var failure: DiagnosticFailure?
+        // Keep the historical success date, but require a new exchange after reconfiguration.
+        var observedGeneration: UUID?
+        var more = false
     }
     private var relayObservations: [String: RelayObservation] = [:]
+    private var activeRelay: String?
     private let requestData: NodeRequest
 
     public var endpoint: String { "http://127.0.0.1:\(port)" }
@@ -92,6 +98,7 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         if !hasSettings {
             try JSONEncoder().encode(settings).write(to: config, options: .atomic)
         }
+        refreshHostConnection()
     }
 
     public func start() throws {
@@ -104,6 +111,7 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
             guard self?.serverGeneration == current else { return }
             self?.serverError = error; self?.listening = error == nil
             self?.diagnostics.record(error == nil ? .listenerReady : .listenerFailed)
+            self?.refreshHostConnection()
         })
         server?.start()
         syncTask = Task { [weak self] in
@@ -119,6 +127,8 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
     public func stop() {
         generation = UUID(); serverGeneration = UUID(); activeRequest?.cancel()
         syncTask?.cancel(); syncTask = nil; server?.stop(); server = nil; listening = false
+        activeRelay = nil
+        refreshHostConnection()
         diagnostics.record(.nodeStopped)
     }
 
@@ -133,11 +143,47 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
         try ledger.retain(updated.relays)
         peerStatus = peerStatus.filter { (updated.peers + updated.relays).contains($0.key) }
         relayObservations = relayObservations.filter { updated.relays.contains($0.key) }
+        if networkChanged { activeRelay = nil }
+        refreshHostConnection()
         diagnostics.configurationChanged()
         if restart { stop(); serverError = nil; try start() }
     }
 
     public func togglePause() throws { var updated = settings; updated.paused.toggle(); try updateSettings(updated) }
+
+    private func refreshHostConnection() {
+        let observations = settings.relays.compactMap { relayObservations[$0] }
+        let current = observations.filter { $0.observedGeneration == generation }
+        let successes = current.filter { $0.failure == nil && $0.success != nil }
+        let failures = current.compactMap(\.failure)
+        let active = activeRelay != nil && !settings.paused && settings.internetEnabled
+        let phase: HostConnectionStatus.Phase
+        if settings.paused { phase = .paused }
+        else if serverError != nil { phase = .needsAttention }
+        else if !settings.internetEnabled { phase = .internetDisabled }
+        else if settings.relays.isEmpty { phase = .noRelays }
+        else if ledger.remaining(limit: settings.dailySyncMiB * 1_024 * 1_024) < 128 ||
+                    (ledger.used() > 0 && failures.contains(where: { $0.kind == .syncBudget })) { phase = .dataLimitReached }
+        else if failures.contains(where: { $0.kind == .storageBudget }) { phase = .storageLimitReached }
+        else if !failures.isEmpty { phase = successes.isEmpty ? .retrying : .partiallyConnected }
+        else if successes.count == settings.relays.count && !successes.contains(where: \.more) { phase = .synced }
+        else { phase = .fetching }
+        let canRetry = !settings.paused && settings.internetEnabled && !settings.relays.isEmpty
+        let retryingFailure = phase == .retrying || phase == .partiallyConnected || phase == .storageLimitReached
+        let scheduledRelays = settings.relays.filter {
+            !retryingFailure || (relayObservations[$0]?.observedGeneration == generation && relayObservations[$0]?.failure != nil)
+        }
+        var nextAttempt = canRetry ? scheduledRelays.compactMap { relaySchedule[$0]?.next }.min() : nil
+        if phase == .dataLimitReached {
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+            nextAttempt = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date()))
+        }
+        let value = HostConnectionStatus(phase: phase, lastSuccess: observations.compactMap(\.success).max(),
+            nextAttempt: nextAttempt, isSyncing: active, relayCount: settings.relays.count,
+            successfulRelayCount: successes.count, failedRelayCount: failures.count)
+        if value != hostConnection { hostConnection = value }
+    }
 
     public func diagnosticSnapshot() -> NodeDiagnostic {
         NodeDiagnostic(session: diagnostics.session, configuration: diagnostics.configuration,
@@ -232,9 +278,10 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
     /// Pull-only replication: both nodes configure each other for bidirectional exchange.
     /// Each peer page is ordered by insertion, so dependencies arrive before replies.
     public func sync() async {
+        refreshHostConnection()
         guard !syncing, !settings.paused else { return }
         syncing = true
-        defer { syncing = false; activeRequest = nil }
+        defer { syncing = false; activeRequest = nil; activeRelay = nil; refreshHostConnection() }
         let current = generation
         for peer in settings.peers {
             guard !settings.paused, !Task.isCancelled, generation == current else { return }
@@ -309,7 +356,10 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
             if let schedule = relaySchedule[relay], schedule.next > Date() { continue }
             let target = DiagnosticTarget(kind: .relay, index: (settings.relays.firstIndex(of: relay) ?? 0) + 1)
             relayObservations[relay] = RelayObservation(attempt: Date(), success: relayObservations[relay]?.success,
-                                                        failure: relayObservations[relay]?.failure)
+                failure: relayObservations[relay]?.failure, observedGeneration: relayObservations[relay]?.observedGeneration,
+                more: relayObservations[relay]?.more ?? false)
+            activeRelay = relay
+            refreshHostConnection()
             diagnostics.record(.syncStarted, target: target)
             do {
                 let base = try RelayEndpoint.validate(relay)
@@ -355,6 +405,9 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
                 relaySchedule[relay] = (0, Date().addingTimeInterval(30))
                 peerStatus[relay] = "Received \(received) · shared \(sent)" + (more ? " · more next sync" : " · up to date")
                 relayObservations[relay]?.success = Date(); relayObservations[relay]?.failure = nil
+                relayObservations[relay]?.observedGeneration = current; relayObservations[relay]?.more = more
+                activeRelay = nil
+                refreshHostConnection()
                 diagnostics.record(.syncSucceeded, target: target, received: received, sent: sent)
             } catch {
                 guard maySync(relay, generation: current) else { return }
@@ -363,6 +416,9 @@ public typealias NodeRequest = @MainActor (URL, String, Event?, Bool, Bool, Int)
                 relaySchedule[relay] = (failures, Date().addingTimeInterval(Double(delay)))
                 peerStatus[relay] = error.localizedDescription + " · retry in \(delay)s"
                 relayObservations[relay]?.failure = .capture(error)
+                relayObservations[relay]?.observedGeneration = current
+                activeRelay = nil
+                refreshHostConnection()
                 diagnostics.record(.syncFailed, target: target, failure: .capture(error))
             }
         }
