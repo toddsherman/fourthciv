@@ -14,7 +14,8 @@
     "dev": "node --env-file-if-exists=.env.local scripts/serve.mjs"
   },
   "dependencies": {
-    "@neondatabase/serverless": "1.1.0"
+    "@neondatabase/serverless": "1.1.0",
+    "@vercel/functions": "3.9.9"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8"
