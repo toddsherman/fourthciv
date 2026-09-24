@@ -1,6 +1,6 @@
 # Fourth Civ: free pilot plan
 
-Updated September 24, 2026. Status: Todd approved keeping Neon Free while minimizing existing Vercel costs. Local relay and protected-preview checks passed; staged production rollout is in progress.
+Updated September 24, 2026. Status: deployed from source `ea28ba632816b5f6c6650f122213e6c5161f0a48`, with all three exact-source CI jobs passing. Neon remains Free but currently rejects queries with a quota error. Production cache/history verification and usage measurement await database recovery; see [validation](VALIDATION.md).
 
 ## Decision and scope
 
@@ -8,7 +8,7 @@ Keep Neon on its free plan for a pilot used only by Todd's test Macs. Start with
 
 The existing Vercel team is **Pro**, and the relay runs in **iad1**. The original plan assumed no additional pilot charges on that subscription. Billing preflight disproved that assumption: the current-period usage report attributes approximately **$1.10** of billed usage to the relay, including approximately **$0.79** of Observability events. This is an in-progress usage report, not a final invoice. Vercel defines `billedCost` as the final charged amount in the usage report; do not subtract the plan credit again. CDN hits reduce origin work but still have infrastructure and monitoring costs. [Vercel usage reporting](https://vercel.com/docs/cli/usage), [tracked Observability events](https://vercel.com/docs/observability#tracked-events)
 
-Neon's integration still reports the **Free** plan. No paid service or upgrade is part of this change. On September 24 Todd chose to keep Neon Free, accepting the approach of minimizing existing Vercel costs. An exactly zero hosting-usage ceiling is not the rollout requirement; this design does not guarantee one. Do not change team-wide billing or pause other sites to enforce this pilot's budget. Paid Observability is enabled at team level; apply and verify a relay-only exclusion as part of cost minimization, preserving every other project setting.
+Neon's integration still reports the **Free** plan. No paid service or upgrade is part of this change. On September 24 Todd chose to keep Neon Free, accepting the approach of minimizing existing Vercel costs. An exactly zero hosting-usage ceiling is not the rollout requirement; this design does not guarantee one. Do not change team-wide billing or pause other sites to enforce this pilot's budget. Only the relay has been excluded from paid Observability Plus; the API verified that no other project is excluded. Team settings are otherwise unchanged, and runtime logs remain available.
 
 Working envelope: up to four test Macs, mostly quiet, occasional deliberate message tests, current public signed-event protocol. No scheduled message generator is needed for routine validation. Continuous automated posting is outside the quiet-pilot budget model.
 
@@ -22,7 +22,7 @@ Source: `Sources/FourthCivCore/Node.swift` (`syncRelays`), `relay/lib/handler.mj
 
 ## 1. Contain usage while preparing the change
 
-- Between deliberate tests, pause internet participation on **all** test Macs. One still polling can keep the database active. This is an interim operator step, not something this plan has changed remotely.
+- Before the cache rollout, or after rollback to the old relay, pause internet participation on **all** test Macs between deliberate tests: one still polling can keep the database active. The new cache should allow ordinary quiet participation after quota recovery, subject to the measurement gates below. This work has not changed Mac participation settings remotely.
 - Check the Neon console/control-plane metrics for current usage, compute sizing, active branches, suspension status, and the exact reset date. Avoid recurring SQL health probes: they would keep waking the database.
 - Retain the current database, epoch, signed events, and local Mac histories. If the quota is exhausted, use local/LAN tests and the existing separate development environment while waiting for the reset. Do not create replacement projects to cycle through free allowances.
 - Code changes cannot restore consumed quota. Before a later deployment, snapshot the existing event IDs and epoch through the established operator process.
@@ -110,3 +110,11 @@ If rollback is needed, preserve all newly accepted events and the epoch; restore
 - All 41 relay tests, the native Swift CLI build, signed-event interop and outage recovery passed. A full native test rerun was blocked before execution by local SwiftUI macro loading in unchanged app code. Native-to-public-CDN verification, another-network delivery, production history comparison, and the quiet-day measurements remain rollout gates.
 - The Neon console requires interactive authentication. Actual compute size, current CU-hours, suspended periods, and Neon reset date remain unverified. The Vercel billing-period reset is not the Neon reset date. No database-polling monitor or overnight sender has been started.
 - Evidence is retained under `.local/free-pilot-cache-20260923/private/`; it is intentionally not published with the source. The public validation record will summarize completed checks without credentials or participant data.
+
+## September 24 rollout disposition
+
+Deployment `dpl_HEQxqN5fGFqCoRvXXvuH2yqjMLr2` is promoted, and [PR #1](https://github.com/toddsherman/fourthciv/pull/1) is merged. The production database was already unavailable before rollout; an isolated read-only check confirmed a Neon quota error. The prior integration `usageQuotaExceeded:false` field did not establish actual availability.
+
+The rollout therefore made a reviewed exception to the live-data gate: install only the exact preview-tested relay code so the new quiet behavior is present at renewal. No schema, database, environment, event or Mac app changes accompanied the deployment. Production returns a safe uncached 503 while Neon refuses queries. The last verified 39-event backup and prior deployment are retained; current history preservation and production cache behavior are **not yet reverified**.
+
+First recovery steps are to confirm the provider's reset date, verify all retained event IDs/signatures and epoch, check native CDN behavior and another network, then begin the 24-hour quiet sample and seven-day projection. Full exact-source CI passed, superseding the local native-test toolchain limitation for this candidate. No measured CU-hour savings or 50-CU-hour projection is claimed yet. Rollout evidence is under `.local/free-pilot-cache-20260924/private/`.
